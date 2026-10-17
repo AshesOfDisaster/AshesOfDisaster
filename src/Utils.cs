@@ -83,7 +83,7 @@ public static class Utils
     public static int PlayerCount()
     {
         int n = 0;
-        foreach (var p in PlayerControl.AllPlayerControls) if (p != null && !WallVisual.IsPuppet(p)) n++;
+        foreach (var p in PlayerControl.AllPlayerControls) if (p != null) n++;
         return n;
     }
 
@@ -234,7 +234,7 @@ public static class Utils
         PlayerControl found = null;
         foreach (var p in PlayerControl.AllPlayerControls)
         {
-            if (p == null || p.Data == null || p.Data.Disconnected || WallVisual.IsPuppet(p)) continue;
+            if (p == null || p.Data == null || p.Data.Disconnected) continue;
             if (p.Data.IsDead == alive) continue;
             if (p.AmOwner) continue;
             if (p != prefer) return p;

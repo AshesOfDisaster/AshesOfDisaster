@@ -4,7 +4,7 @@
 
 **Host-only roles mod for Among Us** · **Хост-мод с ролями для Among Us**
 
-![version](https://img.shields.io/badge/version-0.1.90-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/made%20with-AI-8a2be2)
+![version](https://img.shields.io/badge/version-0.1.91-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/made%20with-AI-8a2be2)
 
 [English](#english) · [Русский](#русский) · [Discord](#discord)
 
@@ -25,12 +25,12 @@ Only the **host** needs the mod — other players join with a normal game and th
 - 🌍 Russian and English, picked from the game language
 - 🛡️ Host-side protections against kicks, performance optimizations (caching, frame limit)
 
-### Roles (70)
-**Crew — 24:** **Peasant** (Крестьянин), **Builder** (Строитель), **Psychologist** (Психолог), **Shieldbearer** (Щитоносец), **Foreman** (Прораб), **Logger** (Логер), **Plumber** (Сантехник), **Dowser** (Лозоходец), **Navigator** (Штурман), **Notary** (Нотариус), **Cartographer** (Картограф), **Archivist** (Архивариус), **Sentry** (Часовой), **Statistician** (Статистик), **Marked** (Меченый), **Dispatcher** (Диспетчер), **Intercessor** (Заступник), **Peacemaker** (Миротворец), **Investigator** (Следователь), **Wanderer** (Бродяга), **Lucky** (Везунчик), **Eyewitness** (Очевидец), **Forensic** (Криминалист), **Aide** (Помощник)
+### Roles (36)
+**Crew — 14:** **Peasant** (Крестьянин), **Builder** (Строитель), **Psychologist** (Психолог), **Foreman** (Прораб), **Logger** (Логер), **Plumber** (Сантехник), **Dowser** (Лозоходец), **Navigator** (Штурман), **Sentry** (Часовой), **Statistician** (Статистик), **Intercessor** (Заступник), **Peacemaker** (Миротворец), **Eyewitness** (Очевидец), **Forensic** (Криминалист)
 
-**Impostors — 23:** **Welder** (Сварщик), **Twin** (Близнец), **Shroomer** (Грибник), **Hound** (Ищейка), **Sealer** (Запечатыватель), **Alarmist** (Паникёр), **Painter** (Маляр), **Spider** (Паук), **Minelayer** (Минёр), **Shuffler** (Тасовщик), **Eclipser** (Затмитель), **Returner** (Возвращенец), **Ghoul** (Упырь), **Auditor** (Ревизор), **Lurer** (Приманщик), **Breaker** (Взломщик), **Rumormonger** (Сплетник), **Jammer** (Глушитель), **Mystifier** (Мистификатор), **Stalker** (Сталкер), **Slammer** (Захлопыватель), **Trapper** (Капканщик), **Reaper** (Жнец)
+**Impostors — 11:** **Welder** (Сварщик), **Twin** (Близнец), **Shroomer** (Грибник), **Hound** (Ищейка), **Painter** (Маляр), **Spider** (Паук), **Minelayer** (Минёр), **Eclipser** (Затмитель), **Returner** (Возвращенец), **Lurer** (Приманщик), **Trapper** (Капканщик)
 
-**Neutrals — 23:** **Smoker** (Курильщик), **Pinkman** (Пинкман), **Prankster** (Шутник), **Crow** (Ворон), **Defector** (Перебежчик), **Reflector** (Отражатель), **Cloud** (Облако), **Vigilante** (Виджилант), **Marauder** (Мародёр), **Adventurer** (Авантюрист), **Hermit** (Затворник), **Tourist** (Турист), **Avenger** (Мститель), **Trader** (Торговец), **Sleepwalker** (Лунатик), **Mole** (Крот), **Hypnotist** (Гипнотизёр), **Swindler** (Мошенник), **Scarecrow** (Пугало), **Clockmaker** (Часовщик), **Lottery** (Лотерейщик), **Magnet** (Магнит), **Fence** (Скупщик)
+**Neutrals — 11:** **Smoker** (Курильщик), **Pinkman** (Пинкман), **Prankster** (Шутник), **Crow** (Ворон), **Defector** (Перебежчик), **Reflector** (Отражатель), **Cloud** (Облако), **Vigilante** (Виджилант), **Avenger** (Мститель), **Hypnotist** (Гипнотизёр), **Clockmaker** (Часовщик)
 
 Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
 
@@ -46,7 +46,7 @@ Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
 
 ### Install
 1. Install [BepInEx (IL2CPP, 6.x)](https://builds.bepinex.dev/projects/bepinex_be) for your Among Us version.
-2. Download `AshesOfDisaster.dll` from [Releases](../../releases) (or `release/`).
+2. Download `AshesOfDisaster.dll` from [Releases](../../releases), or build it yourself from source (see *Build from source*).
 3. Put it into `Among Us/BepInEx/plugins/`.
 4. Start the game, create a lobby — only you need the mod.
 
@@ -68,12 +68,12 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 - 🌍 Русский и английский, язык берётся из языка игры
 - 🛡️ Защита хоста от киков и оптимизации (кэши, лимит кадров)
 
-### Роли (70)
-**Мирные — 24:** **Крестьянин** (Peasant), **Строитель** (Builder), **Психолог** (Psychologist), **Щитоносец** (Shieldbearer), **Прораб** (Foreman), **Логер** (Logger), **Сантехник** (Plumber), **Лозоходец** (Dowser), **Штурман** (Navigator), **Нотариус** (Notary), **Картограф** (Cartographer), **Архивариус** (Archivist), **Часовой** (Sentry), **Статистик** (Statistician), **Меченый** (Marked), **Диспетчер** (Dispatcher), **Заступник** (Intercessor), **Миротворец** (Peacemaker), **Следователь** (Investigator), **Бродяга** (Wanderer), **Везунчик** (Lucky), **Очевидец** (Eyewitness), **Криминалист** (Forensic), **Помощник** (Aide)
+### Роли (36)
+**Мирные — 14:** **Крестьянин** (Peasant), **Строитель** (Builder), **Психолог** (Psychologist), **Прораб** (Foreman), **Логер** (Logger), **Сантехник** (Plumber), **Лозоходец** (Dowser), **Штурман** (Navigator), **Часовой** (Sentry), **Статистик** (Statistician), **Заступник** (Intercessor), **Миротворец** (Peacemaker), **Очевидец** (Eyewitness), **Криминалист** (Forensic)
 
-**Предатели — 23:** **Сварщик** (Welder), **Близнец** (Twin), **Грибник** (Shroomer), **Ищейка** (Hound), **Запечатыватель** (Sealer), **Паникёр** (Alarmist), **Маляр** (Painter), **Паук** (Spider), **Минёр** (Minelayer), **Тасовщик** (Shuffler), **Затмитель** (Eclipser), **Возвращенец** (Returner), **Упырь** (Ghoul), **Ревизор** (Auditor), **Приманщик** (Lurer), **Взломщик** (Breaker), **Сплетник** (Rumormonger), **Глушитель** (Jammer), **Мистификатор** (Mystifier), **Сталкер** (Stalker), **Захлопыватель** (Slammer), **Капканщик** (Trapper), **Жнец** (Reaper)
+**Предатели — 11:** **Сварщик** (Welder), **Близнец** (Twin), **Грибник** (Shroomer), **Ищейка** (Hound), **Маляр** (Painter), **Паук** (Spider), **Минёр** (Minelayer), **Затмитель** (Eclipser), **Возвращенец** (Returner), **Приманщик** (Lurer), **Капканщик** (Trapper)
 
-**Нейтралы — 23:** **Курильщик** (Smoker), **Пинкман** (Pinkman), **Шутник** (Prankster), **Ворон** (Crow), **Перебежчик** (Defector), **Отражатель** (Reflector), **Облако** (Cloud), **Виджилант** (Vigilante), **Мародёр** (Marauder), **Авантюрист** (Adventurer), **Затворник** (Hermit), **Турист** (Tourist), **Мститель** (Avenger), **Торговец** (Trader), **Лунатик** (Sleepwalker), **Крот** (Mole), **Гипнотизёр** (Hypnotist), **Мошенник** (Swindler), **Пугало** (Scarecrow), **Часовщик** (Clockmaker), **Лотерейщик** (Lottery), **Магнит** (Magnet), **Скупщик** (Fence)
+**Нейтралы — 11:** **Курильщик** (Smoker), **Пинкман** (Pinkman), **Шутник** (Prankster), **Ворон** (Crow), **Перебежчик** (Defector), **Отражатель** (Reflector), **Облако** (Cloud), **Виджилант** (Vigilante), **Мститель** (Avenger), **Гипнотизёр** (Hypnotist), **Часовщик** (Clockmaker)
 
 Полные описания: [docs/ROLES.md](docs/ROLES.md) или `/r <роль>` в игре.
 
@@ -82,7 +82,7 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 
 ### Установка
 1. Установите [BepInEx (IL2CPP, 6.x)](https://builds.bepinex.dev/projects/bepinex_be) под вашу версию Among Us.
-2. Скачайте `AshesOfDisaster.dll` в [Releases](../../releases) (или из `release/`).
+2. Скачайте `AshesOfDisaster.dll` в [Releases](../../releases) или соберите сами из исходников (см. «Сборка из исходников»).
 3. Положите в `Among Us/BepInEx/plugins/`.
 4. Запустите игру и создайте лобби — мод нужен только вам.
 

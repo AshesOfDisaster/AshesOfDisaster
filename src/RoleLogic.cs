@@ -68,8 +68,8 @@ public static class RoleLogic
 
     // ---------------------------------------------------------------- Облако (нейтрал)
 
-    public class Cloud { public Vector2 Pos; public byte Owner; public bool Storm; public WallVisualObj Visual; }
-    static void RemoveCloud(Cloud c) { try { if (c.Visual != null) WallVisual.Despawn(c.Visual); } catch { } Clouds.Remove(c); }
+    public class Cloud { public Vector2 Pos; public byte Owner; public bool Storm; }
+    static void RemoveCloud(Cloud c) { Clouds.Remove(c); }
     public static readonly List<Cloud> Clouds = new();
     static readonly List<(PlayerControl p, float end, SystemTypes sys)> flashes = new();
     static readonly Dictionary<byte, float> lastPanic = new();
@@ -173,7 +173,7 @@ public static class RoleLogic
             catch (Exception e) { Plugin.Logger.LogError("Panic flash end: " + e.GetBaseException().Message); }
         }
         if (Clouds.Count == 0) return;
-        if (MeetingHud.Instance != null) { Clouds.Clear(); WallVisual.DespawnAll(); return; }
+        if (MeetingHud.Instance != null) { Clouds.Clear(); return; }
         if (Time.time - lastCloud < 0.25f) return;
         lastCloud = Time.time;
         float r = Opts.CloudRadius.Value / 10f;
@@ -183,7 +183,7 @@ public static class RoleLogic
             if (owner == null || owner.Data == null || owner.Data.IsDead) { RemoveCloud(cloud); continue; }
             foreach (var p in PlayerControl.AllPlayerControls)
             {
-                if (p == null || p.Data == null || WallVisual.IsPuppet(p) || p.PlayerId == cloud.Owner || p.Data.IsDead || p.Data.Disconnected) continue;
+                if (p == null || p.Data == null || p.PlayerId == cloud.Owner || p.Data.IsDead || p.Data.Disconnected) continue;
                 if (Vector2.Distance(p.GetTruePosition(), cloud.Pos) > r) continue;
                 if (cloud.Storm)
                 {
@@ -195,7 +195,6 @@ public static class RoleLogic
         }
     }
 
-    // ---------------------------------------------------------------- куклы-подписи рядом с игроками (эксперимент)
 
     public static float StartRevealAt = -1f;
     public static float AssignAt = -1f;     // роли раздаём через пару секунд после ванильных: к этому моменту у всех уже есть своя ванильная роль
@@ -214,7 +213,7 @@ public static class RoleLogic
     public static void Reset()
     {
         RoleState.Assigned.Clear(); ForcedImp.Clear(); Demoted.Clear(); Informed.Clear(); ShieldArmed.Clear(); ShieldUsed.Clear(); Painted.Clear(); Eaten.Clear();
-        Psy.Reset(); Welder.Reset(); NR.Reset(); Smoker.Reset(); Pinkman.Reset(); Plumber.Reset(); Shroomer.Reset(); VigUnlocked.Clear(); VigPenalty.Clear(); VigLastKill.Clear(); petLast.Clear(); pendingAbility.Clear(); Webs.Clear(); BuilderLast.Clear(); WallVisual.DespawnAll(); Clouds.Clear(); flashes.Clear(); lastPanic.Clear();
+        Psy.Reset(); Welder.Reset(); NR.Reset(); Smoker.Reset(); Pinkman.Reset(); Plumber.Reset(); Shroomer.Reset(); VigUnlocked.Clear(); VigPenalty.Clear(); VigLastKill.Clear(); petLast.Clear(); pendingAbility.Clear(); Webs.Clear(); BuilderLast.Clear(); Clouds.Clear(); flashes.Clear(); lastPanic.Clear();
         StartRevealAt = -1f;
         Utils.ClearDeferred();
         deathNotices.Clear(); NameInfo.ClearNotes();
@@ -263,7 +262,7 @@ public static class RoleLogic
         Reset();
         var all = new List<PlayerControl>();
         foreach (var p in PlayerControl.AllPlayerControls)
-            if (p != null && p.Data != null && !p.Data.Disconnected && !WallVisual.IsPuppet(p)) all.Add(p);
+            if (p != null && p.Data != null && !p.Data.Disconnected) all.Add(p);
 
         var imps = Shuffle(all.Where(p => IsImpRole(p.Data.RoleType)));
         var crew = Shuffle(all.Where(p => !IsImpRole(p.Data.RoleType)));
@@ -482,7 +481,7 @@ public static class RoleLogic
     }
 
     public static bool CanKill(PlayerControl k, PlayerControl t)
-        => k != null && t != null && !WallVisual.IsPuppet(t) && k.Data != null && t.Data != null && !k.Data.IsDead && !t.Data.IsDead && k != t
+        => k != null && t != null && k.Data != null && t.Data != null && !k.Data.IsDead && !t.Data.IsDead && k != t
            && MeetingHud.Instance == null;
 
     // ---------------------------------------------------------------- питомец = кнопка способности
@@ -574,7 +573,7 @@ public static class RoleLogic
             {
                 foreach (var p in PlayerControl.AllPlayerControls)
                 {
-                    if (p == null || WallVisual.IsPuppet(p) || p.PlayerId == web.Owner || !CanBeTrapped(p)) continue;
+                    if (p == null || p.PlayerId == web.Owner || !CanBeTrapped(p)) continue;
                     if (Vector2.Distance(p.GetTruePosition(), web.Pos) > 0.6f) continue;
                     web.Trapped = p.PlayerId; web.Rescue = 0f;
                     if (spider != null) Utils.SendSecret(spider, Translator.IsRu(spider) ? $"Звон нитей! В паутине: {p.Data.PlayerName}" : $"The threads ring! Caught: {p.Data.PlayerName}");
@@ -598,7 +597,7 @@ public static class RoleLogic
                 bool rescuer = false;
                 foreach (var p in PlayerControl.AllPlayerControls)
                 {
-                    if (p == null || WallVisual.IsPuppet(p) || p == victim || p.PlayerId == web.Owner || p.Data == null || p.Data.IsDead) continue;
+                    if (p == null || p == victim || p.PlayerId == web.Owner || p.Data == null || p.Data.IsDead) continue;
                     if (Vector2.Distance(p.GetTruePosition(), web.Pos) < 1.1f) { rescuer = true; break; }
                 }
                 web.Rescue = rescuer ? web.Rescue + dt : 0f;
@@ -628,7 +627,7 @@ public static class RoleLogic
         Vector2 me = vig.GetTruePosition();
         foreach (var p in PlayerControl.AllPlayerControls)
         {
-            if (p == null || WallVisual.IsPuppet(p) || p == vig || p.Data == null || p.Data.IsDead || p.Data.Disconnected) continue;
+            if (p == null || p == vig || p.Data == null || p.Data.IsDead || p.Data.Disconnected) continue;
             float d = Vector2.Distance(me, p.GetTruePosition());
             if (d < best) { best = d; target = p; }
         }
@@ -704,8 +703,6 @@ public static class RoleLogic
     {
         if (!Utils.AmHost || AmongUsClient.Instance == null || AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Started) return;
         PumpDeathNotices();
-
-        WallVisual.Tick();
         while (pendingAbility.Count > 0)
         {
             var (aid, asrc, aat) = pendingAbility.Dequeue();

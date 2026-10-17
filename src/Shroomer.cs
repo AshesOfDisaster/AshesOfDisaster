@@ -65,7 +65,7 @@ public static class Shroomer
     /// Все серые (цвет 15), а ники перемешаны между игроками: по виду и имени никого не узнать
     static void Shuffle()
     {
-        var alive = PlayerControl.AllPlayerControls.ToArray().Where(o => o != null && o.Data != null && !o.Data.IsDead && !o.Data.Disconnected && !WallVisual.IsPuppet(o)).ToList();
+        var alive = PlayerControl.AllPlayerControls.ToArray().Where(o => o != null && o.Data != null && !o.Data.IsDead && !o.Data.Disconnected).ToList();
         if (alive.Count < 2) return;
         original.Clear(); originalNames.Clear();
         foreach (var o in alive) { original[o.PlayerId] = (byte)o.Data.DefaultOutfit.ColorId; originalNames[o.PlayerId] = o.Data.PlayerName; var oc = o.Data.DefaultOutfit; originalCos[o.PlayerId] = (oc.HatId, oc.SkinId, oc.VisorId, oc.PetId); }

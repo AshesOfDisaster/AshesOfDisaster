@@ -80,7 +80,7 @@ public static class Opts
     public static BoolOpt NoEndFewPlayers, NoGameEnd, SyncButtonMode, DisableCloseDoors, GhostSeeRoles, NameStatus, RevealOnExile, PetForAll, TeamSwap;
     public static IntOpt SyncedButtonCount, KillCooldownPercent;
     // Настройки ролей
-    public static IntOpt DyerDuration, BuilderCooldown, CloudMax, CloudRadius, CloudFlash, CloudStormChance, PeasantTasks, SpiderMaxWebs, VigilanteMaxPenalty, VigilanteUnlockTime, VigilanteCooldown, PsyCooldown, PsyMaxUses, PsyFailChance, WelderMax, WelderCooldown, DowserCooldown, DowserRadius, PinkCook, PinkMax, PinkPurity, PinkSaleCooldown, SmokeMax, SmokeLife, SmokeKill, SmokeRadius, SmokeCooldown, ShroomUses, ShroomCooldown, ShroomSeconds, PlumberUses, PlumberCooldown, TwinRadius, TwinCooldown, LogCooldown, LogLines, LogAnon, ShieldUses, ShieldCooldown, ForemanChance, NavCooldown, NotaryUses, HoundCooldown, SealerCooldown, AlarmCooldown, AlarmSeconds, PrankCooldown, CrowCooldown, CrowUses, DefectorWrong, ReflectChance;
+    public static IntOpt DyerDuration, BuilderCooldown, CloudMax, CloudRadius, CloudFlash, CloudStormChance, PeasantTasks, SpiderMaxWebs, VigilanteMaxPenalty, VigilanteUnlockTime, VigilanteCooldown, PsyCooldown, PsyMaxUses, PsyFailChance, WelderMax, WelderCooldown, DowserCooldown, DowserRadius, PinkCook, PinkMax, PinkPurity, PinkSaleCooldown, SmokeMax, SmokeLife, SmokeKill, SmokeRadius, SmokeCooldown, ShroomUses, ShroomCooldown, ShroomSeconds, PlumberUses, PlumberCooldown, TwinRadius, TwinCooldown, LogCooldown, LogLines, LogAnon, ForemanChance, NavCooldown, HoundCooldown, PrankCooldown, CrowCooldown, CrowUses, DefectorWrong, ReflectChance;
     public static BoolOpt SpiderPassThrough, CloudStormMarker, HostAuthority;
     // Другое
     public static BoolOpt ShowCredits;
@@ -180,9 +180,6 @@ public static class Opts
         AddRole(c, "Welder", "Сварщик", "Welder", "#FF8A3D", OptTab.Impostor,
             "Предатель. Погладь питомца у двери — комната запирается и остаётся закрытой до собрания. Одновременно можно держать запертыми ограниченное число комнат (по умолчанию 1), столовую запереть нельзя. Нужен питомец!",
             "Impostor. Pet your pet next to a door - the room is locked and stays closed until the meeting. Only a limited number of rooms can be locked at once (1 by default), the cafeteria can't be locked. A pet is required!");
-        AddRole(c, "Shieldbearer", "Щитоносец", "Shieldbearer", "#64B5F6", OptTab.Crewmate,
-            "Член экипажа. Питомец рядом с игроком (до 3 м) выдаёт ему щит: первое нападение на него будет отменено. Число щитов и перезарядка настраиваются. Нужен питомец!",
-            "A crewmate. Pet next to a player (within 3 m) gives him a shield that cancels the first attack on him. Number of shields and cooldown are configurable. A pet is required!");
         AddRole(c, "Foreman", "Прораб", "Foreman", "#FFB74D", OptTab.Crewmate,
             "Член экипажа. Каждое выполненное им задание с настраиваемым шансом засчитывает одно задание случайному члену экипажа — команде проще победить по заданиям.",
             "A crewmate. Each task he completes has a configurable chance to also complete one task of a random crewmate, helping the team win by tasks.");
@@ -198,12 +195,6 @@ public static class Opts
         AddRole(c, "Navigator", "Штурман", "Navigator", "#4FC3F7", OptTab.Crewmate,
             "Член экипажа. Питомец ставит метку, повторное поглаживание возвращает тебя к метке (перезарядка настраивается). Метка пропадает на собрании. Нужен питомец!",
             "A crewmate. Pet sets a mark, petting again returns you to it (cooldown configurable). The mark vanishes at a meeting. A pet is required!");
-        AddRole(c, "Notary", "Нотариус", "Notary", "#CDAA7D", OptTab.Crewmate,
-            "Член экипажа. На собрании командой /ab ID узнаёт, сколько заданий выполнил игрок. Число проверок ограничено.",
-            "A crewmate. In a meeting /ab ID shows how many tasks a player has completed. The number of checks is limited.");
-        AddRole(c, "Cartographer", "Картограф", "Cartographer", "#81C784", OptTab.Crewmate,
-            "Член экипажа. В начале каждого собрания узнаёт, сколько игроков находилось в каждой комнате (без имён).",
-            "A crewmate. At the start of each meeting learns how many players were in each room (no names).");
         AddRole(c, "Twin", "Близнец", "Twin", "#E040FB", OptTab.Impostor,
             "Предатель. Когда он убивает, вторым умирает ближайший к жертве игрок (в настраиваемом радиусе). Двойное убийство срабатывает не чаще, чем раз в перезарядку (по умолчанию 60 с); если у второго есть защита, она спасает его.",
             "Impostor. When he kills, the player nearest to the victim (within a configurable radius) dies too. The double kill triggers no more often than the cooldown (60 s by default); if the second player has a shield, it saves him.");
@@ -213,12 +204,6 @@ public static class Opts
         AddRole(c, "Hound", "Ищейка", "Hound", "#FF7043", OptTab.Impostor,
             "Предатель. Питомец показывает комнату и расстояние до ближайшего члена экипажа (перезарядка настраивается). Нужен питомец!",
             "Impostor. Pet shows the room and distance to the nearest crewmate (cooldown configurable). A pet is required!");
-        AddRole(c, "Sealer", "Запечатыватель", "Sealer", "#B71C1C", OptTab.Impostor,
-            "Предатель. После твоего убийства двери ближайшей комнаты закрываются на время. Ты сам тоже можешь оказаться внутри. Срабатывает не чаще, чем раз в перезарядку.",
-            "Impostor. After your kill the doors of the nearest room close for a while. You may be trapped too. Triggers no more often than the cooldown.");
-        AddRole(c, "Alarmist", "Паникёр", "Alarmist", "#FF5252", OptTab.Impostor,
-            "Предатель. Питомец вызывает ложную тревогу: у всех мирных на несколько секунд мигает экран. Долгая перезарядка. Нужен питомец!",
-            "Impostor. Pet triggers a false alarm: all crewmates' screens flash for a few seconds. Long cooldown. A pet is required!");
         AddRole(c, "Smoker", "Курильщик", "Smoker", "#BDBDBD", OptTab.Neutral,
             "Нейтрал. Питомец — выкурить сигарету в любом месте: там остаётся облако дыма. Кто просидит в дыму нужное время подряд (по умолчанию 10 с, настраивается) — умрёт; предупреждение приходит тому, кто в дыму. Буст: в своём дыму курильщика нельзя убить, а после убийства дымом сигарета готова сразу. Для сервера он настоящий предатель. Нужен питомец!",
             "Neutral. Pet — smoke a cigarette anywhere, leaving a smoke cloud. Whoever stays in the smoke for the set time in a row (10 s by default, configurable) dies; the player inside gets a warning. Boost: the smoker can't be killed inside his own smoke, and after a smoke kill his cigarette is ready at once. A real impostor for the server. A pet is required!");
@@ -283,15 +268,9 @@ public static class Opts
         LogCooldown         = Extra("Logger", new IntOpt("LogCooldown", OptTab.Crewmate, 30, 5, 120, 5, c), "Перезарядка просмотра журнала (сек)", "Log view cooldown (sec)");
         LogLines            = Extra("Logger", new IntOpt("LogLines", OptTab.Crewmate, 6, 3, 15, 1, c), "Сколько записей показывать", "Entries shown");
         LogAnon             = Extra("Logger", new IntOpt("LogAnon", OptTab.Crewmate, 25, 0, 100, 5, c), "Шанс записи без имени (%)", "Chance an entry has no name (%)");
-        ShieldUses          = Extra("Shieldbearer", new IntOpt("ShieldUses", OptTab.Crewmate, 2, 1, 6, 1, c), "Щитов за игру", "Shields per game");
-        ShieldCooldown      = Extra("Shieldbearer", new IntOpt("ShieldCooldown", OptTab.Crewmate, 30, 5, 120, 5, c), "Перезарядка щита (сек)", "Shield cooldown (sec)");
         ForemanChance       = Extra("Foreman", new IntOpt("ForemanHelp", OptTab.Crewmate, 35, 5, 100, 5, c), "Шанс засчитать чужое задание (%)", "Chance to complete a crewmate's task (%)");
         NavCooldown         = Extra("Navigator", new IntOpt("NavCooldown", OptTab.Crewmate, 30, 5, 120, 5, c), "Перезарядка возврата (сек)", "Return cooldown (sec)");
-        NotaryUses          = Extra("Notary", new IntOpt("NotaryUses", OptTab.Crewmate, 2, 1, 10, 1, c), "Сколько раз можно проверять", "Checks per game");
         HoundCooldown       = Extra("Hound", new IntOpt("HoundCooldown", OptTab.Impostor, 25, 5, 120, 5, c), "Перезарядка поиска (сек)", "Search cooldown (sec)");
-        SealerCooldown      = Extra("Sealer", new IntOpt("SealerCooldown", OptTab.Impostor, 40, 10, 180, 5, c), "Перезарядка запечатывания (сек)", "Seal cooldown (sec)");
-        AlarmCooldown       = Extra("Alarmist", new IntOpt("AlarmCooldown", OptTab.Impostor, 60, 20, 240, 10, c), "Перезарядка тревоги (сек)", "Alarm cooldown (sec)");
-        AlarmSeconds        = Extra("Alarmist", new IntOpt("AlarmSeconds", OptTab.Impostor, 3, 1, 8, 1, c), "Сколько секунд мигает экран", "Flash duration (sec)");
         PrankCooldown       = Extra("Prankster", new IntOpt("PrankCooldown", OptTab.Neutral, 45, 10, 180, 5, c), "Перезарядка обмена (сек)", "Swap cooldown (sec)");
         CrowCooldown        = Extra("Crow", new IntOpt("CrowCooldown", OptTab.Neutral, 40, 10, 180, 5, c), "Перезарядка перелёта (сек)", "Flight cooldown (sec)");
         CrowUses            = Extra("Crow", new IntOpt("CrowUses", OptTab.Neutral, 3, 1, 10, 1, c), "Перелётов за игру", "Flights per game");

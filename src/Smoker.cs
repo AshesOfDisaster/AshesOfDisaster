@@ -61,7 +61,7 @@ public static class Smoker
         var inNow = new HashSet<byte>();
         foreach (var o in PlayerControl.AllPlayerControls)
         {
-            if (o == null || o.Data == null || o.Data.IsDead || o.Data.Disconnected || WallVisual.IsPuppet(o)) continue;
+            if (o == null || o.Data == null || o.Data.IsDead || o.Data.Disconnected) continue;
             var pos = o.GetTruePosition();
             var cl = clouds.FirstOrDefault(c => c.Owner != o.PlayerId && Vector2.Distance(c.Pos, pos) <= r);
             if (cl == null) continue;

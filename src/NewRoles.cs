@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Двенадцать ролей: мирные (Караульный, Плакальщик, Штурман, Нотариус, Картограф),
-// предатели (Ищейка, Запечатыватель, Паникёр), нейтралы (Шутник, Ворон, Перебежчик, Отражатель).
+// Роли: мирные (Прораб, Логер, Штурман, Лозоходец, Сантехник), предатели (Близнец, Ищейка, Грибник),
+// нейтралы (Шутник, Ворон, Перебежчик, Отражатель, Курильщик, Пинкман).
 public static class NR
 {
     static readonly System.Random rng = new();
@@ -26,7 +26,7 @@ public static class NR
 
     public static void Reset() { lastUse.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
 
-    static bool Alive(PlayerControl p) => p != null && p.Data != null && !p.Data.IsDead && !p.Data.Disconnected && !WallVisual.IsPuppet(p);
+    static bool Alive(PlayerControl p) => p != null && p.Data != null && !p.Data.IsDead && !p.Data.Disconnected;
     static bool IsImp(PlayerControl p) => !RoleLogic.Demoted.Contains(p.PlayerId) && (RoleLogic.IsImpRole(p.Data.RoleType) || RoleLogic.ForcedImp.Contains(p.PlayerId));
     static string Room(Vector2 pos, bool ru) => Utils.RoomName(pos, ru);
     static void Say(PlayerControl p, string s) => RoleLogic.Hint(p, s);
@@ -60,7 +60,6 @@ public static class NR
         bool ru = Translator.IsRu(p); string n = r.Colored(ru);
         switch (r.Id)
         {
-            case "Shieldbearer": return ru ? $"{n}: питомец рядом с игроком (до 3 м) выдаёт ему щит: первое нападение на него отменится. Осталось щитов: {Math.Max(0, Opts.ShieldUses.Value - Used(p.PlayerId))}." : $"{n}: pet next to a player (within 3 m) gives him a shield that cancels the first attack. Shields left: {Math.Max(0, Opts.ShieldUses.Value - Used(p.PlayerId))}.";
             case "Foreman": return ru ? $"{n}: каждое выполненное тобой задание с шансом {Opts.ForemanChance.Value}% засчитывает одно задание случайному члену экипажа." : $"{n}: each task you complete has a {Opts.ForemanChance.Value}% chance to complete a task of a random crewmate.";
             case "Logger": return ru ? $"{n}: журнал входов в комнаты. Питомец показывает последние записи ({Opts.LogLines.Value}), на каждом собрании ты получаешь свежие. Часть записей без имени." : $"{n}: a log of room entries. Pet shows the latest entries ({Opts.LogLines.Value}); you also get fresh ones at each meeting. Some entries are anonymous.";
             case "Twin": return ru ? $"{n}: после убийства вторым умирает ближайший к жертве игрок (в радиусе {Opts.TwinRadius.Value / 10f:F1} м). Срабатывает раз в {Opts.TwinCooldown.Value} с." : $"{n}: after a kill the player nearest to the victim (within {Opts.TwinRadius.Value / 10f:F1} m) dies too. Triggers once per {Opts.TwinCooldown.Value} s.";
@@ -70,11 +69,7 @@ public static class NR
             case "Pinkman": return Pinkman.Status(p, r);
             case "Dowser": return ru ? $"{n}: питомец показывает комнату ближайшего трупа и сколько живых игроков рядом (в радиусе {Opts.DowserRadius.Value} м). Перезарядка {Opts.DowserCooldown.Value} с." : $"{n}: pet shows the room of the nearest body and how many living players are nearby (within {Opts.DowserRadius.Value} m). Cooldown {Opts.DowserCooldown.Value} s.";
             case "Navigator": return ru ? $"{n}: питомец ставит метку, повторно — возвращает тебя к метке." : $"{n}: pet sets a mark, pet again returns you to it.";
-            case "Notary": return ru ? $"{n}: на собрании /ab ID — узнать, сколько заданий выполнил игрок. Осталось проверок: {Math.Max(0, Opts.NotaryUses.Value - Used(p.PlayerId))}." : $"{n}: in a meeting /ab ID shows how many tasks a player completed. Checks left: {Math.Max(0, Opts.NotaryUses.Value - Used(p.PlayerId))}.";
-            case "Cartographer": return ru ? $"{n}: в начале каждого собрания ты узнаёшь, сколько игроков было в каждой комнате." : $"{n}: at each meeting you learn how many players were in each room.";
             case "Hound": return ru ? $"{n}: питомец показывает, в какой комнате и как далеко ближайший член экипажа." : $"{n}: pet shows the room and distance of the nearest crewmate.";
-            case "Sealer": return ru ? $"{n}: после твоего убийства двери комнаты жертвы закрываются (ты сам тоже можешь оказаться внутри)." : $"{n}: after your kill the victim's room doors close (you may be trapped too).";
-            case "Alarmist": return ru ? $"{n}: питомец вызывает ложную тревогу — у всех мирных мигает экран." : $"{n}: pet triggers a false alarm — crewmates' screens flash.";
             case "Prankster": return ru ? $"{n}: питомец меняет тебя местами с ближайшим игроком." : $"{n}: pet swaps you with the nearest player.";
             case "Crow": return ru ? $"{n}: питомец переносит тебя к последнему трупу. Осталось {Math.Max(0, Opts.CrowUses.Value - Used(p.PlayerId))}." : $"{n}: pet teleports you to the last body. Left: {Math.Max(0, Opts.CrowUses.Value - Used(p.PlayerId))}.";
             case "Defector": return ru ? $"{n}: на первом собрании ты получишь имя одного из предателей (с вероятностью {Opts.DefectorWrong.Value}% оно ложное)." : $"{n}: at the first meeting you get a name of an impostor ({Opts.DefectorWrong.Value}% chance it's false).";
@@ -89,18 +84,6 @@ public static class NR
         bool ru = Translator.IsRu(p);
         switch (role.Id)
         {
-            case "Shieldbearer":
-                {
-                    if (Used(p.PlayerId) >= Opts.ShieldUses.Value) { Say(p, ru ? "Щиты закончились." : "No shields left."); return true; }
-                    if (Wait("Shieldbearer", p, Opts.ShieldCooldown.Value, ru)) return true;
-                    var t = Nearest(p, 3f, o => !RoleLogic.ShieldArmed.Contains(o.PlayerId));
-                    if (t == null) { Say(p, ru ? "Рядом нет игрока без щита." : "No unshielded player nearby."); return true; }
-                    Stamp("Shieldbearer", p); uses[p.PlayerId] = Used(p.PlayerId) + 1;
-                    RoleLogic.ShieldArmed.Add(t.PlayerId); ShieldGiver[t.PlayerId] = p.PlayerId;
-                    Say(p, ru ? $"Щит выдан: {t.Data.PlayerName}. Осталось: {Math.Max(0, Opts.ShieldUses.Value - Used(p.PlayerId))}." : $"Shield given to {t.Data.PlayerName}.");
-                    Plugin.Logger.LogInfo($"Shieldbearer {p.Data.PlayerName}: shield -> {t.Data.PlayerName}");
-                    return true;
-                }
             case "Plumber": return Plumber.Use(p);
             case "Pinkman": return Pinkman.Use(p);
             case "Smoker": return Smoker.Use(p);
@@ -146,16 +129,6 @@ public static class NR
                     if (t == null) { Say(p, ru ? "Никого не найдено." : "Nobody found."); return true; }
                     float d = Vector2.Distance(p.GetTruePosition(), t.GetTruePosition());
                     Say(p, ru ? $"Ближайший член экипажа: {Room(t.GetTruePosition(), true)}, примерно {d:F0} м." : $"Nearest crewmate: {Room(t.GetTruePosition(), false)}, ~{d:F0} m.");
-                    return true;
-                }
-            case "Alarmist":
-                {
-                    if (Wait("Alarmist", p, Opts.AlarmCooldown.Value, ru)) return true;
-                    Stamp("Alarmist", p);
-                    int n = 0;
-                    foreach (var o in PlayerControl.AllPlayerControls)
-                        if (Alive(o) && o.PlayerId != p.PlayerId && !IsImp(o) && !o.AmOwner) { RoleLogic.FlashPlayer(o, Opts.AlarmSeconds.Value); n++; }
-                    Say(p, ru ? $"Ложная тревога! Экран мигает у {n} игроков." : $"False alarm! {n} players' screens flash.");
                     return true;
                 }
             case "Prankster":
@@ -239,27 +212,6 @@ public static class NR
         Utils.SendSecret(p, sb.ToString());
     }
 
-    // ---------------------------------------------------------------- Нотариус (на собрании)
-    public static bool UseMeeting(PlayerControl p, string[] args)
-    {
-        if (!RoleState.Assigned.TryGetValue(p.PlayerId, out var role) || role.Id != "Notary") return false;
-        bool ru = Translator.IsRu(p);
-        void S(string s) => Utils.SendSecret(p, s);
-        if (p.Data.IsDead) { S(ru ? "Мёртвые не проверяют." : "The dead can't check."); return true; }
-        if (MeetingHud.Instance == null) { S(ru ? "Работает только на собрании." : "Meeting only."); return true; }
-        if (args.Length == 0) { S(ru ? "/ab ID — чьи задания проверить." : "/ab ID."); return true; }
-        PlayerControl t = null;
-        string q = string.Join(" ", args);
-        if (byte.TryParse(q, out var id)) t = Utils.GetPlayer(id);
-        if (t == null) t = PlayerControl.AllPlayerControls.ToArray().FirstOrDefault(x => x != null && x.Data != null && x.Data.PlayerName != null && x.Data.PlayerName.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0);
-        if (t == null || t.Data == null) { S(ru ? "Игрок не найден." : "Player not found."); return true; }
-        if (Used(p.PlayerId) >= Opts.NotaryUses.Value) { S(ru ? "Проверки закончились." : "No checks left."); return true; }
-        uses[p.PlayerId] = Used(p.PlayerId) + 1;
-        int done = 0; foreach (var x in t.Data.Tasks) if (x.Complete) done++;
-        S(ru ? $"{t.Data.PlayerName}: выполнено заданий — {done}. Проверок осталось: {Math.Max(0, Opts.NotaryUses.Value - Used(p.PlayerId))}." : $"{t.Data.PlayerName}: tasks done — {done}. Checks left: {Math.Max(0, Opts.NotaryUses.Value - Used(p.PlayerId))}.");
-        return true;
-    }
-
     // ---------------------------------------------------------------- Хуки
     public static void OnKill(PlayerControl killer, PlayerControl target)
     {
@@ -297,19 +249,6 @@ public static class NR
                     }
                 }
             }
-            if (killer != null && RoleLogic.Has(killer, "Sealer") && killer.PlayerId != target.PlayerId && !Wait("Sealer", killer, Opts.SealerCooldown.Value, Translator.IsRu(killer)))
-            {
-                var doors = ShipStatus.Instance != null ? ShipStatus.Instance.AllDoors : null;
-                OpenableDoor best = null; float bd = 6f;
-                if (doors != null) foreach (var d in doors) { if (d == null) continue; float dd = Vector2.Distance(vpos, (Vector2)d.transform.position); if (dd < bd) { bd = dd; best = d; } }
-                if (best != null)
-                {
-                    Stamp("Sealer", killer);
-                    ShipStatus.Instance.RpcCloseDoorsOfType(best.Room);
-                    Say(killer, Translator.IsRu(killer) ? "Двери комнаты запечатаны." : "Room doors sealed.");
-                    Plugin.Logger.LogInfo($"Sealer {killer.Data.PlayerName}: sealed {best.Room}");
-                }
-            }
         }
         catch (Exception e) { Plugin.Logger.LogWarning("NR.OnKill: " + e.Message); }
     }
@@ -344,12 +283,6 @@ public static class NR
                 if (!Alive(p)) continue;
                 bool ru = Translator.IsRu(p);
                 if (kv.Value.Id == "Logger") ShowLog(p, Opts.LogLines.Value + 2);
-                else if (kv.Value.Id == "Cartographer")
-                {
-                    var counts = new Dictionary<string, int>();
-                    foreach (var o in alive) { var n = Room(o.GetTruePosition(), ru); counts[n] = counts.TryGetValue(n, out var c) ? c + 1 : 1; }
-                    Utils.SendSecret(p, (ru ? "Карта игроков: " : "Player map: ") + string.Join(", ", counts.OrderByDescending(x => x.Value).Select(x => $"{x.Key} {x.Value}")));
-                }
                 else if (kv.Value.Id == "Defector" && !defectorDone)
                 {
                     defectorDone = true;

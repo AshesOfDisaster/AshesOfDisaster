@@ -38,7 +38,7 @@ public static class Pinkman
         PlayerControl buyer = null; float bd = 3f;
         foreach (var o in PlayerControl.AllPlayerControls)
         {
-            if (o == null || o.Data == null || o.Data.IsDead || o.Data.Disconnected || o.PlayerId == id || WallVisual.IsPuppet(o)) continue;
+            if (o == null || o.Data == null || o.Data.IsDead || o.Data.Disconnected || o.PlayerId == id) continue;
             float d = Vector2.Distance(pos, o.GetTruePosition());
             if (d < bd) { bd = d; buyer = o; }
         }

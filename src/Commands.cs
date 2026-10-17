@@ -307,7 +307,7 @@ public static class Commands
                     }
 
                 case "ab":
-                    if (Psy.Use(sender, a) || NR.UseMeeting(sender, a) || Roles30.UseMeeting(sender, a)) return true;
+                    if (Psy.Use(sender, a) || Roles30.UseMeeting(sender, a)) return true;
                     if (!host) { Say(R("cmd.noperm")); return true; }
                     RoleLogic.UseAbility(sender, "cmd");
                     return true;
