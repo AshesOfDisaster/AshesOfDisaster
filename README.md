@@ -52,8 +52,8 @@ Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
 
 > Remove other overlapping mods (e.g. old host mods, AUnlocker) if you see conflicts.
 
-### Build
-Source lives in [`src/`](src). Requires .NET 6 SDK and the game's `BepInEx/interop` assemblies as references.
+### Build from source
+Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install BepInEx 6, run the game once, then double-click **`Run all.bat`** (or `python run_all.py`) — the script finds the game, builds the mod and puts `AshesOfDisaster.dll` into `BepInEx/plugins`. Needs Python 3 and .NET SDK 8. More notes (Russian): [docs/NOTES.ru.md](docs/NOTES.ru.md).
 
 ---
 
@@ -88,8 +88,8 @@ Source lives in [`src/`](src). Requires .NET 6 SDK and the game's `BepInEx/inter
 
 > При конфликтах уберите другие похожие моды (старые хост-моды, AUnlocker).
 
-### Сборка
-Исходный код — в [`src/`](src). Нужны .NET 6 SDK и сборки `BepInEx/interop` вашей игры.
+### Сборка из исходников
+Исходный код — в [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Установите BepInEx 6, один раз запустите игру и дважды кликните **`Run all.bat`** (или `python run_all.py`): скрипт найдёт игру, соберёт мод и положит `AshesOfDisaster.dll` в `BepInEx/plugins`. Нужны Python 3 и .NET SDK 8. Подробности: [docs/NOTES.ru.md](docs/NOTES.ru.md).
 
 ---
 
