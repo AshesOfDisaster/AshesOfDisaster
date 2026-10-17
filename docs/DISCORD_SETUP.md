@@ -7,7 +7,7 @@
 - 💬 COMMUNITY: `#general`, `#suggestions`, `#showcase`, `#find-a-lobby`
 - 🛠 SUPPORT: `#install-help`, `#bug-reports`
 - 🔊 Voice: `Lobby`, `Game 1`, `Game 2`
-- Roles: `Owner` (Calamitas), `Co-author` (Akakish), `Moderator`, `Player`
+- Roles: `Owner` (niko), `Co-author` (Akakish), `Moderator`, `Player`
 
 ## #welcome
 Welcome to **Ashes of Disaster** — a host-only roles mod for Among Us! 🔥

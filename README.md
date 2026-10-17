@@ -25,14 +25,14 @@ Only the **host** needs the mod — other players join with a normal game and th
 - 🌍 Russian and English, picked from the game language
 - 🛡️ Host-side protections against kicks, performance optimizations (caching, frame limit)
 
-### Roles
-| Group | Role |
-|---|---|
-| Crew | Farmer (Крестьянин), Builder (Строитель) |
-| Impostors | Painter (Маляр), Spider (Паук), Vigilant (Виджилант) |
-| Neutrals | Cloud (Облако) |
+### Roles (70)
+**Crew — 24:** **Peasant** (Крестьянин), **Builder** (Строитель), **Psychologist** (Психолог), **Shieldbearer** (Щитоносец), **Foreman** (Прораб), **Logger** (Логер), **Plumber** (Сантехник), **Dowser** (Лозоходец), **Navigator** (Штурман), **Notary** (Нотариус), **Cartographer** (Картограф), **Archivist** (Архивариус), **Sentry** (Часовой), **Statistician** (Статистик), **Marked** (Меченый), **Dispatcher** (Диспетчер), **Intercessor** (Заступник), **Peacemaker** (Миротворец), **Investigator** (Следователь), **Wanderer** (Бродяга), **Lucky** (Везунчик), **Eyewitness** (Очевидец), **Forensic** (Криминалист), **Aide** (Помощник)
 
-> Role list changes between builds — the in-game `/r` command is always the source of truth.
+**Impostors — 23:** **Welder** (Сварщик), **Twin** (Близнец), **Shroomer** (Грибник), **Hound** (Ищейка), **Sealer** (Запечатыватель), **Alarmist** (Паникёр), **Painter** (Маляр), **Spider** (Паук), **Minelayer** (Минёр), **Shuffler** (Тасовщик), **Eclipser** (Затмитель), **Returner** (Возвращенец), **Ghoul** (Упырь), **Auditor** (Ревизор), **Lurer** (Приманщик), **Breaker** (Взломщик), **Rumormonger** (Сплетник), **Jammer** (Глушитель), **Mystifier** (Мистификатор), **Stalker** (Сталкер), **Slammer** (Захлопыватель), **Trapper** (Капканщик), **Reaper** (Жнец)
+
+**Neutrals — 23:** **Smoker** (Курильщик), **Pinkman** (Пинкман), **Prankster** (Шутник), **Crow** (Ворон), **Defector** (Перебежчик), **Reflector** (Отражатель), **Cloud** (Облако), **Vigilante** (Виджилант), **Marauder** (Мародёр), **Adventurer** (Авантюрист), **Hermit** (Затворник), **Tourist** (Турист), **Avenger** (Мститель), **Trader** (Торговец), **Sleepwalker** (Лунатик), **Mole** (Крот), **Hypnotist** (Гипнотизёр), **Swindler** (Мошенник), **Scarecrow** (Пугало), **Clockmaker** (Часовщик), **Lottery** (Лотерейщик), **Magnet** (Магнит), **Fence** (Скупщик)
+
+Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
 
 ### Commands
 | Command | Description |
@@ -68,14 +68,14 @@ Source lives in [`src/`](src). Requires .NET 6 SDK and the game's `BepInEx/inter
 - 🌍 Русский и английский, язык берётся из языка игры
 - 🛡️ Защита хоста от киков и оптимизации (кэши, лимит кадров)
 
-### Роли
-| Группа | Роль |
-|---|---|
-| Мирные | Крестьянин, Строитель |
-| Предатели | Маляр, Паук, Виджилант |
-| Нейтралы | Облако |
+### Роли (70)
+**Мирные — 24:** **Крестьянин** (Peasant), **Строитель** (Builder), **Психолог** (Psychologist), **Щитоносец** (Shieldbearer), **Прораб** (Foreman), **Логер** (Logger), **Сантехник** (Plumber), **Лозоходец** (Dowser), **Штурман** (Navigator), **Нотариус** (Notary), **Картограф** (Cartographer), **Архивариус** (Archivist), **Часовой** (Sentry), **Статистик** (Statistician), **Меченый** (Marked), **Диспетчер** (Dispatcher), **Заступник** (Intercessor), **Миротворец** (Peacemaker), **Следователь** (Investigator), **Бродяга** (Wanderer), **Везунчик** (Lucky), **Очевидец** (Eyewitness), **Криминалист** (Forensic), **Помощник** (Aide)
 
-> Список ролей меняется от сборки к сборке — актуальный всегда показывает `/r` в игре.
+**Предатели — 23:** **Сварщик** (Welder), **Близнец** (Twin), **Грибник** (Shroomer), **Ищейка** (Hound), **Запечатыватель** (Sealer), **Паникёр** (Alarmist), **Маляр** (Painter), **Паук** (Spider), **Минёр** (Minelayer), **Тасовщик** (Shuffler), **Затмитель** (Eclipser), **Возвращенец** (Returner), **Упырь** (Ghoul), **Ревизор** (Auditor), **Приманщик** (Lurer), **Взломщик** (Breaker), **Сплетник** (Rumormonger), **Глушитель** (Jammer), **Мистификатор** (Mystifier), **Сталкер** (Stalker), **Захлопыватель** (Slammer), **Капканщик** (Trapper), **Жнец** (Reaper)
+
+**Нейтралы — 23:** **Курильщик** (Smoker), **Пинкман** (Pinkman), **Шутник** (Prankster), **Ворон** (Crow), **Перебежчик** (Defector), **Отражатель** (Reflector), **Облако** (Cloud), **Виджилант** (Vigilante), **Мародёр** (Marauder), **Авантюрист** (Adventurer), **Затворник** (Hermit), **Турист** (Tourist), **Мститель** (Avenger), **Торговец** (Trader), **Лунатик** (Sleepwalker), **Крот** (Mole), **Гипнотизёр** (Hypnotist), **Мошенник** (Swindler), **Пугало** (Scarecrow), **Часовщик** (Clockmaker), **Лотерейщик** (Lottery), **Магнит** (Magnet), **Скупщик** (Fence)
+
+Полные описания: [docs/ROLES.md](docs/ROLES.md) или `/r <роль>` в игре.
 
 ### Команды
 `/m` — своя роль · `/r` — список ролей (`/r 1` мирные, `/r 2` предатели, `/r 3` нейтралы) · `/r <роль>` — описание · `/h` — помощь · `/id` — ID игроков · `/lang ru|en` — язык ответов.
@@ -94,7 +94,7 @@ Source lives in [`src/`](src). Requires .NET 6 SDK and the game's `BepInEx/inter
 ---
 
 ## Credits / Авторы
-- **Calamitas** — author / автор
+- **niko** — author / автор
 - **Акакиш (Akakish)** — co-author / соавтор
 - **Claude (Anthropic)** — AI assistant that wrote and debugged the code / ИИ-помощник, писавший и отлаживавший код
 
