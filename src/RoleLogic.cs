@@ -19,6 +19,8 @@ public static class RoleLogic
     static readonly System.Random rng = new();
 
     public static readonly HashSet<byte> Informed = new();          // получили полное описание на собрании
+    /// Нейтралы, которым сервер выдаёт ванильную роль предателя (иначе их убийство = кик хоста)
+    public static readonly HashSet<string> RealImpNeutrals = new() { "Vigilante", "Cloud", "Smoker", "Meteor" };
     public static readonly HashSet<byte> ShieldArmed = new();       // у Крестьянина защита готова
     public static readonly HashSet<byte> ShieldUsed = new();        // уже использована
     public static readonly Dictionary<byte, float> Painted = new(); // PlayerId трупа -> до какого времени закрашен
@@ -275,7 +277,7 @@ public static class RoleLogic
             var pp = all.Find(x => x.PlayerId == kv.Key);
             if (pp == null) continue;      // игрок вышел — роль пропускаем (запись остаётся до /role clear)
             bool wantImp = kv.Value.Tab == OptTab.Impostor;
-            if (kv.Value.Id == "Vigilante" || kv.Value.Id == "Cloud" || kv.Value.Id == "Smoker") wantImp = imps.Contains(pp);      // этим ролям нужна ванильная роль предателя — мод сам выдаст её ниже
+            if (RealImpNeutrals.Contains(kv.Value.Id)) wantImp = imps.Contains(pp);      // этим ролям нужна ванильная роль предателя — мод сам выдаст её ниже
             var from = wantImp ? imps : crew;
             if (!from.Remove(pp))
             {
@@ -338,7 +340,7 @@ public static class RoleLogic
         // Виджилант для сервера — настоящий предатель (иначе его убийство = кик хоста). Мод по-прежнему считает его нейтралом.
         foreach (var kv in RoleState.Assigned.ToList())
         {
-            if (kv.Value.Id != "Vigilante" && kv.Value.Id != "Cloud" && kv.Value.Id != "Smoker") continue;
+            if (!RealImpNeutrals.Contains(kv.Value.Id)) continue;
             var vp = Utils.GetPlayer(kv.Key);
             if (vp == null || vp.Data == null || IsImpRole(vp.Data.RoleType)) continue;
             try { SetVanillaRole(vp, RoleTypes.Impostor); ForcedImp.Add(vp.PlayerId); Plugin.Logger.LogInfo($"{kv.Value.Id} {vp.Data.PlayerName}: vanilla role set to Impostor (now {vp.Data.RoleType})"); }
@@ -509,6 +511,7 @@ public static class RoleLogic
             if (p.AmOwner) Utils.Toast(ru ? "Питомец погладил, но у тебя нет роли мода (проверь шанс роли и /who)." : "Pet event received, but you have no mod role (check role chance and /who).");
             return;
         }
+        if (Roles75.IsMuted(p)) { Hint(p, ru ? "Твоя способность заглушена." : "Your ability is silenced."); return; }
         if (p.AmOwner) Utils.Toast((ru ? "Способность: " : "Ability: ") + role.Colored(ru));
         Plugin.Logger.LogInfo($"Pet ability: {p.Data.PlayerName} ({role.Id})");
         if (role.Id == "Spider") PlaceWeb(p);
@@ -784,7 +787,7 @@ public static class CheckMurderPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         if (!Utils.AmHost || target == null) return true;
-        if (RoleLogic.Has(__instance, "Vigilante") || RoleLogic.Has(__instance, "Cloud") || RoleLogic.Has(__instance, "Smoker")) return false;      // Виджилант убивает только питомцем
+        if (RoleState.Assigned.TryGetValue(__instance.PlayerId, out var killerRole) && RoleLogic.RealImpNeutrals.Contains(killerRole.Id)) return false;      // Виджилант убивает только питомцем
         if (NR.TryReflect(__instance, target)) return false;
         if (Roles30.BlockKill(__instance, target)) return false;
         if (Smoker.InOwnSmoke(target))      // Курильщика в его собственном дыму убить нельзя

@@ -24,7 +24,7 @@ public static class NR
     static bool defectorDone;
     static float nextTick;
 
-    public static void Reset() { lastUse.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
+    public static void Reset() { lastUse.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
 
     static bool Alive(PlayerControl p) => p != null && p.Data != null && !p.Data.IsDead && !p.Data.Disconnected;
     static bool IsImp(PlayerControl p) => !RoleLogic.Demoted.Contains(p.PlayerId) && (RoleLogic.IsImpRole(p.Data.RoleType) || RoleLogic.ForcedImp.Contains(p.PlayerId));
@@ -75,7 +75,7 @@ public static class NR
             case "Defector": return ru ? $"{n}: на первом собрании ты получишь имя одного из предателей (с вероятностью {Opts.DefectorWrong.Value}% оно ложное)." : $"{n}: at the first meeting you get a name of an impostor ({Opts.DefectorWrong.Value}% chance it's false).";
             case "Reflector": return ru ? $"{n}: первое нападение на тебя с шансом {Opts.ReflectChance.Value}% отражается — убийца гибнет сам." : $"{n}: the first attack on you has a {Opts.ReflectChance.Value}% chance to be reflected — the killer dies.";
         }
-        return Roles30.Status(p, r);
+        return Roles30.Status(p, r) ?? Roles75.Status(p, r);
     }
 
     // ---------------------------------------------------------------- Способности питомца
@@ -154,7 +154,7 @@ public static class NR
                     return true;
                 }
         }
-        return Roles30.Pet(p, role);
+        return Roles30.Pet(p, role) || Roles75.Pet(p, role);
     }
 
     // ---------------------------------------------------------------- Логер: журнал входов в комнаты
@@ -176,6 +176,18 @@ public static class NR
         return null;
     }
 
+    public static void AddFakeLog(byte who, Vector2 pos)
+    {
+        logBook.Add((Time.time, who, pos, false));
+        if (logBook.Count > 80) logBook.RemoveAt(0);
+    }
+
+    public static void ResetCooldowns(byte id)
+    {
+        string suffix = ":" + id;
+        foreach (var k in lastUse.Keys.Where(x => x.EndsWith(suffix)).ToList()) lastUse.Remove(k);
+    }
+
     static void LogTick()
     {
         if (Time.time < nextLog) return;
@@ -184,7 +196,7 @@ public static class NR
         if (!RoleState.Assigned.Values.Any(r => r.Id == "Logger")) return;
         foreach (var o in PlayerControl.AllPlayerControls)
         {
-            if (!Alive(o)) continue;
+            if (!Alive(o) || Roles75.Stealth(o.PlayerId)) continue;
             var pos = o.GetTruePosition();
             string key = RoomKey(pos);
             lastRoom.TryGetValue(o.PlayerId, out var prev);
@@ -217,7 +229,7 @@ public static class NR
     {
         try
         {
-            Roles30.OnKill(killer, target);
+            Roles30.OnKill(killer, target); Roles75.OnKill(killer, target);
             var vpos = target.GetTruePosition();
             bodies.Add((target.PlayerId, vpos));
             if (!inTwin && killer != null && killer.PlayerId != target.PlayerId && RoleLogic.Has(killer, "Twin")
@@ -274,7 +286,7 @@ public static class NR
     {
         try
         {
-            Shroomer.Restore(); Smoker.OnMeeting(); Roles30.OnMeeting();
+            Shroomer.Restore(); Smoker.OnMeeting(); Roles30.OnMeeting(); Roles75.OnMeeting();
             anchors.Clear(); bodies.Clear();
             var alive = PlayerControl.AllPlayerControls.ToArray().Where(Alive).ToList();
             foreach (var kv in RoleState.Assigned.ToList())
@@ -303,7 +315,7 @@ public static class NR
     public static void Tick()
     {
         if (!Utils.AmHost) return;
-        Shroomer.Tick(); Smoker.Tick(); Pinkman.Tick(); Roles30.Tick();
+        Shroomer.Tick(); Smoker.Tick(); Pinkman.Tick(); Roles30.Tick(); Roles75.Tick();
         try { LogTick(); } catch (Exception e) { Plugin.Logger.LogWarning("NR.LogTick: " + e.Message); }
         if (RoleState.Assigned.Count == 0 || Time.time < nextTask) return;
         nextTask = Time.time + 1f;

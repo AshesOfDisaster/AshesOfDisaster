@@ -4,7 +4,7 @@
 
 **Host-only roles mod for Among Us** · **Хост-мод с ролями для Among Us**
 
-![version](https://img.shields.io/badge/version-0.1.91-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/made%20with-AI-8a2be2)
+![version](https://img.shields.io/badge/version-0.1.92-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/made%20with-AI-8a2be2)
 
 [English](#english) · [Русский](#русский) · [Discord](#discord)
 
@@ -25,12 +25,12 @@ Only the **host** needs the mod — other players join with a normal game and th
 - 🌍 Russian and English, picked from the game language
 - 🛡️ Host-side protections against kicks, performance optimizations (caching, frame limit)
 
-### Roles (36)
-**Crew — 14:** **Peasant** (Крестьянин), **Builder** (Строитель), **Psychologist** (Психолог), **Foreman** (Прораб), **Logger** (Логер), **Plumber** (Сантехник), **Dowser** (Лозоходец), **Navigator** (Штурман), **Sentry** (Часовой), **Statistician** (Статистик), **Intercessor** (Заступник), **Peacemaker** (Миротворец), **Eyewitness** (Очевидец), **Forensic** (Криминалист)
+### Roles (75)
+**Crew — 25:** **Peasant** (Крестьянин), **Builder** (Строитель), **Psychologist** (Психолог), **Foreman** (Прораб), **Logger** (Логер), **Plumber** (Сантехник), **Dowser** (Лозоходец), **Navigator** (Штурман), **Sentry** (Часовой), **Statistician** (Статистик), **Intercessor** (Заступник), **Peacemaker** (Миротворец), **Eyewitness** (Очевидец), **Forensic** (Криминалист), **Watcher** (Наблюдатель), **Radioman** (Радист), **Companion** (Спутник), **Seismograph** (Сейсмограф), **Tracker** (Следопыт), **Accountant** (Бухгалтер), **Beacon** (Маяк), **Sapper** (Сапёр), **Herald** (Глашатай), **Coach** (Тренер), **Telegraphist** (Телеграфист)
 
-**Impostors — 11:** **Welder** (Сварщик), **Twin** (Близнец), **Shroomer** (Грибник), **Hound** (Ищейка), **Painter** (Маляр), **Spider** (Паук), **Minelayer** (Минёр), **Eclipser** (Затмитель), **Returner** (Возвращенец), **Lurer** (Приманщик), **Trapper** (Капканщик)
+**Impostors — 25:** **Welder** (Сварщик), **Twin** (Близнец), **Shroomer** (Грибник), **Hound** (Ищейка), **Painter** (Маляр), **Spider** (Паук), **Minelayer** (Минёр), **Eclipser** (Затмитель), **Returner** (Возвращенец), **Lurer** (Приманщик), **Trapper** (Капканщик), **Banisher** (Выселитель), **Hush** (Беззвучный), **Bomber** (Подрывник), **Forger** (Фальсификатор), **Scatterer** (Разгонщик), **Spy** (Шпион), **Spotter** (Наводчик), **Fugitive** (Беглец), **Overseer** (Надзиратель), **Gravedigger** (Могильщик), **Meltdown** (Расплав), **Appraiser** (Оценщик), **Silencer** (Молчун), **Distracter** (Отвлекатель)
 
-**Neutrals — 11:** **Smoker** (Курильщик), **Pinkman** (Пинкман), **Prankster** (Шутник), **Crow** (Ворон), **Defector** (Перебежчик), **Reflector** (Отражатель), **Cloud** (Облако), **Vigilante** (Виджилант), **Avenger** (Мститель), **Hypnotist** (Гипнотизёр), **Clockmaker** (Часовщик)
+**Neutrals — 25:** **Smoker** (Курильщик), **Pinkman** (Пинкман), **Prankster** (Шутник), **Crow** (Ворон), **Defector** (Перебежчик), **Reflector** (Отражатель), **Cloud** (Облако), **Vigilante** (Виджилант), **Avenger** (Мститель), **Hypnotist** (Гипнотизёр), **Clockmaker** (Часовщик), **Collector** (Коллекционер), **Whirlwind** (Вихрь), **Timestop** (Стоп-кадр), **Oracle** (Прорицатель), **Meteor** (Метеорит), **Siren** (Сирена), **Insider** (Знаток), **Broker** (Брокер), **Portalist** (Портальщик), **Photographer** (Фотограф), **Boomerang** (Бумеранг), **Chronicler** (Летописец), **Sorcerer** (Колдун), **Rescuer** (Спасатель)
 
 Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
 
@@ -68,12 +68,12 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 - 🌍 Русский и английский, язык берётся из языка игры
 - 🛡️ Защита хоста от киков и оптимизации (кэши, лимит кадров)
 
-### Роли (36)
-**Мирные — 14:** **Крестьянин** (Peasant), **Строитель** (Builder), **Психолог** (Psychologist), **Прораб** (Foreman), **Логер** (Logger), **Сантехник** (Plumber), **Лозоходец** (Dowser), **Штурман** (Navigator), **Часовой** (Sentry), **Статистик** (Statistician), **Заступник** (Intercessor), **Миротворец** (Peacemaker), **Очевидец** (Eyewitness), **Криминалист** (Forensic)
+### Роли (75)
+**Мирные — 25:** **Крестьянин** (Peasant), **Строитель** (Builder), **Психолог** (Psychologist), **Прораб** (Foreman), **Логер** (Logger), **Сантехник** (Plumber), **Лозоходец** (Dowser), **Штурман** (Navigator), **Часовой** (Sentry), **Статистик** (Statistician), **Заступник** (Intercessor), **Миротворец** (Peacemaker), **Очевидец** (Eyewitness), **Криминалист** (Forensic), **Наблюдатель** (Watcher), **Радист** (Radioman), **Спутник** (Companion), **Сейсмограф** (Seismograph), **Следопыт** (Tracker), **Бухгалтер** (Accountant), **Маяк** (Beacon), **Сапёр** (Sapper), **Глашатай** (Herald), **Тренер** (Coach), **Телеграфист** (Telegraphist)
 
-**Предатели — 11:** **Сварщик** (Welder), **Близнец** (Twin), **Грибник** (Shroomer), **Ищейка** (Hound), **Маляр** (Painter), **Паук** (Spider), **Минёр** (Minelayer), **Затмитель** (Eclipser), **Возвращенец** (Returner), **Приманщик** (Lurer), **Капканщик** (Trapper)
+**Предатели — 25:** **Сварщик** (Welder), **Близнец** (Twin), **Грибник** (Shroomer), **Ищейка** (Hound), **Маляр** (Painter), **Паук** (Spider), **Минёр** (Minelayer), **Затмитель** (Eclipser), **Возвращенец** (Returner), **Приманщик** (Lurer), **Капканщик** (Trapper), **Выселитель** (Banisher), **Беззвучный** (Hush), **Подрывник** (Bomber), **Фальсификатор** (Forger), **Разгонщик** (Scatterer), **Шпион** (Spy), **Наводчик** (Spotter), **Беглец** (Fugitive), **Надзиратель** (Overseer), **Могильщик** (Gravedigger), **Расплав** (Meltdown), **Оценщик** (Appraiser), **Молчун** (Silencer), **Отвлекатель** (Distracter)
 
-**Нейтралы — 11:** **Курильщик** (Smoker), **Пинкман** (Pinkman), **Шутник** (Prankster), **Ворон** (Crow), **Перебежчик** (Defector), **Отражатель** (Reflector), **Облако** (Cloud), **Виджилант** (Vigilante), **Мститель** (Avenger), **Гипнотизёр** (Hypnotist), **Часовщик** (Clockmaker)
+**Нейтралы — 25:** **Курильщик** (Smoker), **Пинкман** (Pinkman), **Шутник** (Prankster), **Ворон** (Crow), **Перебежчик** (Defector), **Отражатель** (Reflector), **Облако** (Cloud), **Виджилант** (Vigilante), **Мститель** (Avenger), **Гипнотизёр** (Hypnotist), **Часовщик** (Clockmaker), **Коллекционер** (Collector), **Вихрь** (Whirlwind), **Стоп-кадр** (Timestop), **Прорицатель** (Oracle), **Метеорит** (Meteor), **Сирена** (Siren), **Знаток** (Insider), **Брокер** (Broker), **Портальщик** (Portalist), **Фотограф** (Photographer), **Бумеранг** (Boomerang), **Летописец** (Chronicler), **Колдун** (Sorcerer), **Спасатель** (Rescuer)
 
 Полные описания: [docs/ROLES.md](docs/ROLES.md) или `/r <роль>` в игре.
 

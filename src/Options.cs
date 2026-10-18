@@ -285,6 +285,7 @@ public static class Opts
         VigilanteUnlockTime = Extra("Vigilante", new IntOpt("VigilanteUnlockTime", OptTab.Neutral, 60, 0, 300, 10, c), "Через сколько секунд открывается убийство", "Seconds until the kill unlocks");
 
         Roles30.Define(c);
+        Roles75.Define(c);
 
         // --- Другое ---
         ShowCredits = new("ShowCredits", OptTab.Other, true, c);

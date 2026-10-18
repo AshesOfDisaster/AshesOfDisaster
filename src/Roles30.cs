@@ -120,6 +120,29 @@ public static class Roles30
     static readonly Dictionary<byte, float> deathTime = new();
     static float nextTick;
 
+    /// Обезвредить мины, капканы и посты в радиусе (для Сапёра); возвращает число обезвреженных
+    public static int Defuse(Vector2 pos, float radius)
+    {
+        int n = mines.RemoveAll(m => Vector2.Distance(m.pos, pos) <= radius);
+        n += traps.RemoveAll(t => Vector2.Distance(t.pos, pos) <= radius);
+        n += posts.RemoveAll(t => Vector2.Distance(t.pos, pos) <= radius);
+        return n;
+    }
+
+    /// Заморозить игрока на время (для Стоп-кадра)
+    public static void FreezePlayer(PlayerControl t, float seconds)
+    {
+        if (t == null || t.Data == null || freezes.Any(f => f.Id == t.PlayerId)) return;
+        freezes.Add(new Freeze { Id = t.PlayerId, Pos = t.GetTruePosition(), Until = Time.time + seconds, NextTp = 0f });
+    }
+
+    /// Сбросить перезарядки игрока (для Тренера)
+    public static void ResetCooldowns(byte id)
+    {
+        string suffix = ":" + id;
+        foreach (var k in lastUse.Keys.Where(x => x.EndsWith(suffix)).ToList()) lastUse.Remove(k);
+    }
+
     public static void Reset()
     {
         lastUse.Clear(); uses.Clear(); bodies.Clear(); posts.Clear(); mines.Clear(); traps.Clear(); history.Clear(); ward.Clear(); peace.Clear(); home.Clear();
@@ -471,7 +494,7 @@ public static class Roles30
             {
                 var po = posts[i]; var owner = Utils.GetPlayer(po.owner);
                 if (!Alive(owner)) { posts.RemoveAt(i); continue; }
-                var who = players.FirstOrDefault(o => o.PlayerId != po.owner && Vector2.Distance(o.GetTruePosition(), po.pos) < 1.2f);
+                var who = players.FirstOrDefault(o => o.PlayerId != po.owner && !Roles75.Stealth(o.PlayerId) && Vector2.Distance(o.GetTruePosition(), po.pos) < 1.2f);
                 if (who == null) continue;
                 posts.RemoveAt(i);
                 Say(owner, T(Translator.IsRu(owner), $"Пост сработал: {who.Data.PlayerName} прошёл у поста ({Room(po.pos, true)}).", $"Post triggered: {who.Data.PlayerName} passed ({Room(po.pos, false)})."));

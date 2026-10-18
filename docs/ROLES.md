@@ -1,6 +1,6 @@
 # Roles / Роли
 
-Total / Всего: **36**. Descriptions are shown in game with `/r <role>`.
+Total / Всего: **75**. Descriptions are shown in game with `/r <role>`.
 
 
 ## Crew / Мирные
@@ -61,6 +61,49 @@ Total / Всего: **36**. Descriptions are shown in game with `/r <role>`.
 - RU: Член экипажа. Питомец рядом с трупом (до 2 м): узнаёт, сколько секунд назад тот погиб, и смывает краску Маляра, чтобы труп можно было доложить. Съеденное тело не вернуть. Число осмотров ограничено. Нужен питомец!
 - EN: A crewmate. Pet next to a body (within 2 m): learns how many seconds ago it died and washes off the Painter's paint so the body can be reported. An eaten body can't be restored. Number of exams is limited. A pet is required!
 
+### Watcher / Наблюдатель
+- RU: Член экипажа. Питомец ставит камеру в комнате (число камер настраивается). На собрании узнаёшь, кто заходил в эти комнаты. Нужен питомец!
+- EN: A crewmate. Pet places a camera in the room you stand in (number of cameras is configurable). At the meeting you learn who entered those rooms. A pet is required!
+
+### Radioman / Радист
+- RU: Член экипажа. Питомец включает радар: ты узнаёшь, насколько близко ближайший предатель — «холодно», «тепло» или «горячо», без имени и комнаты. Нужен питомец!
+- EN: A crewmate. Pet switches on a radar: you learn how close the nearest impostor is - cold, warm or hot - without a name or a room. A pet is required!
+
+### Companion / Спутник
+- RU: Член экипажа. Считает, сколько секунд каждый игрок провёл рядом с тобой. На собрании называет того, кто был рядом дольше всех.
+- EN: A crewmate. Counts how long every player stayed near you. At the meeting names the player who was near you the longest.
+
+### Seismograph / Сейсмограф
+- RU: Член экипажа. Когда кого-то убивают, ты сразу чувствуешь толчок: в какой стороне света и насколько далеко от тебя это случилось (комнату не называет).
+- EN: A crewmate. When someone is killed you feel a tremor at once: in which direction and how far from you it happened (the room is not named).
+
+### Tracker / Следопыт
+- RU: Член экипажа. Питомец рядом с игроком метит его. Дальше питомец показывает, в какой комнате метка сейчас, и на каждом собрании ты получаешь отчёт о нём.
+- EN: A crewmate. Pet next to a player tags him. Afterwards the pet shows the room the tagged player is in right now, and at every meeting you get a report about him.
+
+### Accountant / Бухгалтер
+- RU: Член экипажа. На каждом собрании узнаёт, кто из игроков выполнил меньше всего заданий и сколько именно. Работает сам.
+- EN: A crewmate. At every meeting learns which player has completed the fewest tasks and how many. Works by itself.
+
+### Beacon / Маяк
+- RU: Член экипажа. Питомец ставит маяк в комнате. Пока маяк стоит, ты получаешь сигнал каждый раз, когда в эту комнату входит предатель (без имени). Маяк гаснет на собрании. Нужен питомец!
+- EN: A crewmate. Pet places a beacon in the room. While it stands you get a signal every time an impostor enters that room (no name). The beacon goes out at a meeting. A pet is required!
+
+### Sapper / Сапёр
+- RU: Член экипажа. Питомец обезвреживает мины и капканы предателей в радиусе 3 м. Число обезвреживаний и перезарядка настраиваются. Нужен питомец!
+- EN: A crewmate. Pet defuses impostors' mines and traps within 3 m. Number of uses and cooldown are configurable. A pet is required!
+
+### Herald / Глашатай
+- RU: Член экипажа. Питомец рассылает всем живым игрокам вестник: в какой ты комнате и сколько людей рядом. Число объявлений ограничено. Нужен питомец!
+- EN: A crewmate. Pet sends a bulletin to every living player: which room you are in and how many people are near. Number of announcements is limited. A pet is required!
+
+### Coach / Тренер
+- RU: Член экипажа. Питомец рядом с членом экипажа (до 3 м) сбрасывает ему перезарядки способностей. Число тренировок ограничено. Нужен питомец!
+- EN: A crewmate. Pet next to a crewmate (within 3 m) resets his ability cooldowns. Number of trainings is limited. A pet is required!
+
+### Telegraphist / Телеграфист
+- RU: Член экипажа. Питомец рядом с игроком (до 3 м) связывает вас телеграфом. Если один из вас погибнет, второй сразу узнает, кто и где. Связь одна. Нужен питомец!
+- EN: A crewmate. Pet next to a player (within 3 m) links you by telegraph. If one of you is killed the other learns at once who and where. One link at a time. A pet is required!
 
 ## Impostors / Предатели
 
@@ -108,6 +151,61 @@ Total / Всего: **36**. Descriptions are shown in game with `/r <role>`.
 - RU: Предатель. Питомец ставит капкан: первый член экипажа, наступивший на него, застывает на несколько секунд, а ты узнаёшь его имя. Капканы пропадают на собрании. Нужен питомец!
 - EN: Impostor. Pet places a trap: the first crewmate to step on it freezes for a few seconds and you learn his name. Traps vanish at a meeting. A pet is required!
 
+### Banisher / Выселитель
+- RU: Предатель. Питомец выбрасывает ближайшего члена экипажа (до 4 м) к случайной двери на карте. Число использований и перезарядка настраиваются. Нужен питомец!
+- EN: Impostor. Pet throws the nearest crewmate (within 4 m) to a random door on the map. Number of uses and cooldown are configurable. A pet is required!
+
+### Hush / Беззвучный
+- RU: Предатель. Питомец включает режим тишины на несколько секунд: тебя не замечают журнал Логера, камеры Наблюдателя, посты Часового, маяки и радары. Нужен питомец!
+- EN: Impostor. Pet switches on silence for a few seconds: the Logger's log, the Watcher's cameras, Sentry posts, beacons and radars do not notice you. A pet is required!
+
+### Bomber / Подрывник
+- RU: Предатель. Питомец рядом с членом экипажа (до 3 м) цепляет ему бомбу. Через время бомба взрывается и убивает всех мирных вокруг (щит спасает). Нужен питомец!
+- EN: Impostor. Pet next to a crewmate (within 3 m) sticks a bomb on him. After a while it explodes and kills every crewmate around (a shield saves). A pet is required!
+
+### Forger / Фальсификатор
+- RU: Предатель. Питомец вписывает в журнал Логера ложную запись: случайный член экипажа якобы вошёл в твою комнату. Число подделок ограничено. Нужен питомец!
+- EN: Impostor. Pet writes a false entry into the Logger's log: a random crewmate supposedly entered your room. Number of forgeries is limited. A pet is required!
+
+### Scatterer / Разгонщик
+- RU: Предатель. После твоего убийства все члены экипажа рядом с телом (в настраиваемом радиусе) разлетаются к случайным дверям. Срабатывает не чаще перезарядки.
+- EN: Impostor. After your kill every crewmate near the body (within a configurable radius) is thrown to random doors. Triggers no more often than the cooldown.
+
+### Spy / Шпион
+- RU: Предатель. Питомец рядом с игроком (до 4 м) раскрывает тебе его роль. Число проверок ограничено. Нужен питомец!
+- EN: Impostor. Pet next to a player (within 4 m) reveals his role to you. Number of checks is limited. A pet is required!
+
+### Spotter / Наводчик
+- RU: Предатель. Питомец показывает, сколько членов экипажа сейчас в каждой четверти карты относительно тебя: северо-восток, северо-запад, юго-восток, юго-запад. Нужен питомец!
+- EN: Impostor. Pet shows how many crewmates are in each quarter of the map relative to you: north-east, north-west, south-east, south-west. A pet is required!
+
+### Fugitive / Беглец
+- RU: Предатель. После убийства тебя через секунду уносит к случайной двери. Срабатывает не чаще перезарядки.
+- EN: Impostor. After a kill you are carried to a random door a second later. Triggers no more often than the cooldown.
+
+### Overseer / Надзиратель
+- RU: Предатель. Когда член экипажа в настраиваемом радиусе заканчивает задание, ты сразу узнаёшь, кто и в какой комнате. Работает сам.
+- EN: Impostor. When a crewmate within a configurable radius finishes a task you at once learn who and in which room. Works by itself.
+
+### Gravedigger / Могильщик
+- RU: Предатель. Питомец рядом с телом (до 2 м) закапывает его: тело нельзя доложить. Число захоронений ограничено. Нужен питомец!
+- EN: Impostor. Pet next to a body (within 2 m) buries it: the body can't be reported. Number of burials is limited. A pet is required!
+
+### Meltdown / Расплав
+- RU: Предатель. Питомец запускает тяжёлый саботаж (реактор, лаборатория, вертолёт или кислород, смотря какой есть на карте), если сейчас нет другого саботажа. Нужен питомец!
+- EN: Impostor. Pet starts a heavy sabotage (reactor, laboratory, helicopter or oxygen, whichever the map has) if no other sabotage is active. A pet is required!
+
+### Appraiser / Оценщик
+- RU: Предатель. Питомец показывает, сколько игроков сейчас со щитом и в какой комнате ближайший из них. Перезарядка настраивается. Нужен питомец!
+- EN: Impostor. Pet shows how many players have a shield right now and in which room the nearest one is. Cooldown is configurable. A pet is required!
+
+### Silencer / Молчун
+- RU: Предатель. Питомец рядом с членом экипажа (до 3 м) глушит его способности питомцем на несколько секунд. Число использований ограничено. Нужен питомец!
+- EN: Impostor. Pet next to a crewmate (within 3 m) silences his pet abilities for a few seconds. Number of uses is limited. A pet is required!
+
+### Distracter / Отвлекатель
+- RU: Предатель. Питомец захлопывает двери случайной комнаты вдали от тебя (от 15 м), чтобы отвлечь экипаж. Число использований и перезарядка настраиваются. Нужен питомец!
+- EN: Impostor. Pet slams the doors of a random room far from you (15 m or more) to distract the crew. Number of uses and cooldown are configurable. A pet is required!
 
 ## Neutrals / Нейтралы
 
@@ -154,3 +252,60 @@ Total / Всего: **36**. Descriptions are shown in game with `/r <role>`.
 ### Clockmaker / Часовщик
 - RU: Нейтрал. Питомец отматывает время для тебя: ты возвращаешься туда, где был около 10 секунд назад. Перезарядка настраивается. Нужен питомец!
 - EN: Neutral. Pet rewinds time for you: you return to where you were about 10 seconds ago. Cooldown is configurable. A pet is required!
+
+### Collector / Коллекционер
+- RU: Нейтрал. Питомец рядом с телом (до 2 м) забирает трофей (одно тело — один раз). Набрав нужное число трофеев, ты узнаёшь имя настоящего предателя. Нужен питомец!
+- EN: Neutral. Pet next to a body (within 2 m) takes a trophy (one body, once). With enough trophies you learn the name of a real impostor. A pet is required!
+
+### Whirlwind / Вихрь
+- RU: Нейтрал. Питомец закручивает вихрь: все игроки вокруг (в радиусе настраивается) разлетаются к случайным дверям. Число использований и перезарядка настраиваются. Нужен питомец!
+- EN: Neutral. Pet spins up a whirlwind: every player around (radius is configurable) is thrown to random doors. Number of uses and cooldown are configurable. A pet is required!
+
+### Timestop / Стоп-кадр
+- RU: Нейтрал. Питомец останавливает время: все игроки вокруг (кроме тебя) замирают на несколько секунд. Нужен питомец!
+- EN: Neutral. Pet stops time: every player around (except you) freezes for a few seconds. A pet is required!
+
+### Oracle / Прорицатель
+- RU: Нейтрал. Питомец запускает пророчество: через заданное время ты узнаёшь, сколько убийств случилось за этот срок. Нужен питомец!
+- EN: Neutral. Pet starts a prophecy: after the set time you learn how many kills happened in that period. A pet is required!
+
+### Meteor / Метеорит
+- RU: Нейтрал. Для сервера — настоящий предатель. Питомец отмечает точку: через несколько секунд туда падает метеорит и убивает всех в радиусе (щит спасает). Нужен питомец!
+- EN: Neutral. A real impostor for the server. Pet marks a spot: a few seconds later a meteor hits it and kills everyone in the radius (a shield saves). A pet is required!
+
+### Siren / Сирена
+- RU: Нейтрал. Питомец включает сирену: у всех предателей рядом (в радиусе настраивается) мигает экран, а ты узнаёшь, сколько их было. Нужен питомец!
+- EN: Neutral. Pet sounds a siren: the screens of all impostors nearby (radius is configurable) flash, and you learn how many there were. A pet is required!
+
+### Insider / Знаток
+- RU: Нейтрал. На первом собрании узнаёт имена остальных нейтралов. Работает сам.
+- EN: Neutral. At the first meeting learns the names of the other neutrals. Works by itself.
+
+### Broker / Брокер
+- RU: Нейтрал. Питомец рядом с игроком (до 3 м): сделка. Ты узнаёшь его роль, а он — в какой комнате ближайшее тело. Число сделок ограничено. Нужен питомец!
+- EN: Neutral. Pet next to a player (within 3 m): a deal. You learn his role, he learns which room the nearest body is in. Number of deals is limited. A pet is required!
+
+### Portalist / Портальщик
+- RU: Нейтрал. Питомец ставит первый портал, затем второй. Когда оба стоят, питомец у одного портала переносит тебя ко второму. Питомец вдали от порталов ставит новую пару. Нужен питомец!
+- EN: Neutral. Pet places a first portal and then a second one. When both stand, the pet next to one portal carries you to the other. The pet away from the portals starts a new pair. A pet is required!
+
+### Photographer / Фотограф
+- RU: Нейтрал. Питомец делает снимок: кто где был в этот момент. На ближайшем собрании ты получаешь все свои снимки. Число снимков ограничено. Нужен питомец!
+- EN: Neutral. Pet takes a snapshot: who was where at that moment. At the next meeting you receive all your snapshots. Number of snapshots is limited. A pet is required!
+
+### Boomerang / Бумеранг
+- RU: Нейтрал. Питомец рядом с игроком (до 5 м) запускает бумеранг: через несколько секунд этот игрок возвращается к тебе, туда, где ты стоишь. Нужен питомец!
+- EN: Neutral. Pet next to a player (within 5 m) throws a boomerang: a few seconds later that player is carried back to wherever you stand. A pet is required!
+
+### Chronicler / Летописец
+- RU: Нейтрал. Когда кого-то убивают, ты сразу узнаёшь, кто погиб и к какой группе принадлежал убийца (предатель или нейтрал). Работает сам.
+- EN: Neutral. When someone is killed you at once learn who died and which group the killer belonged to (impostor or neutral). Works by itself.
+
+### Sorcerer / Колдун
+- RU: Нейтрал. Питомец рядом с игроком (до 3 м) накладывает проклятие: его следующая способность питомцем не сработает, а экран замигает. Нужен питомец!
+- EN: Neutral. Pet next to a player (within 3 m) casts a curse: his next pet ability fails and his screen flashes. A pet is required!
+
+### Rescuer / Спасатель
+- RU: Нейтрал. Питомец рядом с игроком, застрявшим в паутине (до 2,5 м), освобождает его сразу. Число спасений ограничено. Нужен питомец!
+- EN: Neutral. Pet next to a player stuck in a web (within 2.5 m) frees him at once. Number of rescues is limited. A pet is required!
+
