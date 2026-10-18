@@ -24,7 +24,7 @@ public static class NR
     static bool defectorDone;
     static float nextTick;
 
-    public static void Reset() { lastUse.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
+    public static void Reset() { lastUse.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); Crates.Reset(); LobbyGames.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
 
     static bool Alive(PlayerControl p) => p != null && p.Data != null && !p.Data.IsDead && !p.Data.Disconnected;
     static bool IsImp(PlayerControl p) => !RoleLogic.Demoted.Contains(p.PlayerId) && (RoleLogic.IsImpRole(p.Data.RoleType) || RoleLogic.ForcedImp.Contains(p.PlayerId));
@@ -286,7 +286,7 @@ public static class NR
     {
         try
         {
-            Shroomer.Restore(); Smoker.OnMeeting(); Roles30.OnMeeting(); Roles75.OnMeeting();
+            Shroomer.Restore(); Smoker.OnMeeting(); Roles30.OnMeeting(); Roles75.OnMeeting(); Crates.OnMeeting();
             anchors.Clear(); bodies.Clear();
             var alive = PlayerControl.AllPlayerControls.ToArray().Where(Alive).ToList();
             foreach (var kv in RoleState.Assigned.ToList())
@@ -315,7 +315,7 @@ public static class NR
     public static void Tick()
     {
         if (!Utils.AmHost) return;
-        Shroomer.Tick(); Smoker.Tick(); Pinkman.Tick(); Roles30.Tick(); Roles75.Tick();
+        Shroomer.Tick(); Smoker.Tick(); Pinkman.Tick(); Roles30.Tick(); Roles75.Tick(); Crates.Tick(); LobbyGames.Tick();
         try { LogTick(); } catch (Exception e) { Plugin.Logger.LogWarning("NR.LogTick: " + e.Message); }
         if (RoleState.Assigned.Count == 0 || Time.time < nextTask) return;
         nextTask = Time.time + 1f;

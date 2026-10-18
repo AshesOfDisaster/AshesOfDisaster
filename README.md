@@ -4,7 +4,7 @@
 
 **Host-only roles mod for Among Us** · **Хост-мод с ролями для Among Us**
 
-![version](https://img.shields.io/badge/version-0.1.92-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/made%20with-AI-8a2be2)
+![version](https://img.shields.io/badge/version-0.1.93-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/made%20with-AI-8a2be2)
 
 [English](#english) · [Русский](#русский) · [Discord](#discord)
 
@@ -33,6 +33,10 @@ Only the **host** needs the mod — other players join with a normal game and th
 **Neutrals — 25:** **Smoker** (Курильщик), **Pinkman** (Пинкман), **Prankster** (Шутник), **Crow** (Ворон), **Defector** (Перебежчик), **Reflector** (Отражатель), **Cloud** (Облако), **Vigilante** (Виджилант), **Avenger** (Мститель), **Hypnotist** (Гипнотизёр), **Clockmaker** (Часовщик), **Collector** (Коллекционер), **Whirlwind** (Вихрь), **Timestop** (Стоп-кадр), **Oracle** (Прорицатель), **Meteor** (Метеорит), **Siren** (Сирена), **Insider** (Знаток), **Broker** (Брокер), **Portalist** (Портальщик), **Photographer** (Фотограф), **Boomerang** (Бумеранг), **Chronicler** (Летописец), **Sorcerer** (Колдун), **Rescuer** (Спасатель)
 
 Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
+
+### Extras (host-side, no mod needed for others)
+- **Supply crates** (lobby menu → Game): a crate appears in a random room, the first player to reach it gets a random effect (shield, radar, teleport, swap places, alarm).
+- **Lobby mini-games** (on by default): `/guess`, `/roll`, `/quiz` + `/a`, `/rps`, `/games`, `/top`.
 
 ### Commands
 | Command | Description |
@@ -76,6 +80,10 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 **Нейтралы — 25:** **Курильщик** (Smoker), **Пинкман** (Pinkman), **Шутник** (Prankster), **Ворон** (Crow), **Перебежчик** (Defector), **Отражатель** (Reflector), **Облако** (Cloud), **Виджилант** (Vigilante), **Мститель** (Avenger), **Гипнотизёр** (Hypnotist), **Часовщик** (Clockmaker), **Коллекционер** (Collector), **Вихрь** (Whirlwind), **Стоп-кадр** (Timestop), **Прорицатель** (Oracle), **Метеорит** (Meteor), **Сирена** (Siren), **Знаток** (Insider), **Брокер** (Broker), **Портальщик** (Portalist), **Фотограф** (Photographer), **Бумеранг** (Boomerang), **Летописец** (Chronicler), **Колдун** (Sorcerer), **Спасатель** (Rescuer)
 
 Полные описания: [docs/ROLES.md](docs/ROLES.md) или `/r <роль>` в игре.
+
+### Дополнительно (на стороне хоста, мод у остальных не нужен)
+- **Ящики снабжения** (меню лобби → Игра): в случайной комнате появляется ящик, первый подошедший получает случайный эффект (щит, радар, телепорт, обмен местами, сигнализация).
+- **Мини-игры в лобби** (включены по умолчанию): `/guess`, `/roll`, `/quiz` и `/a`, `/rps`, `/games`, `/top`.
 
 ### Команды
 `/m` — своя роль · `/r` — список ролей (`/r 1` мирные, `/r 2` предатели, `/r 3` нейтралы) · `/r <роль>` — описание · `/h` — помощь · `/id` — ID игроков · `/lang ru|en` — язык ответов.

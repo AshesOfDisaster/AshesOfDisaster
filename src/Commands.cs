@@ -114,6 +114,8 @@ public static class Commands
         string R(string k, params object[] p) => Translator.T(k, sender, p);
         void Say(string s) => Utils.SendPrivate(sender, s);
 
+        if (LobbyGames.Handle(sender, cmd, a)) return true;
+
         var info = Find(cmd);
         if (info != null && info.HostOnly && !host) { Say(R("cmd.noperm")); return true; }
 
