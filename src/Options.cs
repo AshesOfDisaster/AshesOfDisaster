@@ -286,6 +286,7 @@ public static class Opts
 
         Roles30.Define(c);
         Roles75.Define(c);
+        Mars.Define(c);
 
         // --- Другое ---
         ShowCredits = new("ShowCredits", OptTab.Other, true, c);
