@@ -101,5 +101,8 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 ## Discord
 Join the community: https://discord.gg/CCB2rg3CHz — bug reports, suggestions, lobbies. / Баг-репорты, идеи, поиск игр.
 
+## License / Лицензия
+GPL-3.0 — see [LICENSE](LICENSE). Copyright (C) 2026 niko, Акакиш. / Лицензия GPL-3.0, см. [LICENSE](LICENSE).
+
 ## Disclaimer
 Unofficial fan project, not affiliated with or endorsed by Innersloth. Among Us is a trademark of Innersloth LLC. Use at your own risk; modded hosts can be flagged by anti-cheat on official servers.
