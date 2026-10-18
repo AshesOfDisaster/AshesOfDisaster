@@ -99,7 +99,7 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 - **Claude (Anthropic)** — AI assistant that wrote and debugged the code / ИИ-помощник, писавший и отлаживавший код
 
 ## Discord
-Join the community: **DISCORD_INVITE_LINK** — bug reports, suggestions, lobbies. / Баг-репорты, идеи, поиск игр.
+Join the community: https://discord.gg/CCB2rg3CHz — bug reports, suggestions, lobbies. / Баг-репорты, идеи, поиск игр.
 
 ## Disclaimer
 Unofficial fan project, not affiliated with or endorsed by Innersloth. Among Us is a trademark of Innersloth LLC. Use at your own risk; modded hosts can be flagged by anti-cheat on official servers.
