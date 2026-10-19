@@ -33,7 +33,8 @@ public static class Utils
     {
         get
         {
-            return false;      // протокол host-only (+25) включён всегда, античит ослаблен
+            try { return OnOfficialServer && !(Opts.HostOnlyForce != null && Opts.HostOnlyForce.Value); }
+            catch { return OnOfficialServer; }
         }
     }
 
@@ -92,8 +93,8 @@ public static class Utils
     static float nextSendAt;
     public static bool CommandContext;   // true, пока хост обрабатывает команду игрока
     const int MaxLen = 95;          // в чате игры не больше 100 символов в сообщении
-    static int MaxMessagesPerReply => AnticheatLikely ? 3 : 8; // на обычном сервере не больше 3 сообщений на ответ; в host-only режиме (античит ослаблен) — до 8
-    static float SendGap => AnticheatLikely ? 3.2f : 0.6f;       // сервер считает частые сообщения читерством (кик «Hacking»)
+    const int MaxMessagesPerReply = 3; // не больше 3 сообщений на один ответ
+    const float SendGap = 3.2f;       // сервер считает частые сообщения читерством (кик «Hacking»)
 
     static IEnumerable<string> SplitLines(string text)
     {
@@ -112,9 +113,8 @@ public static class Utils
     }
 
     /// Склеиваем строки через « | » в сообщения до 95 символов, не больше 3 штук на ответ
-    static List<string> Pack(string text, int max = -1)
+    static List<string> Pack(string text, int max = MaxMessagesPerReply)
     {
-        if (max < 0) max = MaxMessagesPerReply;
         var res = new List<string>();
         string cur = "";
         foreach (var line in SplitLines(text))
@@ -136,12 +136,12 @@ public static class Utils
     static bool TargetedMode => !string.Equals(Opts.ChatPrivate.Value, "All", StringComparison.OrdinalIgnoreCase);
 
     /// Сообщение игроку. В режиме Broadcast ответ видят все (это безопасно для хоста), в Targeted — только адресат.
-    public static void SendPrivate(PlayerControl to, string text, int maxMessages = -1) => Send(to, text, false, maxMessages);
+    public static void SendPrivate(PlayerControl to, string text, int maxMessages = MaxMessagesPerReply) => Send(to, text, false, maxMessages);
 
     /// Секретное сообщение (роли, штрафы...). В режиме Broadcast не отправляется, чтобы не раскрывать информацию.
     /// defer = true: если чат сейчас закрыт (раунд), сообщение ждёт ближайшего собрания, а не пропадает.
     /// defer = false — для коротких подсказок («нет цели», «перезарядка»), которые на собрании уже не нужны.
-    public static void SendSecret(PlayerControl to, string text, int maxMessages = -1, bool defer = true) => Send(to, text, true, maxMessages, defer);
+    public static void SendSecret(PlayerControl to, string text, int maxMessages = MaxMessagesPerReply, bool defer = true) => Send(to, text, true, maxMessages, defer);
 
     /// Сообщение всем игрокам от хоста (например, роль выброшенного). Идёт вне очереди; без тегов — игра их в чате не любит.
     public static void Announce(string text)
@@ -204,7 +204,7 @@ public static class Utils
         var q = CommandContext ? urgent : outbox;
         foreach (var m in Pack(text, maxMessages))
         {
-            if (q.Count >= (AnticheatLikely ? 16 : 40)) { Plugin.Logger.LogInfo("Chat queue full, message dropped"); break; }
+            if (q.Count >= 16) { Plugin.Logger.LogInfo("Chat queue full, message dropped"); break; }
             q.Enqueue((to.PlayerId, m, !targeted, UnityEngine.Time.time));
         }
     }
