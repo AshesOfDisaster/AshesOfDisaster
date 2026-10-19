@@ -18,7 +18,7 @@ public static class HostOnlyVersionPatch
         {
             var c = AmongUsClient.Instance;
             if (c == null || c.NetworkMode != NetworkModes.OnlineGame) return;
-            if (Opts.HostOnlyForce == null || !Opts.HostOnlyForce.Value) return;
+            // протокол host-only (+25) включён всегда: комнаты всегда создаются с ним
             if (__result % 50 < 25) __result += 25;
             if (lastLogged != __result) { lastLogged = __result; Plugin.Logger.LogInfo($"HostOnly: broadcast version = {__result} (+25 flag on)"); }
         }
@@ -37,7 +37,6 @@ public static class IsVersionModdedPatch
 
     public static bool Prefix(ref bool __result)
     {
-        if (Opts.HostOnlyForce == null || !Opts.HostOnlyForce.Value) return true;
         __result = true;
         return false;
     }

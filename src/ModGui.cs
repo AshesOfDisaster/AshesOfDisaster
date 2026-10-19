@@ -23,6 +23,7 @@ public class ModGui : MonoBehaviour
 
     void Update()
     {
+        Intro.Tick();
         Optimizer.Tick();
         Psy.Tick();
         Welder.Tick();

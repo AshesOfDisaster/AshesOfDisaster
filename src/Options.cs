@@ -287,6 +287,7 @@ public static class Opts
         Roles30.Define(c);
         Roles75.Define(c);
         Crates.Define(c);
+        Intro.Define(c);
         LobbyGames.Define(c);
 
         // --- Другое ---

@@ -141,27 +141,17 @@ public static class Commands
 
                 case "r":
                     {
-                        string q0 = string.Join(" ", a).ToLowerInvariant();
-                        OptTab? cls = q0 is "1" or "экипаж" or "мирные" or "crew" ? OptTab.Crewmate
-                                    : q0 is "2" or "предатели" or "impostors" ? OptTab.Impostor
-                                    : q0 is "3" or "нейтралы" or "neutrals" ? OptTab.Neutral : (OptTab?)null;
-                        if (a.Length == 0 || cls != null)
+                        if (a.Length == 0)
                         {
-                            // в одно сообщение все роли не влезают (чат режется до 3 сообщений) — список выдаётся по классам
-                            if (cls == null)
+                            // /r без аргументов — сразу все роли по группам
+                            string Grp(OptTab t, string title) => title + ": " + string.Join(", ", Opts.Roles.Where(r => r.Tab == t).Select(r => ru ? r.Ru : r.En));
+                            Utils.SendPrivate(sender, string.Join("\n", new[]
                             {
-                                int nc = Opts.Roles.Count(r => r.Tab == OptTab.Crewmate), ni = Opts.Roles.Count(r => r.Tab == OptTab.Impostor), nn = Opts.Roles.Count(r => r.Tab == OptTab.Neutral);
-                                SayChunks(sender, new[]
-                                {
-                                    ru ? $"/r 1 — экипаж ({nc})" : $"/r 1 - crew ({nc})",
-                                    ru ? $"/r 2 — предатели ({ni})" : $"/r 2 - impostors ({ni})",
-                                    ru ? $"/r 3 — нейтралы ({nn})" : $"/r 3 - neutrals ({nn})",
-                                    ru ? "/r <роль> — описание" : "/r <role> - description"
-                                });
-                                return true;
-                            }
-                            var names = Opts.Roles.Where(r => r.Tab == cls.Value).Select(r => ru ? r.Ru : r.En);
-                            Utils.SendPrivate(sender, string.Join(", ", names), 6);
+                                Grp(OptTab.Crewmate, ru ? "Мирные" : "Crew"),
+                                Grp(OptTab.Impostor, ru ? "Предатели" : "Impostors"),
+                                Grp(OptTab.Neutral, ru ? "Нейтралы" : "Neutrals"),
+                                ru ? "/r <роль> — описание" : "/r <role> - description"
+                            }), 14);
                             return true;
                         }
                         string q = string.Join(" ", a).ToLowerInvariant();
