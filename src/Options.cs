@@ -4,7 +4,7 @@ using BepInEx.Configuration;
 
 namespace AshesOfDisaster;
 
-public enum OptTab { System, Game, Crewmate, Impostor, Neutral, Other, Ghost }
+public enum OptTab { System, Game, Crewmate, Impostor, Neutral, Other, Ghost, Mini }
 
 public abstract class Opt
 {
@@ -279,7 +279,7 @@ public static class Opts
         Anticheat.Define(c);
         Extras.Define(c);
         Crates.Define(c);
-        LobbyGames.Define(c); Ghosts.Define(c);
+        MiniMode.Define(c); LobbyGames.Define(c); Ghosts.Define(c);
 
         ShowCredits = new("ShowCredits", OptTab.Other, true, c);
 

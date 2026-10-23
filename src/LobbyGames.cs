@@ -19,10 +19,13 @@ public static class LobbyGames
 
     public static void Define(ConfigFile c)
     {
-        On = new BoolOpt("LobbyGames", OptTab.System, true, c);
+        On = new BoolOpt("LobbyGames", OptTab.Mini, true, c);
         On.NameRu = "Мини-игры в лобби"; On.NameEn = "Lobby mini-games";
-        On.GroupRu = "Лобби"; On.GroupEn = "Lobby";
+        On.GroupRu = "Мини-игры"; On.GroupEn = "Mini-games";
     }
+
+    static bool GamesOn => MiniMode.Active || (On != null && On.Value);
+    static float nextHint;
 
     public static void Reset() { points.Clear(); streak.Clear(); secret = 0; bestId = 255; bestRoll = 0; quizAnswer = 0; quizText = null; }
 
@@ -38,7 +41,7 @@ public static class LobbyGames
 
     public static bool Handle(PlayerControl me, string cmd, string[] a)
     {
-        if (On == null || !On.Value) return false;
+        if (!GamesOn) return false;
         switch (cmd)
         {
             case "games":
@@ -189,12 +192,17 @@ public static class LobbyGames
     static float nextTick;
     public static void Tick()
     {
-        if (!Utils.AmHost || On == null || !On.Value || Time.time < nextTick) return;
+        if (!Utils.AmHost || !GamesOn || Time.time < nextTick) return;
         nextTick = Time.time + 1f;
         if (!Utils.InLobby) return;
         try
         {
             float now = Time.time;
+            if (MiniMode.Active && now > nextHint)
+            {
+                nextHint = now + 120f;
+                All("Режим мини-игр! Ролей нет. Играй: /games", "Mini-games mode! No roles. Play: /games");
+            }
             if (bestId != 255 && now > rollEnds)
             {
                 Add(bestId, 2);

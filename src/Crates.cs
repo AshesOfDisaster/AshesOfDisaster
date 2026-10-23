@@ -52,6 +52,7 @@ public static class Crates
 
     public static void Tick()
     {
+        if (MiniMode.Active) return;
         if (!Utils.AmHost || On == null || !On.Value || Time.time < nextTick) return;
         nextTick = Time.time + 0.25f;
         if (MeetingHud.Instance != null || ShipStatus.Instance == null || RoleState.Assigned.Count == 0) return;

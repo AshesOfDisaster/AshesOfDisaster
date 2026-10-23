@@ -739,6 +739,7 @@ public static class SelectRolesPatch
     {
         if (!Utils.AmHost) return;
         RoleLogic.Reset();
+        if (MiniMode.Active) return;
         RoleLogic.AssignAt = Time.time + 2f;
     }
 }

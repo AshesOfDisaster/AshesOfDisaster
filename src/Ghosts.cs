@@ -109,6 +109,7 @@ public static class Ghosts
 
     public static void Tick()
     {
+        if (MiniMode.Active) return;
         try { TickInner(); } catch (Exception e) { Plugin.Logger.LogWarning("Ghosts.Tick: " + e.Message); }
     }
 

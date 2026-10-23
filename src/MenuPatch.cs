@@ -36,6 +36,7 @@ public static class ModMenu
         new() { Ru = "Предатели",   En = "Impostors",   Filter = o => o.Tab == OptTab.Impostor },
         new() { Ru = "Нейтралы",    En = "Neutrals",    Filter = o => o.Tab == OptTab.Neutral },
         new() { Ru = "Призраки",    En = "Ghosts",      Filter = o => o.Tab == OptTab.Ghost },
+        new() { Ru = "Мини-игры",   En = "Mini-games",  Filter = o => o.Tab == OptTab.Mini },
     };
 
     static GameSettingMenu menu;
