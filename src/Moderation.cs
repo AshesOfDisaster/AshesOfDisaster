@@ -93,7 +93,10 @@ public static class Anticheat
     static void Flag(PlayerControl p, string why)
     {
         string key = KeyOf(p);
+        if (seen.Count > 300) seen.Clear();
+        if (seen.TryGetValue(key + "*", out var lastAny) && Time.time - lastAny < 10f) return;
         if (seen.TryGetValue(key + why, out var lastTime) && Time.time - lastTime < 60f) return;
+        seen[key + "*"] = Time.time;
         seen[key + why] = Time.time;
         flagged[key] = why;
         var cl = AmongUsClient.Instance.GetClientFromCharacter(p);
@@ -123,14 +126,35 @@ public static class Reports
 
     static string Esc(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", "\\n");
 
+    static readonly Dictionary<string, float> sentAt = new();
+    static readonly Queue<float> recent = new();
+    public static string Blocked = "";
+
+    static string Cut(string s, int n) => s == null ? "" : s.Length > n ? s.Substring(0, n) : s;
+
+    static bool Allowed(string key)
+    {
+        float now = Time.realtimeSinceStartup;
+        if (sentAt.TryGetValue(key, out var t) && now - t < 600f) { Blocked = "Такая жалоба уже отправлена, подожди"; return false; }
+        while (recent.Count > 0 && now - recent.Peek() > 60f) recent.Dequeue();
+        if (recent.Count >= 5) { Blocked = "Слишком много жалоб, подожди минуту"; return false; }
+        if (sentAt.Count > 200) sentAt.Clear();
+        sentAt[key] = now;
+        recent.Enqueue(now);
+        return true;
+    }
+
     public static bool Send(string name, string fc, string why)
     {
+        Blocked = "";
         string url = Anticheat.Webhook == null ? "" : Anticheat.Webhook.Value.Trim();
         if (url.Length == 0) return false;
+        name = Cut(name, 40); fc = Cut(fc, 40); why = Cut(why, 200);
+        if (!Allowed((fc.Length > 0 ? fc : name) + "|" + why)) return false;
         var me = PlayerControl.LocalPlayer;
-        string hostName = me == null || me.Data == null ? "?" : me.Data.PlayerName;
+        string hostName = me == null || me.Data == null ? "?" : Cut(me.Data.PlayerName, 40);
         string text = $"Жалоба от хоста {hostName}\nИгрок: {name}\nFriend code: {(fc.Length > 0 ? fc : "нет")}\nПричина: {why}";
-        string body = "{\"content\":\"" + Esc(text) + "\"}";
+        string body = "{\"content\":\"" + Esc(Cut(text, 1500)) + "\",\"allowed_mentions\":{\"parse\":[]}}";
         Task.Run(async () =>
         {
             try
@@ -181,6 +205,7 @@ public static class ModPanel
         string reason = why ?? Anticheat.Flagged(p) ?? "жалоба хоста";
         return Reports.Send(p.Data.PlayerName, Utils.FriendCodeOf(p), reason)
             ? "Жалоба отправлена в Discord"
+            : Reports.Blocked.Length > 0 ? Reports.Blocked
             : "Вебхук не указан: строка DiscordWebhook в секции Moderation (папка BepInEx/config)";
     }
 
@@ -263,7 +288,7 @@ public static class ModPanel
         {
             if (cFc.Trim().Length == 0 || cReason.Trim().Length == 0) Tell("Впиши код дружбы и причину");
             else if (Reports.Send(cName, cFc.Trim(), cReason.Trim())) { Tell("Жалоба отправлена в Discord"); cOpen = false; }
-            else Tell("Вебхук не указан в конфиге");
+            else Tell(Reports.Blocked.Length > 0 ? Reports.Blocked : "Вебхук не указан в конфиге");
         }
         if (GUI.Button(new Rect(936f, 250f, 190f, 32f), "Отмена")) cOpen = false;
     }
