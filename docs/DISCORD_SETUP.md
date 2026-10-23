@@ -11,7 +11,7 @@
 
 ## #welcome
 Welcome to **Ashes of Disaster** — a host-only roles mod for Among Us! 🔥
-Only the host needs the mod. Download: GitHub Releases. Made with the help of AI (Claude).
+Only the host needs the mod. Download: GitHub Releases. About 45% of the mod was made by AI (Claude).
 Добро пожаловать! Мод нужен только хосту. Скачать — в #download.
 
 ## #rules

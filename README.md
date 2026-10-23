@@ -4,13 +4,13 @@
 
 **Host-only roles mod for Among Us** · **Хост-мод с ролями для Among Us**
 
-![version](https://img.shields.io/badge/version-0.1.93-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/made%20with-AI-8a2be2)
+![version](https://img.shields.io/badge/version-0.1.93-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/AI%20made-45%25-8a2be2)
 
 [English](#english) · [Русский](#русский) · [Discord](#discord)
 
 </div>
 
-> 🤖 **AI disclosure / Сделано с помощью ИИ.** This mod was created with the help of an AI assistant (Claude by Anthropic), directed and tested by its human authors. / Мод создан с помощью ИИ (Claude от Anthropic) под руководством и с тестированием авторов-людей.
+> 🤖 **AI disclosure / Сделано с помощью ИИ.** About **45%** of this mod was made by AI (Claude by Anthropic); the rest was made, directed and tested by its human authors. / Около **45%** мода сделано ИИ (Claude от Anthropic), остальное сделано, направлено и протестировано авторами-людьми.
 
 ---
 
@@ -104,7 +104,7 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 ## Credits / Авторы
 - **niko** — author / автор
 - **Акакиш (Akakish)** — co-author / соавтор
-- **Claude (Anthropic)** — AI assistant that wrote and debugged the code / ИИ-помощник, писавший и отлаживавший код
+- **Claude (Anthropic)** — AI assistant, about 45% of the mod / ИИ-помощник, около 45% мода
 
 ## Discord
 Join the community: https://discord.gg/CCB2rg3CHz — bug reports, suggestions, lobbies. / Баг-репорты, идеи, поиск игр.
