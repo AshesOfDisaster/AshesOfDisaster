@@ -42,6 +42,7 @@ public static class Translator
         ["opt.AutoStartDelay"] = ("Задержка автозапуска (сек)", "Auto-start delay (sec)"),
         ["opt.Welcome"] = ("Приветствие при входе", "Welcome message"),
         ["opt.PlayerCommands"] = ("Команды для игроков", "Commands for players"),
+        ["opt.ChatColors"] = ("Цветные роли в чате (выключи, если сервер ругается)", "Colored roles in chat (turn off if the server complains)"),
         ["opt.UseBanList"] = ("Бан-лист (BanList.txt)", "Ban list (BanList.txt)"),
         ["opt.UseDenyNames"] = ("Запрещённые ники (DenyName.txt)", "Denied names (DenyName.txt)"),
         ["opt.KickLowLevel"] = ("Кик низкого уровня", "Kick low level"),

@@ -73,6 +73,37 @@ public static class Commands
     static void SayChunks(PlayerControl to, IEnumerable<string> lines)
         => Utils.SendPrivate(to, string.Join("\n", lines));
 
+    static string Tint(string color, string text) => "<color=" + color + ">" + text + "</color>";
+
+    static void RoleGroup(PlayerControl to, int g, bool ru)
+    {
+        string title, col;
+        var items = new List<string>();
+        if (g == 4)
+        {
+            title = ru ? "Призраки" : "Ghosts"; col = "#BDBDBD";
+            foreach (var gr in Ghosts.Roles) items.Add(Tint(gr.color, ru ? gr.ru : gr.en));
+        }
+        else
+        {
+            var tab = g == 1 ? OptTab.Crewmate : g == 2 ? OptTab.Impostor : OptTab.Neutral;
+            title = g == 1 ? (ru ? "Мирные" : "Crew") : g == 2 ? (ru ? "Предатели" : "Impostors") : (ru ? "Нейтралы" : "Neutrals");
+            col = g == 1 ? "#78DCE6" : g == 2 ? "#FF4D4D" : "#FFAB1B";
+            foreach (var r in Opts.Roles.Where(x => x.Tab == tab)) items.Add(r.Colored(ru));
+        }
+        var msgs = new List<string> { Tint(col, title + " (" + items.Count + ")") };
+        string cur = "";
+        foreach (var it in items)
+        {
+            if (cur.Length == 0) cur = it;
+            else if (cur.Length + 1 + it.Length <= Utils.ChatLimit) cur += "\n" + it;
+            else { msgs.Add(cur); cur = it; }
+        }
+        if (cur.Length > 0) msgs.Add(cur);
+        msgs.Add(ru ? "Что умеет роль: /r название" : "What a role does: /r name");
+        Utils.SendRich(to, msgs);
+    }
+
     static string CmdLine(CmdInfo c, PlayerControl p)
     {
         bool ru = Translator.IsRu(p);
@@ -140,11 +171,38 @@ public static class Commands
                             Say(c == null || (c.HostOnly && !host) ? R("cmd.unknown") : CmdLine(c, sender));
                             return true;
                         }
-                        string Names(bool hostOnly) => string.Join(" ", All.Where(c => c.HostOnly == hostOnly).Select(c => "/" + c.Name));
-                        var help = (ru ? "Команды: " : "Commands: ") + Names(false);
-                        if (host) help += "\n" + (ru ? "Хост: " : "Host: ") + Names(true);
-                        help += "\n" + (ru ? "Подробно про команду: /h команда" : "Details about a command: /h command");
-                        Say(help);
+                        var hl = new List<string>();
+                        if (ru)
+                        {
+                            hl.Add("Команды. Каждая строка про своё:");
+                            hl.Add("Роли: /m твоя роль, /r список ролей, /ab способность");
+                            hl.Add("Игра: /id номера игроков, /lang язык, /v версия, /color цвет");
+                            hl.Add("Бонусы: /perk твой перк, /bounty твоя цель");
+                            hl.Add("Мини-игры: /games список игр");
+                            hl.Add("Призраки: /boo /haunt /hk /task /solve");
+                            if (host)
+                            {
+                                hl.Add("Хост, игроки: /kick /ban /unban /block /report /kill");
+                                hl.Add("Хост, игра: /start /cancel /end /role /who /o /tag /say /ac");
+                            }
+                            hl.Add("Про одну команду: /h команда");
+                        }
+                        else
+                        {
+                            hl.Add("Commands. Every line is its own topic:");
+                            hl.Add("Roles: /m your role, /r role list, /ab ability");
+                            hl.Add("Game: /id player numbers, /lang language, /v version, /color color");
+                            hl.Add("Bonuses: /perk your perk, /bounty your target");
+                            hl.Add("Mini-games: /games game list");
+                            hl.Add("Ghosts: /boo /haunt /hk /task /solve");
+                            if (host)
+                            {
+                                hl.Add("Host, players: /kick /ban /unban /block /report /kill");
+                                hl.Add("Host, game: /start /cancel /end /role /who /o /tag /say /ac");
+                            }
+                            hl.Add("About one command: /h command");
+                        }
+                        Utils.SendRich(sender, hl);
                         return true;
                     }
 
@@ -152,25 +210,29 @@ public static class Commands
                     {
                         if (a.Length == 0)
                         {
-                            string Grp(OptTab t, string title)
+                            Utils.SendRich(sender, new[]
                             {
-                                var names = Opts.Roles.Where(r => r.Tab == t).Select(r => ru ? r.Ru : r.En).ToList();
-                                return title + " (" + names.Count + "): " + string.Join(", ", names);
-                            }
-                            Utils.SendPrivate(sender, string.Join("\n", new[]
-                            {
-                                Grp(OptTab.Crewmate, ru ? "Мирные" : "Crew"),
-                                Grp(OptTab.Impostor, ru ? "Предатели" : "Impostors"),
-                                Grp(OptTab.Neutral, ru ? "Нейтралы" : "Neutrals"),
-                                Ghosts.List(ru),
-                                ru ? "Что умеет роль: /r Сантехник (своя роль: /m)" : "What a role does: /r Plumber (your own role: /m)"
-                            }), 14);
+                                ru ? "Роли. Выбери группу:" : "Roles. Pick a group:",
+                                Tint("#78DCE6", "/r 1 " + (ru ? "Мирные" : "Crew") + " (" + Opts.Roles.Count(r => r.Tab == OptTab.Crewmate) + ")"),
+                                Tint("#FF4D4D", "/r 2 " + (ru ? "Предатели" : "Impostors") + " (" + Opts.Roles.Count(r => r.Tab == OptTab.Impostor) + ")"),
+                                Tint("#FFAB1B", "/r 3 " + (ru ? "Нейтралы" : "Neutrals") + " (" + Opts.Roles.Count(r => r.Tab == OptTab.Neutral) + ")"),
+                                Tint("#BDBDBD", "/r 4 " + (ru ? "Призраки" : "Ghosts") + " (" + Ghosts.Roles.Length + ")"),
+                                ru ? "/r Сантехник что умеет роль" : "/r Plumber what a role does",
+                                ru ? "/m твоя роль" : "/m your role"
+                            });
+                            return true;
+                        }
+                        if (a.Length == 1 && a[0].Length == 1 && a[0][0] >= '1' && a[0][0] <= '4')
+                        {
+                            RoleGroup(sender, a[0][0] - '0', ru);
                             return true;
                         }
                         string q = string.Join(" ", a).ToLowerInvariant();
                         var role = Opts.Roles.Find(r => r.Id.ToLowerInvariant().StartsWith(q) || r.Ru.ToLowerInvariant().StartsWith(q) || r.En.ToLowerInvariant().StartsWith(q));
                         if (role == null) { var gd = Ghosts.Find(q, ru); if (gd != null) { Utils.SendPrivate(sender, gd, 5); return true; } Say(R("cmd.norole")); return true; }
-                        Utils.SendPrivate(sender, $"{role.Colored(ru)}\n{(ru ? role.DescRu : role.DescEn)}", 5);
+                        var rd = new List<string> { role.Colored(ru) };
+                        rd.AddRange(Utils.PackText(ru ? role.DescRu : role.DescEn, 5));
+                        Utils.SendRich(sender, rd);
                         return true;
                     }
 

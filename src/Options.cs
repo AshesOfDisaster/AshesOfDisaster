@@ -68,7 +68,7 @@ public static class Opts
     public static ConfigEntry<float> RowX, RowY, RowSpacing;
     public static readonly List<RoleDef> Roles = new();
 
-    public static BoolOpt AnyPlayers, AutoStart, Welcome, PlayerCommands;
+    public static BoolOpt AnyPlayers, AutoStart, Welcome, PlayerCommands, ChatColors;
     public static IntOpt AutoStartPlayers, AutoStartDelay;
     public static BoolOpt UseBanList, UseDenyNames, KickLowLevel, KickNoFriendCode;
     public static IntOpt MinLevel;
@@ -136,6 +136,7 @@ public static class Opts
         AutoStartDelay   = new("AutoStartDelay",   OptTab.System, 20, 5, 120, 5, c);
         Welcome          = new("Welcome",          OptTab.System, true,  c);
         PlayerCommands   = new("PlayerCommands",   OptTab.System, true,  c);
+        ChatColors       = new("ChatColors",       OptTab.System, true,  c);
         UseBanList       = new("UseBanList",       OptTab.System, true,  c);
         UseDenyNames     = new("UseDenyNames",     OptTab.System, false, c);
         KickLowLevel     = new("KickLowLevel",     OptTab.System, false, c);
@@ -154,7 +155,7 @@ public static class Opts
         PetForAll           = new("PetForAll",           OptTab.Game, true, c);
         RevealOnExile       = new("RevealOnExile",       OptTab.Game, true, c);
 
-        Grp("Лобби", "Lobby", AnyPlayers, AutoStart, AutoStartPlayers, AutoStartDelay, Welcome, PlayerCommands);
+        Grp("Лобби", "Lobby", AnyPlayers, AutoStart, AutoStartPlayers, AutoStartDelay, Welcome, PlayerCommands, ChatColors);
         Grp("Защита", "Protection", UseBanList, UseDenyNames, KickLowLevel, MinLevel, KickNoFriendCode);
         Grp("Настройки игры", "Game settings", NoGameEnd, NoEndFewPlayers, SyncButtonMode, SyncedButtonCount, KillCooldownPercent, DisableCloseDoors, GhostSeeRoles, NameStatus, RevealOnExile, PetForAll, TeamSwap);
 

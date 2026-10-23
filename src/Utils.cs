@@ -113,7 +113,7 @@ public static class Utils
         foreach (var line in SplitLines(text))
         {
             if (cur.Length == 0) cur = line;
-            else if (cur.Length + 3 + line.Length <= MaxLen) cur += " | " + line;
+            else if (cur.Length + 1 + line.Length <= MaxLen) cur += "\n" + line;
             else { res.Add(cur); cur = line; }
         }
         if (cur.Length > 0) res.Add(cur);
@@ -129,6 +129,31 @@ public static class Utils
     static bool TargetedMode => !string.Equals(Opts.ChatPrivate.Value, "All", StringComparison.OrdinalIgnoreCase);
 
     public static void SendPrivate(PlayerControl to, string text, int maxMessages = -1) => Send(to, text, false, maxMessages);
+
+    public static List<string> PackText(string text, int max) => Pack(text, max);
+
+    public const int ChatLimit = MaxLen;
+
+    public static void SendRich(PlayerControl to, IEnumerable<string> messages)
+    {
+        if (to == null || PlayerControl.LocalPlayer == null || messages == null) return;
+        bool colors = Opts.ChatColors == null || Opts.ChatColors.Value;
+        var list = new List<string>();
+        foreach (var m in messages)
+        {
+            if (string.IsNullOrWhiteSpace(m)) continue;
+            string t = colors ? m : Regex.Replace(m, "<[^>]*>", "");
+            list.Add(Unblur(t));
+        }
+        if (list.Count == 0) return;
+        if (to.AmOwner) { LocalChat(string.Join("\n", list)); return; }
+        var q = CommandContext ? urgent : outbox;
+        foreach (var m in list)
+        {
+            if (q.Count >= (AnticheatLikely ? 16 : 40)) { Plugin.Logger.LogInfo("Chat queue full, message dropped"); break; }
+            q.Enqueue((to.PlayerId, m, !TargetedMode, UnityEngine.Time.time));
+        }
+    }
 
     public static void SendSecret(PlayerControl to, string text, int maxMessages = -1, bool defer = true) => Send(to, text, true, maxMessages, defer);
 
