@@ -6,8 +6,6 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// «Ящики снабжения»: в случайной комнате появляется ящик, первый подошедший открывает его и получает случайный эффект.
-// Всё работает на стороне хоста и видно всем текстом, мод у остальных не нужен.
 public static class Crates
 {
     public static BoolOpt On;
@@ -74,7 +72,7 @@ public static class Crates
                 if (RandomDoor(out var sp))
                 {
                     pos = sp; active = true; until = now + Lifetime.Value;
-                    Announce($"Ящик снабжения: «{Utils.RoomName(sp, true)}». Кто первым дойдёт — откроет!", $"Supply crate at \"{Utils.RoomName(sp, false)}\". The first to reach it opens it!");
+                    Announce($"Ящик снабжения: «{Utils.RoomName(sp, true)}». Кто первым дойдёт - откроет!", $"Supply crate at \"{Utils.RoomName(sp, false)}\". The first to reach it opens it!");
                 }
             }
         }

@@ -3,11 +3,8 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// На собрании рядом со значком уровня каждого игрока добавляется такой же значок с его ID (нужен для команд /ab, /role, /tag и др.).
-// Это только интерфейс на экране хоста: другие игроки его не видят.
 public static class MeetingIds
 {
-    // В разных версиях interop поле с ID игрока называется по-разному (или его нет) — ищем через reflection, запасной путь — по нику
     static string IdOf(PlayerVoteArea pva)
     {
         try

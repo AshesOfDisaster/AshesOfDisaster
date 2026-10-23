@@ -5,19 +5,18 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Пинкман (нейтрал, по мотивам «Во все тяжкие»): питомец вдали от людей — варить партию, рядом с игроком — продать ему товар.
-// Чистый товар даёт покупателю щит (отменяет первое нападение), брак — мигание экрана. Каждые 2 удачные продажи — щит самому Пинкману.
 public static class Pinkman
 {
     static readonly System.Random rng = new();
     static readonly Dictionary<byte, int> batch = new();
-    static readonly Dictionary<byte, float> cooking = new();      // когда будет готова партия
+    static readonly Dictionary<byte, float> cooking = new();
     static readonly Dictionary<byte, int> goodSales = new();
     static readonly Dictionary<byte, int> sales = new();
     static readonly Dictionary<byte, float> lastSale = new();
     static float nextTick;
 
     public static void Reset() { batch.Clear(); cooking.Clear(); goodSales.Clear(); sales.Clear(); lastSale.Clear(); }
+    public static void ResetCooldowns(byte id) { lastSale.Remove(id); }
     static int B(byte id) => batch.TryGetValue(id, out var b) ? b : 0;
 
     public static string Status(PlayerControl p, RoleDef r)
@@ -25,8 +24,8 @@ public static class Pinkman
         bool ru = Translator.IsRu(p);
         byte id = p.PlayerId;
         string cook = cooking.ContainsKey(id) ? (ru ? $", варится ({Mathf.CeilToInt(cooking[id] - Time.time)} с)" : $", cooking ({Mathf.CeilToInt(cooking[id] - Time.time)} s)") : "";
-        return ru ? $"{r.Colored(true)}: питомец вдали от людей — варить партию, рядом с игроком — продать товар. Партий в запасе: {B(id)}{cook}. Продаж: {(sales.TryGetValue(id, out var s) ? s : 0)}. Yeah, science!"
-                  : $"{r.Colored(false)}: pet away from people — cook a batch, next to a player — sell. Batches: {B(id)}{cook}. Sales: {(sales.TryGetValue(id, out var s2) ? s2 : 0)}. Yeah, science!";
+        return ru ? $"{r.Colored(true)}: питомец вдали от людей - варить партию, рядом с игроком - продать товар. Партий в запасе: {B(id)}{cook}. Продаж: {(sales.TryGetValue(id, out var s) ? s : 0)}. Yeah, science!"
+                  : $"{r.Colored(false)}: pet away from people - cook a batch, next to a player - sell. Batches: {B(id)}{cook}. Sales: {(sales.TryGetValue(id, out var s2) ? s2 : 0)}. Yeah, science!";
     }
 
     public static bool Use(PlayerControl p)
@@ -45,7 +44,7 @@ public static class Pinkman
         if (buyer == null)
         {
             if (cooking.ContainsKey(id)) { H(ru ? $"Партия ещё варится: {Mathf.CeilToInt(cooking[id] - Time.time)} с." : "Still cooking."); return true; }
-            if (B(id) >= Opts.PinkMax.Value) { H(ru ? "Склад полон — продай товар." : "Stock is full — sell something."); return true; }
+            if (B(id) >= Opts.PinkMax.Value) { H(ru ? "Склад полон - продай товар." : "Stock is full - sell something."); return true; }
             cooking[id] = Time.time + Opts.PinkCook.Value;
             H(ru ? $"Ты варишь партию: {Opts.PinkCook.Value} с. Yeah, science!" : $"Cooking a batch: {Opts.PinkCook.Value} s. Yeah, science!");
             return true;

@@ -8,16 +8,10 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-/// Статус над ником для игроков БЕЗ мода: роль и что осталось сделать («до щита: 2 задания», «убийство открыто» ...).
-/// ЭКСПЕРИМЕНТ (настройка «Статус над ником», по умолчанию ВЫКЛ): личный SetName другим игрокам в раунде.
-/// Сообщение уходит ОДНОМУ клиенту (StartRpcImmediately с его ClientId), остальные ник не меняют.
-/// Раньше был перехват игрового RpcSetName; в этой версии игры он не срабатывал, и аварийная ветка рассылала ник всем — это кикало хоста.
-/// Если кикнет — выключи настройку и пришли строки "NameInfo: ..." и "Disconnect via" из LogOutput.log.
-/// У хоста статус всегда рисуется только локально. Выключается настройкой «Статус над ником» (вкладка «Игра»).
 public static class NameInfo
 {
-    static readonly Dictionary<byte, string> real = new();       // настоящие ники
-    static readonly Dictionary<byte, string> shown = new();      // что сейчас показано игроку (без ника)
+    static readonly Dictionary<byte, string> real = new();
+    static readonly Dictionary<byte, string> shown = new();
     static readonly Dictionary<byte, float> lastSent = new();
     static readonly Queue<byte> restoreQ = new();
     static float nextTick, nextRestore;
@@ -25,7 +19,6 @@ public static class NameInfo
     static bool installed, works, broken;
     static byte setNameCall = 6;
 
-    /// Перехвата больше нет: сообщение собирается вручную и сразу уходит одному получателю .
     public static void Install(Harmony h)
     {
         try { setNameCall = (byte)Convert.ToInt32(Enum.Parse(typeof(RpcCalls), "SetName")); } catch { }
@@ -33,13 +26,8 @@ public static class NameInfo
         Plugin.Logger.LogInfo("NameInfo: direct private SetName (no redirect)");
     }
 
-    // ---------------------------------------------------------------- отправка
-
     static byte shiftCall = 46;
 
-    /// Ник одному клиенту так, как это делается на ванильных серверах: НЕ RPC SetName (он даёт Hacking в раунде),
-    /// а сообщение с данными игрока (GameData, тип 1) внутри GameDataTo (тип 6) — хост владеет этими данными, поэтому сервер их принимает.
-    /// После данных идёт Shapeshift «в себя» без анимации — клиент перерисовывает ник.
     static bool SendPrivate(PlayerControl p, string name)
     {
         if (p == null || p.Data == null || p.AmOwner || p.Data.Disconnected) return false;
@@ -52,7 +40,6 @@ public static class NameInfo
             w = MessageWriter.Get(SendOption.Reliable);
             if (Opts.NameViaRpc == null || Opts.NameViaRpc.Value)
             {
-                // Адресный RPC SetName одному клиенту (GameDataTo): ник над головой меняется сразу, в раунде тоже
                 w.StartMessage(6);
                 w.Write(AmongUsClient.Instance.GameId);
                 w.WritePacked(p.OwnerId);
@@ -77,7 +64,6 @@ public static class NameInfo
             w.EndMessage();
             if (Opts.NameRefresh == null || Opts.NameRefresh.Value)
             {
-                // Shapeshift «в себя» без анимации: клиент перерисовывает ник над головой (без этого новый ник виден только в списке собрания)
                 w.StartMessage(2);
                 w.WritePacked(p.NetId);
                 w.Write(shiftCall);
@@ -98,10 +84,9 @@ public static class NameInfo
         }
     }
 
-    // --- Оформление ников для ВСЕХ клиентов: хост (голубым + «Хост») и игроки с тегом ---
     static float nextBadge; static int badgeIdx;
     static readonly Dictionary<int, float> hostBadgeAt = new();
-    static readonly Dictionary<byte, float> undecorate = new();      // у кого сняли тег — один раз разослать обычный ник
+    static readonly Dictionary<byte, float> undecorate = new();
 
     static string Decor(PlayerControl p, bool ru, bool plain = false)
     {
@@ -171,9 +156,6 @@ public static class NameInfo
         catch (Exception e) { Plugin.Logger.LogError("NameInfo.SetLocal: " + e.Message); }
     }
 
-    // ---------------------------------------------------------------- логика
-
-    // --- Всплывающие сообщения над ником: то, что в раунде нельзя написать в чат ---
     static readonly Dictionary<byte, List<(string text, float until)>> notes = new();
 
     public static bool CanNotify => Utils.AmHost && installed && !broken && !Utils.AnticheatLikely && Opts.NameStatus.Value
@@ -181,7 +163,6 @@ public static class NameInfo
 
     public static void ClearNotes() => notes.Clear();
 
-    // --- Теги: хранятся на время существования комнаты (по коду друга, иначе по нику), переживают раунды и перезаход ---
     static readonly Dictionary<string, string> tags = new();
     static int tagGame;
     static string TagKey(PlayerControl p)
@@ -196,7 +177,7 @@ public static class NameInfo
         if (p == null) return;
         if (string.IsNullOrWhiteSpace(tag)) { if (tags.Remove(TagKey(p))) undecorate[p.PlayerId] = Time.time; }
         else { tags[TagKey(p)] = tag.Trim(); undecorate.Remove(p.PlayerId); }
-        hostBadgeAt.Clear();      // разослать сразу
+        hostBadgeAt.Clear();
     }
     public static string GetTag(PlayerControl p) => p != null && tags.TryGetValue(TagKey(p), out var t) ? t : null;
     public static void CheckRoom()
@@ -247,14 +228,14 @@ public static class NameInfo
         if (!real.TryGetValue(id, out var name)) { name = p.Data.PlayerName; real[id] = name; }
         string text = $"<size=55%>{info}</size>\r\n{name}";
         if (p.AmOwner) { SetLocal(p, text); shown[id] = info; return; }
-        text = text.Replace("color=", "");      //: сервер не любит «color=» в нике; <#FF0000> работает так же
+        text = text.Replace("color=", "");
         if (!EnsureWorks(p)) return;
         if (SendPrivate(p, text)) { shown[id] = info; lastSent[id] = Time.time; }
     }
 
     public static void QueueRestore(byte id) { if (shown.ContainsKey(id) && !restoreQ.Contains(id)) restoreQ.Enqueue(id); }
     public static void QueueRestoreAll() { foreach (var id in shown.Keys.ToList()) QueueRestore(id); }
-    public static void OnMeetingStart() => QueueRestoreAll();      // в списке голосования ники должны быть обычными
+    public static void OnMeetingStart() => QueueRestoreAll();
 
     static void PumpRestore()
     {
@@ -268,12 +249,11 @@ public static class NameInfo
         else if (works && !p.Data.Disconnected) SendPrivate(p, name);
     }
 
-    /// Каждый кадр из ModGui.Update (только хост)
     public static void Tick()
     {
         CheckRoom();
         if (!Utils.AmHost) return;
-        if (Shroomer.Active) return;      // во время грибов ники и цвета не трогаем
+        if (Shroomer.Active) return;
         PumpRestore();
         HostBadgeTick();
 
@@ -281,22 +261,22 @@ public static class NameInfo
         var c = AmongUsClient.Instance;
         if (c == null || c.GameState != InnerNetClient.GameStates.Started)
         {
-            if (shown.Count > 0) QueueRestoreAll();      // игра кончилась — вернуть ники
+            if (shown.Count > 0) QueueRestoreAll();
             return;
         }
         if (MeetingHud.Instance != null) return;
-        if (Time.time - RoleLogic.VigStart < 15f) return;      // не в заставке и первые секунды игры
+        if (Time.time - RoleLogic.VigStart < 15f) return;
         if (Time.time < nextTick) return;
         nextTick = Time.time + 1f;
 
-        int budget = 2;      // не больше двух сетевых обновлений за секунду
+        int budget = 2;
         foreach (var p in PlayerControl.AllPlayerControls)
         {
             if (p == null || p.Data == null) continue;
             string info = Build(p);
             bool has = shown.TryGetValue(p.PlayerId, out var cur);
             if (info == null) { if (has) QueueRestore(p.PlayerId); continue; }
-            if (has && cur == info) { if (p.AmOwner) Apply(p, info); continue; }     // у хоста рисуем заново: игра могла сбросить текст
+            if (has && cur == info) { if (p.AmOwner) Apply(p, info); continue; }
             if (!p.AmOwner)
             {
                 if (budget <= 0) continue;
@@ -308,7 +288,6 @@ public static class NameInfo
     }
 }
 
-/// При выкидывании на собрании в чат пишется роль выброшенного
 [HarmonyPatch(typeof(MeetingHud), "VotingComplete")]
 public static class ExileRolePatch
 {
@@ -325,7 +304,7 @@ public static class ExileRolePatch
             if (Time.time - last < 2f) return;
             NetworkedPlayerInfo ex = null;
             foreach (var a in __args) if (a is NetworkedPlayerInfo ni) { ex = ni; break; }
-            if (ex == null) return;      // ничья или пропуск — никого не выбросили
+            if (ex == null) return;
             last = Time.time;
             bool ru = Translator.GameIsRu;
             string who = ex.PlayerName ?? "?";

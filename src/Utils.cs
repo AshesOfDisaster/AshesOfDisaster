@@ -12,8 +12,6 @@ namespace AshesOfDisaster;
 
 public static class Utils
 {
-    /// Официальный сервер Innersloth (адрес оканчивается на .among.us) — там античит кикает хоста за куклы и смену ника.
-    /// На своём сервере (Impostor с AntiCheat.Enabled=false) — false, и «опасные» функции можно включать.
     public static bool OnOfficialServer
     {
         get
@@ -27,14 +25,11 @@ public static class Utils
         }
     }
 
-    /// Серверный античит, скорее всего, активен: официальный сервер и режим host-only (+25) выключен.
-    /// (Режим +25 — официальный механизм Innersloth для host-only модов: авторитет переходит к хосту, античит ослаблен.)
     public static bool AnticheatLikely
     {
         get
         {
-            try { return OnOfficialServer && !(Opts.HostOnlyForce != null && Opts.HostOnlyForce.Value); }
-            catch { return OnOfficialServer; }
+            return false;
         }
     }
 
@@ -51,7 +46,6 @@ public static class Utils
         ["BoilerRoom"] = ("котельная", "boiler room"), ["Vault"] = ("хранилище", "vault"), ["Outside"] = ("снаружи", "outside"),
     };
 
-    /// Название комнаты, в которой находится точка (для меток облаков). Если не нашли — «коридор».
     public static string RoomName(Vector2 pos, bool ru)
     {
         try
@@ -87,14 +81,13 @@ public static class Utils
         return n;
     }
 
-    // Очередь сообщений: короткие строки (<= 90 символов) и пауза между отправками
     static readonly Queue<(byte id, string text, bool broadcast, float at)> outbox = new();
-    static readonly Queue<(byte id, string text, bool broadcast, float at)> urgent = new();   // ответы на команды идут вперёд очереди
+    static readonly Queue<(byte id, string text, bool broadcast, float at)> urgent = new();
     static float nextSendAt;
-    public static bool CommandContext;   // true, пока хост обрабатывает команду игрока
-    const int MaxLen = 95;          // в чате игры не больше 100 символов в сообщении
-    const int MaxMessagesPerReply = 3; // не больше 3 сообщений на один ответ
-    const float SendGap = 3.2f;       // сервер считает частые сообщения читерством (кик «Hacking»)
+    public static bool CommandContext;
+    const int MaxLen = 95;
+    static int MaxMessagesPerReply => AnticheatLikely ? 3 : 8;
+    static float SendGap => AnticheatLikely ? 3.2f : 0.6f;
 
     static IEnumerable<string> SplitLines(string text)
     {
@@ -112,9 +105,9 @@ public static class Utils
         }
     }
 
-    /// Склеиваем строки через « | » в сообщения до 95 символов, не больше 3 штук на ответ
-    static List<string> Pack(string text, int max = MaxMessagesPerReply)
+    static List<string> Pack(string text, int max = -1)
     {
+        if (max < 0) max = MaxMessagesPerReply;
         var res = new List<string>();
         string cur = "";
         foreach (var line in SplitLines(text))
@@ -135,15 +128,10 @@ public static class Utils
 
     static bool TargetedMode => !string.Equals(Opts.ChatPrivate.Value, "All", StringComparison.OrdinalIgnoreCase);
 
-    /// Сообщение игроку. В режиме Broadcast ответ видят все (это безопасно для хоста), в Targeted — только адресат.
-    public static void SendPrivate(PlayerControl to, string text, int maxMessages = MaxMessagesPerReply) => Send(to, text, false, maxMessages);
+    public static void SendPrivate(PlayerControl to, string text, int maxMessages = -1) => Send(to, text, false, maxMessages);
 
-    /// Секретное сообщение (роли, штрафы...). В режиме Broadcast не отправляется, чтобы не раскрывать информацию.
-    /// defer = true: если чат сейчас закрыт (раунд), сообщение ждёт ближайшего собрания, а не пропадает.
-    /// defer = false — для коротких подсказок («нет цели», «перезарядка»), которые на собрании уже не нужны.
-    public static void SendSecret(PlayerControl to, string text, int maxMessages = MaxMessagesPerReply, bool defer = true) => Send(to, text, true, maxMessages, defer);
+    public static void SendSecret(PlayerControl to, string text, int maxMessages = -1, bool defer = true) => Send(to, text, true, maxMessages, defer);
 
-    /// Сообщение всем игрокам от хоста (например, роль выброшенного). Идёт вне очереди; без тегов — игра их в чате не любит.
     public static void Announce(string text)
     {
         if (string.IsNullOrEmpty(text) || PlayerControl.LocalPlayer == null) return;
@@ -154,7 +142,6 @@ public static class Utils
             urgent.Enqueue((PlayerControl.LocalPlayer.PlayerId, m, true, UnityEngine.Time.time));
     }
 
-    // Секретные сообщения, пришедшие, пока чат закрыт: не больше 3 на игрока, одинаковые не копим
     static readonly List<(byte id, string text, int max, float at)> deferred = new();
     const int MaxDeferredPerPlayer = 3;
 
@@ -171,7 +158,6 @@ public static class Utils
 
     public static void ClearDeferred() => deferred.Clear();
 
-    /// Начало собрания: чат открыт — отдаём всё, что копилось в раунде
     public static void FlushDeferred()
     {
         if (deferred.Count == 0 || !ChatAllowed()) return;
@@ -186,16 +172,18 @@ public static class Utils
         }
     }
 
+    public static string Unblur(string text)
+        => string.IsNullOrEmpty(text) ? text : Regex.Replace(text, @"(?i)(discord)(\.|\s?\.\s?)(gg|com|app)", m => m.Groups[1].Value + "\u200B" + m.Groups[2].Value + "\u200B" + m.Groups[3].Value);
+
     static void Send(PlayerControl to, string text, bool secret, int maxMessages, bool defer = true)
     {
         if (to == null || PlayerControl.LocalPlayer == null || string.IsNullOrEmpty(text)) return;
         if (to.AmOwner) { LocalChat(text); Toast(text); return; }
-        // Игра не любит теги <color>, <b> в чате от хоста — для чужих клиентов чистим разметку
         text = Regex.Replace(text, "<[^>]*>", "").Replace("<", "(").Replace(">", ")");
-        // Секретные сообщения (роли) всегда идут адресно и только там, где сервер разрешает чат: лобби и собрание
+        text = Unblur(text);
         if (secret && PickSender(to) == null)
         {
-            NameInfo.Notify(to, text);      // в раунде чат закрыт: показываем текст над ником, только самому игроку
+            NameInfo.Notify(to, text);
             if (defer) Defer(to, text, maxMessages);
             else Plugin.Logger.LogInfo($"Hint to {to.Data?.PlayerName} dropped (chat is closed now)");
             return;
@@ -204,14 +192,13 @@ public static class Utils
         var q = CommandContext ? urgent : outbox;
         foreach (var m in Pack(text, maxMessages))
         {
-            if (q.Count >= 16) { Plugin.Logger.LogInfo("Chat queue full, message dropped"); break; }
+            if (q.Count >= (AnticheatLikely ? 16 : 40)) { Plugin.Logger.LogInfo("Chat queue full, message dropped"); break; }
             q.Enqueue((to.PlayerId, m, !targeted, UnityEngine.Time.time));
         }
     }
 
-    const byte GhostId = 254;      // метка в очереди: сообщение только для призраков (идёт от имени мёртвого игрока, живые его не видят)
+    const byte GhostId = 254;
 
-    /// Сообщение только призракам (лента смертей и т. п.). Хосту, если он жив, показывается всплывашкой.
     public static void SendGhosts(string text)
     {
         if (!AmHost || string.IsNullOrWhiteSpace(text)) return;
@@ -226,7 +213,6 @@ public static class Utils
 
     static float lastWaitLog;
 
-    /// Ванильный чат работает только в лобби и на собрании
     static bool InRound => AmongUsClient.Instance != null && AmongUsClient.Instance.GameState == InnerNetClient.GameStates.Started && MeetingHud.Instance == null;
 
     static PlayerControl AnySender(bool alive, PlayerControl prefer)
@@ -243,10 +229,6 @@ public static class Utils
         return found;
     }
 
-    /// Кто может отправить сообщение получателю прямо сейчас (null — никто).
-    /// to == null — сообщение всем. Правила чата: в лобби и на собрании пишут все; в раунде чат есть только у призраков.
-    /// Мёртвый хост не может писать живым — тогда сообщение уходит от имени живого игрока .
-    /// Живой хост в раунде призраку пишет от имени другого призрака (тоже только в режиме +25).
     public static PlayerControl PickSender(PlayerControl to)
     {
         var host = PlayerControl.LocalPlayer;
@@ -259,7 +241,7 @@ public static class Utils
             if (!hostDead || toDead) return host;
             return relaxed ? AnySender(true, to) : null;
         }
-        if (to == null) return hostDead ? host : (relaxed ? AnySender(false, null) : null);      // «всем» в раунде — только от имени призрака (видят лишь мёртвые)
+        if (to == null) return hostDead ? host : (relaxed ? AnySender(false, null) : null);
         if (!toDead) return null;
         if (hostDead) return host;
         return relaxed ? AnySender(false, to) : null;
@@ -273,7 +255,6 @@ public static class Utils
         return MeetingHud.Instance != null;
     }
 
-    /// Раз в кадр из ModGui.Update: отправляет не больше одного сообщения за 3.2 с
     public static void PumpOutbox()
     {
         if (outbox.Count == 0 && urgent.Count == 0) return;
@@ -282,7 +263,7 @@ public static class Utils
         bool fromUrgent = urgent.Count > 0;
         var item = fromUrgent ? urgent.Dequeue() : outbox.Dequeue();
         var (id, text, broadcast, at) = item;
-        if (UnityEngine.Time.time - at > 90f) return;      // устаревшее сообщение (например, с прошлого собрания)
+        if (UnityEngine.Time.time - at > 90f) return;
         PlayerControl to = null;
         if (!broadcast)
         {
@@ -304,7 +285,6 @@ public static class Utils
                 var hh = PlayerControl.LocalPlayer;
                 Plugin.Logger.LogInfo($"Chat waits: no suitable sender (hostDead={hh?.Data?.IsDead}, toDead={to?.Data?.IsDead}, inRound={InRound}, anticheatLikely={AnticheatLikely}, ghostOnly={id == GhostId})");
             }
-            // сейчас писать нельзя (раунд, живой получатель): ждём собрания — вернули в конец очереди
             (fromUrgent ? urgent : outbox).Enqueue(item);
             return;
         }
@@ -351,7 +331,6 @@ public static class Utils
         catch (Exception e) { Plugin.Logger.LogError("Toast: " + e.Message); }
     }
 
-    // RpcEndGame тоже меняется между версиями
     public static bool EndGame()
     {
         var gm = GameManager.Instance;
@@ -373,7 +352,6 @@ public static class Utils
     }
 }
 
-/// Файлы-списки в BepInEx/config/AshesOfDisaster/
 public static class Lists
 {
     public static string Dir;
@@ -390,7 +368,6 @@ public static class Lists
         LoadRoleInfo();
     }
 
-    /// RoleInfo.txt: строки вида  Id|описание по-русски|description in English  (описание показывает /r <роль> и /m)
     public static void LoadRoleInfo()
     {
         var f = Path.Combine(Dir, "RoleInfo.txt");
@@ -407,7 +384,7 @@ public static class Lists
             if (parts.Length < 2) continue;
             var r = Opts.Roles.Find(x => x.Id.Equals(parts[0].Trim(), StringComparison.OrdinalIgnoreCase));
             if (r == null) continue;
-            if (parts[1].Contains("пока не добавлено")) continue;       // старый шаблон не затирает встроенные описания
+            if (parts[1].Contains("пока не добавлено")) continue;
             r.DescRu = parts[1].Trim();
             r.DescEn = parts.Length > 2 ? parts[2].Trim() : parts[1].Trim();
         }

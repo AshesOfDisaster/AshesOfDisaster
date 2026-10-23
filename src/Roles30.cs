@@ -6,14 +6,12 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Дополнительные роли (мирные, предатели, нейтралы): настройки, способности питомца, статусы и хуки.
 public static class Roles30
 {
     static readonly System.Random rng = new();
     static readonly Dictionary<string, IntOpt> X = new();
     static int G(string k) => X.TryGetValue(k, out var o) ? o.Value : 0;
 
-    // ---------------------------------------------------------------- Описание и настройки
     public static void Define(ConfigFile c)
     {
         void R(string id, string ru, string en, string color, OptTab tab, string dru, string den) => Opts.AddRole(c, id, ru, en, color, tab, dru, den);
@@ -21,59 +19,54 @@ public static class Roles30
         { var o = Opts.Extra(role, new IntOpt(key, tab, def, min, max, step, c), ru, en); X[key] = o; return o; }
         const OptTab C = OptTab.Crewmate, I = OptTab.Impostor, N = OptTab.Neutral;
 
-        // ---------- Мирные
         R("Sentry", "Часовой", "Sentry", "#FFD54F", C,
-            "Член экипажа. Питомец ставит пост (растяжку): первый, кто пройдёт рядом, будет назван Часовому, пост исчезает. Посты пропадают на собрании. Нужен питомец!",
-            "A crewmate. Pet places a tripwire post: the first player to pass near it is named to the Sentry and the post vanishes. Posts vanish at a meeting. A pet is required!");
+            "Мирный. Питомец ставит пост-растяжку. Кто первым пройдёт рядом, тот будет назван тебе, и пост исчезнет. На собрании посты пропадают. [Питомец]",
+            "Crewmate. The pet places a tripwire post. The first player to pass near it is named to you and the post vanishes. Posts vanish at a meeting. [Pet]");
         R("Statistician", "Статистик", "Statistician", "#90CAF9", C,
-            "Член экипажа. На собрании командой /ab узнаёт, сколько предателей (для сервера) ещё живо. Число проверок ограничено.",
-            "A crewmate. In a meeting /ab shows how many impostors (as the server sees them) are still alive. The number of checks is limited.");
+            "Мирный. На собрании напиши /ab и узнаешь, сколько предателей (для сервера) ещё живо. Проверок: 2. [Собрание /ab]",
+            "Crewmate. In a meeting type /ab to learn how many impostors (as the server sees them) are still alive. Checks: 2. [Meeting /ab]");
         R("Intercessor", "Заступник", "Intercessor", "#FFAB91", C,
-            "Член экипажа. Питомец рядом с игроком берёт его под защиту: если подопечного попытаются убить, нападение отменяется, а погибает сам Заступник. Подопечный один, новый заменяет прежнего. Метка пропадает на собрании. Нужен питомец!",
-            "A crewmate. Pet next to a player takes him under protection: if the ward is attacked the attack is cancelled and the Intercessor dies instead. One ward at a time. The ward is dropped at a meeting. A pet is required!");
+            "Мирный. Питомец рядом с игроком берёт его под защиту. Если на подопечного нападут, нападение отменится, а погибнешь ты. Подопечный один, новый заменяет прежнего. На собрании защита снимается. [Питомец]",
+            "Crewmate. The pet next to a player takes him under your protection. If he is attacked the attack is cancelled and you die instead. One ward at a time, a new one replaces the old one. The protection is dropped at a meeting. [Pet]");
         R("Peacemaker", "Миротворец", "Peacemaker", "#F8BBD0", C,
-            "Член экипажа. Питомец создаёт вокруг него зону мира на несколько секунд: пока она действует, предатели рядом не могут никого убить. Число использований ограничено. Нужен питомец!",
-            "A crewmate. Pet creates a peace zone around him for a few seconds: while it lasts impostors nearby can't kill anyone. Number of uses is limited. A pet is required!");
+            "Мирный. Питомец создаёт вокруг тебя зону мира на несколько секунд. Пока она действует, предатели рядом не могут никого убить. Использований: 2. [Питомец]",
+            "Crewmate. The pet creates a peace zone around you for a few seconds. While it lasts, impostors nearby cannot kill anyone. Uses: 2. [Pet]");
 
         R("Eyewitness", "Очевидец", "Eyewitness", "#FFE082", C,
-            "Член экипажа. Если рядом с ним (в радиусе, по умолчанию 7 м) кого-то убили, он узнаёт имя убийцы — но с настраиваемым шансом имя ложное.",
-            "A crewmate. If someone is killed near him (within the radius, 7 m by default) he learns the killer's name - but with a configurable chance the name is false.");
+            "Мирный. Если рядом с тобой (по умолчанию в радиусе 7 м) кого-то убили, ты узнаёшь имя убийцы. Но с некоторым шансом имя будет ложным. [Сама]",
+            "Crewmate. If someone is killed near you (within 7 m by default) you learn the killer's name. But with some chance the name is false. [Passive]");
         R("Forensic", "Криминалист", "Forensic", "#B39DDB", C,
-            "Член экипажа. Питомец рядом с трупом (до 2 м): узнаёт, сколько секунд назад тот погиб, и смывает краску Маляра, чтобы труп можно было доложить. Съеденное тело не вернуть. Число осмотров ограничено. Нужен питомец!",
-            "A crewmate. Pet next to a body (within 2 m): learns how many seconds ago it died and washes off the Painter's paint so the body can be reported. An eaten body can't be restored. Number of exams is limited. A pet is required!");
+            "Мирный. Питомец рядом с трупом (до 2 м) покажет, сколько секунд назад он погиб, и смоет краску Маляра, чтобы о трупе можно было доложить. Съеденное тело вернуть нельзя. Осмотров: 3. [Питомец]",
+            "Crewmate. The pet next to a body (within 2 m) shows how many seconds ago it died and washes off the Painter's paint so the body can be reported. An eaten body cannot be restored. Exams: 3. [Pet]");
 
-        // ---------- Предатели
         R("Minelayer", "Минёр", "Minelayer", "#E65100", I,
-            "Предатель. Питомец ставит мину: первый член экипажа, наступивший на неё, погибает (щит спасает). Мины пропадают на собрании. Число мин настраивается. Нужен питомец!",
-            "Impostor. Pet places a mine: the first crewmate to step on it dies (a shield saves him). Mines vanish at a meeting. Number of mines is configurable. A pet is required!");
+            "Предатель. Питомец ставит мину. Первый член экипажа, наступивший на неё, погибает (щит спасает). На собрании мины пропадают. Мин одновременно: 3. [Питомец]",
+            "Impostor. The pet places a mine. The first crewmate to step on it dies (a shield saves him). Mines vanish at a meeting. Mines at once: 3. [Pet]");
         R("Eclipser", "Затмитель", "Eclipser", "#37474F", I,
-            "Предатель. Питомец гасит свет (саботаж электричества), если сейчас нет другого саботажа. Перезарядка настраивается. Нужен питомец!",
-            "Impostor. Pet turns the lights off (electrical sabotage) if no other sabotage is active. Cooldown is configurable. A pet is required!");
+            "Предатель. Питомец гасит свет (саботаж электричества), если сейчас нет другого саботажа. Перезарядка 90 с. [Питомец]",
+            "Impostor. The pet turns the lights off (electrical sabotage) if no other sabotage is active. Cooldown: 90 s. [Pet]");
         R("Returner", "Возвращенец", "Returner", "#26A69A", I,
-            "Предатель. Питомец ставит метку; после каждого твоего убийства тебя возвращает к метке (метка остаётся). Метка сбрасывается на собрании. Нужен питомец!",
-            "Impostor. Pet sets a mark; after each of your kills you are returned to the mark (it stays). The mark is cleared at a meeting. A pet is required!");
+            "Предатель. Питомец ставит метку. После каждого твоего убийства тебя возвращает к метке (она остаётся). На собрании метка сбрасывается. [Питомец]",
+            "Impostor. The pet sets a mark. After each of your kills you are returned to the mark (it stays). The mark is cleared at a meeting. [Pet]");
         R("Lurer", "Приманщик", "Lurer", "#FF8A80", I,
-            "Предатель. Питомец притягивает к тебе ближайшего члена экипажа (в радиусе до 8 м). Число использований и перезарядка настраиваются. Нужен питомец!",
-            "Impostor. Pet pulls the nearest crewmate (within 8 m) to you. Number of uses and cooldown are configurable. A pet is required!");
+            "Предатель. Питомец притягивает к тебе ближайшего члена экипажа (в радиусе до 8 м). Использований: 4, перезарядка 45 с. [Питомец]",
+            "Impostor. The pet pulls the nearest crewmate (within 8 m) to you. Uses: 4, cooldown 45 s. [Pet]");
 
         R("Trapper", "Капканщик", "Trapper", "#A1887F", I,
-            "Предатель. Питомец ставит капкан: первый член экипажа, наступивший на него, застывает на несколько секунд, а ты узнаёшь его имя. Капканы пропадают на собрании. Нужен питомец!",
-            "Impostor. Pet places a trap: the first crewmate to step on it freezes for a few seconds and you learn his name. Traps vanish at a meeting. A pet is required!");
+            "Предатель. Питомец ставит капкан. Первый член экипажа, наступивший на него, замирает на несколько секунд, а ты узнаёшь его имя. На собрании капканы пропадают. [Питомец]",
+            "Impostor. The pet places a trap. The first crewmate to step on it freezes for a few seconds and you learn his name. Traps vanish at a meeting. [Pet]");
 
-        // ---------- Нейтралы
         R("Avenger", "Мститель", "Avenger", "#D32F2F", N,
-            "Нейтрал. Если его убили, через настраиваемое время погибает и убийца.",
-            "Neutral. If he is killed, his killer dies too after a configurable delay.");
+            "Нейтрал. Если тебя убьют, убийца погибнет через несколько секунд (время в настройках). [Сама]",
+            "Neutral. If you are killed, your killer dies a few seconds later (time in the settings). [Passive]");
         R("Hypnotist", "Гипнотизёр", "Hypnotist", "#AB47BC", N,
-            "Нейтрал. Питомец рядом с игроком (до 3 м) обездвиживает его на несколько секунд. Перезарядка настраивается. Нужен питомец!",
-            "Neutral. Pet next to a player (within 3 m) freezes him in place for a few seconds. Cooldown is configurable. A pet is required!");
+            "Нейтрал. Питомец рядом с игроком (до 3 м) обездвиживает его на несколько секунд. Перезарядка 45 с. [Питомец]",
+            "Neutral. The pet next to a player (within 3 m) freezes him in place for a few seconds. Cooldown: 45 s. [Pet]");
 
         R("Clockmaker", "Часовщик", "Clockmaker", "#4E342E", N,
-            "Нейтрал. Питомец отматывает время для тебя: ты возвращаешься туда, где был около 10 секунд назад. Перезарядка настраивается. Нужен питомец!",
-            "Neutral. Pet rewinds time for you: you return to where you were about 10 seconds ago. Cooldown is configurable. A pet is required!");
+            "Нейтрал. Питомец отматывает время для тебя: ты возвращаешься туда, где был около 10 секунд назад. Перезарядка 60 с. [Питомец]",
+            "Neutral. The pet rewinds time for you: you return to where you were about 10 seconds ago. Cooldown: 60 s. [Pet]");
 
-
-        // ---------- Настройки
         E("Sentry", "SentryCd", C, 15, 5, 90, 5, "Перезарядка поста (сек)", "Post cooldown (sec)");
         E("Sentry", "SentryMax", C, 3, 1, 8, 1, "Постов одновременно", "Posts at a time");
         E("Statistician", "StatUses", C, 2, 1, 10, 1, "Число проверок", "Checks per game");
@@ -102,9 +95,10 @@ public static class Roles30
         E("Hypnotist", "HypnoSecs", N, 4, 1, 15, 1, "Сколько секунд игрок неподвижен", "Seconds the player is frozen");
     }
 
-    // ---------------------------------------------------------------- Состояние
     class Freeze { public byte Id; public Vector2 Pos; public float Until, NextTp; }
     static readonly Dictionary<string, float> lastUse = new();
+    static readonly Dictionary<string, int> lastCd = new();
+    static readonly Dictionary<string, int> useMax = new();
     static readonly Dictionary<string, int> uses = new();
     static readonly List<(byte victim, Vector2 pos)> bodies = new();
     static readonly List<(byte owner, Vector2 pos)> posts = new();
@@ -120,7 +114,6 @@ public static class Roles30
     static readonly Dictionary<byte, float> deathTime = new();
     static float nextTick;
 
-    /// Обезвредить мины, капканы и посты в радиусе (для Сапёра); возвращает число обезвреженных
     public static int Defuse(Vector2 pos, float radius)
     {
         int n = mines.RemoveAll(m => Vector2.Distance(m.pos, pos) <= radius);
@@ -129,14 +122,12 @@ public static class Roles30
         return n;
     }
 
-    /// Заморозить игрока на время (для Стоп-кадра)
     public static void FreezePlayer(PlayerControl t, float seconds)
     {
         if (t == null || t.Data == null || freezes.Any(f => f.Id == t.PlayerId)) return;
         freezes.Add(new Freeze { Id = t.PlayerId, Pos = t.GetTruePosition(), Until = Time.time + seconds, NextTp = 0f });
     }
 
-    /// Сбросить перезарядки игрока (для Тренера)
     public static void ResetCooldowns(byte id)
     {
         string suffix = ":" + id;
@@ -145,7 +136,7 @@ public static class Roles30
 
     public static void Reset()
     {
-        lastUse.Clear(); uses.Clear(); bodies.Clear(); posts.Clear(); mines.Clear(); traps.Clear(); history.Clear(); ward.Clear(); peace.Clear(); home.Clear();
+        lastUse.Clear(); lastCd.Clear(); useMax.Clear(); uses.Clear(); bodies.Clear(); posts.Clear(); mines.Clear(); traps.Clear(); history.Clear(); ward.Clear(); peace.Clear(); home.Clear();
         avenge.Clear(); tpQueue.Clear(); freezes.Clear(); deathTime.Clear();
     }
 
@@ -162,13 +153,29 @@ public static class Roles30
     static bool Wait(string key, PlayerControl p, int cd, bool ru)
     {
         string k = key + ":" + p.PlayerId;
+        lastCd[k] = cd;
         if (lastUse.TryGetValue(k, out var l) && Time.time - l < cd)
-        { Say(p, T(ru, $"Перезарядка: ещё {Mathf.CeilToInt(cd - (Time.time - l))} с.", "Cooling down.")); return true; }
+        { Say(p, T(ru, $"Перезарядка: ещё {Mathf.CeilToInt(cd - (Time.time - l))} с.", $"Cooldown: {Mathf.CeilToInt(cd - (Time.time - l))} s left.")); return true; }
         return false;
     }
     static void Stamp(string key, PlayerControl p) => lastUse[key + ":" + p.PlayerId] = Time.time;
+
+    public static int CdLeft(string role, byte id)
+    {
+        string k = role + ":" + id;
+        if (!lastUse.TryGetValue(k, out var t0) || !lastCd.TryGetValue(k, out var c0)) return -1;
+        return Mathf.Max(0, Mathf.CeilToInt(c0 - (Time.time - t0)));
+    }
+
+    public static int UsesLeft(string role, byte id)
+    {
+        string k = useMax.ContainsKey(role + id) ? role : role.ToLowerInvariant();
+        if (!useMax.TryGetValue(k + id, out var m0)) return -1;
+        return Math.Max(0, m0 - Used(k, id));
+    }
     static bool NoUses(string key, PlayerControl p, int max, bool ru)
     {
+        useMax[key + p.PlayerId] = max;
         if (Used(key, p.PlayerId) < max) return false;
         Say(p, T(ru, "Использования закончились.", "No uses left.")); return true;
     }
@@ -185,15 +192,14 @@ public static class Roles30
         return best;
     }
 
-    // ---------------------------------------------------------------- Статус (сводка на собрании)
     public static string Status(PlayerControl p, RoleDef r)
     {
         bool ru = Translator.IsRu(p); string n = r.Colored(ru); byte id = p.PlayerId;
         int L(string k, int max) => Math.Max(0, max - Used(k, id));
         switch (r.Id)
         {
-            case "Sentry": return T(ru, $"{n}: питомец ставит пост; кто пройдёт рядом — будет назван тебе. Постов {posts.Count(x => x.owner == id)}/{G("SentryMax")}.", $"{n}: pet places a post; whoever passes near is named to you. Posts {posts.Count(x => x.owner == id)}/{G("SentryMax")}.");
-            case "Statistician": return T(ru, $"{n}: на собрании /ab — число живых предателей. Проверок: {L("stat", G("StatUses"))}.", $"{n}: in a meeting /ab shows living impostors. Checks left: {L("stat", G("StatUses"))}.");
+            case "Sentry": return T(ru, $"{n}: питомец ставит пост; кто пройдёт рядом - будет назван тебе. Постов {posts.Count(x => x.owner == id)}/{G("SentryMax")}.", $"{n}: pet places a post; whoever passes near is named to you. Posts {posts.Count(x => x.owner == id)}/{G("SentryMax")}.");
+            case "Statistician": return T(ru, $"{n}: на собрании напиши /ab: узнаешь число живых предателей. Проверок: {L("stat", G("StatUses"))}.", $"{n}: in a meeting type /ab to learn the number of living impostors. Checks left: {L("stat", G("StatUses"))}.");
             case "Intercessor": return T(ru, $"{n}: питомец рядом с игроком берёт его под защиту; за подопечного погибнешь ты. Подопечный: {WardName(id, true)}.", $"{n}: pet next to a player protects him; you die in his place. Ward: {WardName(id, false)}.");
             case "Peacemaker": return T(ru, $"{n}: питомец создаёт зону мира ({G("PeaceSeconds")} с). Осталось: {L("peace", G("PeaceUses"))}.", $"{n}: pet creates a peace zone ({G("PeaceSeconds")} s). Left: {L("peace", G("PeaceUses"))}.");
             case "Minelayer": return T(ru, $"{n}: питомец ставит мину; наступивший член экипажа погибает. Мин {mines.Count(x => x.owner == id)}/{G("MineMax")}.", $"{n}: pet places a mine; a crewmate who steps on it dies. Mines {mines.Count(x => x.owner == id)}/{G("MineMax")}.");
@@ -201,7 +207,7 @@ public static class Roles30
             case "Returner": return T(ru, $"{n}: питомец ставит метку; после убийства ты возвращаешься к ней. Метка: {(home.ContainsKey(id) ? Room(home[id], true) : "нет")}.", $"{n}: pet sets a mark; after a kill you return to it. Mark: {(home.ContainsKey(id) ? Room(home[id], false) : "none")}.");
             case "Lurer": return T(ru, $"{n}: питомец притягивает ближайшего члена экипажа (до 8 м). Осталось: {L("lurer", G("LurerUses"))}.", $"{n}: pet pulls the nearest crewmate (up to 8 m). Left: {L("lurer", G("LurerUses"))}.");
             case "Eyewitness": return T(ru, $"{n}: если рядом (до {G("WitnessRadius")} м) кого-то убьют, ты узнаешь имя убийцы (верное с шансом {G("WitnessTrue")}%).", $"{n}: if someone is killed near you (within {G("WitnessRadius")} m) you learn the killer's name (true with {G("WitnessTrue")}% chance).");
-            case "Forensic": return T(ru, $"{n}: питомец у трупа — время смерти и смыть краску. Осмотров: {L("forensic", G("ForensicUses"))}.", $"{n}: pet next to a body - time of death and wash off paint. Exams left: {L("forensic", G("ForensicUses"))}.");
+            case "Forensic": return T(ru, $"{n}: питомец у трупа: узнаёшь, когда он погиб, и смываешь краску. Осмотров: {L("forensic", G("ForensicUses"))}.", $"{n}: the pet next to a body shows when it died and washes off paint. Exams left: {L("forensic", G("ForensicUses"))}.");
             case "Trapper": return T(ru, $"{n}: питомец ставит капкан; наступивший застывает на {G("TrapSecs")} с. Капканов {traps.Count(x => x.owner == id)}/{G("TrapMax")}.", $"{n}: pet places a trap; whoever steps on it freezes for {G("TrapSecs")} s. Traps {traps.Count(x => x.owner == id)}/{G("TrapMax")}.");
             case "Clockmaker": return T(ru, $"{n}: питомец отматывает тебя на ~10 секунд назад.", $"{n}: pet rewinds you ~10 seconds back.");
             case "Avenger": return T(ru, $"{n}: если тебя убьют, убийца погибнет через {G("AvengerDelay")} с.", $"{n}: if you are killed, your killer dies after {G("AvengerDelay")} s.");
@@ -216,7 +222,6 @@ public static class Roles30
         return ru ? "нет" : "none";
     }
 
-    // ---------------------------------------------------------------- Способности питомца
     public static bool Pet(PlayerControl p, RoleDef role)
     {
         bool ru = Translator.IsRu(p); byte id = p.PlayerId; var ss = ShipStatus.Instance;
@@ -282,7 +287,7 @@ public static class Roles30
                     int ago = deathTime.TryGetValue(best.victim, out var dt) ? Mathf.RoundToInt(Time.time - dt) : 0;
                     string extra;
                     if (RoleLogic.Eaten.Contains(best.victim)) extra = T(ru, "От тела почти ничего не осталось.", "Almost nothing is left of the body.");
-                    else if (RoleLogic.Painted.Remove(best.victim)) extra = T(ru, "Краска смыта — труп можно доложить.", "Paint washed off - the body can be reported.");
+                    else if (RoleLogic.Painted.Remove(best.victim)) extra = T(ru, "Краска смыта - труп можно доложить.", "Paint washed off - the body can be reported.");
                     else extra = T(ru, "Следов краски нет.", "No traces of paint.");
                     Say(p, T(ru, $"Смерть наступила {ago} с назад. {extra}", $"Death occurred {ago} s ago. {extra}"));
                     return true;
@@ -339,7 +344,6 @@ public static class Roles30
         return true;
     }
 
-    // ---------------------------------------------------------------- Команда на собрании (/ab)
     public static bool UseMeeting(PlayerControl p, string[] args)
     {
         if (!RoleState.Assigned.TryGetValue(p.PlayerId, out var role)) return false;
@@ -357,13 +361,11 @@ public static class Roles30
         return false;
     }
 
-    // ---------------------------------------------------------------- Отмена убийства (вызывается из CheckMurder)
     public static bool BlockKill(PlayerControl killer, PlayerControl target)
     {
         try
         {
             if (killer == null || target == null || killer.Data == null || target.Data == null) return false;
-            // Миротворец: в зоне мира убийства невозможны
             var kp = killer.GetTruePosition();
             foreach (var kv in peace.ToList())
             {
@@ -373,11 +375,10 @@ public static class Roles30
                 if (Vector2.Distance(kp, pm.GetTruePosition()) <= G("PeaceRadius"))
                 {
                     RoleLogic.Kill(killer, target, false);
-                    Say(killer, T(Translator.IsRu(killer), "Здесь действует зона мира — убить не получилось.", "A peace zone is active here - the kill failed."));
+                    Say(killer, T(Translator.IsRu(killer), "Здесь действует зона мира - убить не получилось.", "A peace zone is active here - the kill failed."));
                     return true;
                 }
             }
-            // Заступник: гибнет вместо подопечного
             foreach (var kv in ward.ToList())
             {
                 if (kv.Value != target.PlayerId) continue;
@@ -395,7 +396,6 @@ public static class Roles30
         return false;
     }
 
-    // ---------------------------------------------------------------- Хуки
     public static void OnKill(PlayerControl killer, PlayerControl target)
     {
         try
@@ -417,7 +417,7 @@ public static class Roles30
                     var pool = Players().Where(o => o.PlayerId != w.PlayerId && o.PlayerId != killer.PlayerId && o.PlayerId != target.PlayerId).ToList();
                     if (pool.Count > 0) named = pool[rng.Next(pool.Count)];
                 }
-                Say(w, T(Translator.IsRu(w), $"Ты видел убийство! Убийца — {named.Data.PlayerName}.", $"You saw a kill! The killer is {named.Data.PlayerName}."));
+                Say(w, T(Translator.IsRu(w), $"Ты видел убийство! Убийца - {named.Data.PlayerName}.", $"You saw a kill! The killer is {named.Data.PlayerName}."));
             }
             if (RoleLogic.Has(target, "Avenger")) { avenge.Add((killer.PlayerId, Time.time + G("AvengerDelay"))); Say(killer, T(Translator.IsRu(killer), "Ты чувствуешь, что за эту смерть придётся расплатиться…", "You feel you will pay for this death...")); }
             if (RoleLogic.Has(killer, "Returner") && home.TryGetValue(killer.PlayerId, out var h))
@@ -428,11 +428,9 @@ public static class Roles30
 
     public static void OnMeeting()
     {
-        // чистим всё, что живёт только до собрания
         posts.Clear(); mines.Clear(); ward.Clear(); peace.Clear(); home.Clear(); tpQueue.Clear(); freezes.Clear(); bodies.Clear();
     }
 
-    // ---------------------------------------------------------------- Тик (мины, посты, заморозка, пассивные роли)
     public static void Tick()
     {
         if (!Utils.AmHost || Time.time < nextTick) return;
@@ -443,11 +441,9 @@ public static class Roles30
             float now = Time.time;
             var players = Players();
 
-            // отложенные телепорты (Возвращенец)
             for (int i = tpQueue.Count - 1; i >= 0; i--)
                 if (now >= tpQueue[i].at) { var t = Utils.GetPlayer(tpQueue[i].id); if (Alive(t)) Commands.Tp(t, tpQueue[i].pos); tpQueue.RemoveAt(i); }
 
-            // Мститель: расплата убийцы
             for (int i = avenge.Count - 1; i >= 0; i--)
                 if (now >= avenge[i].at)
                 {
@@ -455,7 +451,6 @@ public static class Roles30
                     if (Alive(k)) { Say(k, T(Translator.IsRu(k), "Месть настигла тебя.", "Revenge has caught up with you.")); RoleLogic.Kill(k, k, true); }
                 }
 
-            // мины
             for (int i = mines.Count - 1; i >= 0; i--)
             {
                 var m = mines[i]; var owner = Utils.GetPlayer(m.owner);
@@ -476,7 +471,6 @@ public static class Roles30
                 }
             }
 
-            // капканы
             for (int i = traps.Count - 1; i >= 0; i--)
             {
                 var tr = traps[i]; var owner = Utils.GetPlayer(tr.owner);
@@ -489,7 +483,6 @@ public static class Roles30
                 Say(v, T(Translator.IsRu(v), "Ты попал в капкан!", "You are caught in a trap!"));
             }
 
-            // посты Часового
             for (int i = posts.Count - 1; i >= 0; i--)
             {
                 var po = posts[i]; var owner = Utils.GetPlayer(po.owner);
@@ -500,7 +493,6 @@ public static class Roles30
                 Say(owner, T(Translator.IsRu(owner), $"Пост сработал: {who.Data.PlayerName} прошёл у поста ({Room(po.pos, true)}).", $"Post triggered: {who.Data.PlayerName} passed ({Room(po.pos, false)})."));
             }
 
-            // заморозка Гипнотизёра
             for (int i = freezes.Count - 1; i >= 0; i--)
             {
                 var f = freezes[i]; var t = Utils.GetPlayer(f.Id);
@@ -508,7 +500,6 @@ public static class Roles30
                 if (now >= f.NextTp && Vector2.Distance(t.GetTruePosition(), f.Pos) > 0.15f) { Commands.Tp(t, f.Pos); f.NextTp = now + 0.4f; }
             }
 
-            // пассивные роли
             foreach (var kv in RoleState.Assigned.ToList())
             {
                 var p = Utils.GetPlayer(kv.Key);

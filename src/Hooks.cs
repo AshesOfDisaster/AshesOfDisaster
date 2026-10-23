@@ -5,9 +5,6 @@ using HarmonyLib;
 
 namespace AshesOfDisaster;
 
-/// Устойчивая установка патчей. Раньше один неудачный патч (метод, которого нет в этой версии игры)
-/// обрывал PatchAll: остальные патчи не ставились, и ломались команды, меню и способности ролей.
-/// Теперь каждый класс патчится отдельно, а причина сбоя пишется в LogOutput.log.
 public static class ModHooks
 {
     public static bool Exists(Type t, string method)
@@ -41,9 +38,6 @@ public static class ModHooks
     }
 }
 
-/// Питомец = кнопка способности. В разных версиях игры погладивание приходит разными путями,
-/// поэтому хуки ставятся по именам методов во время работы: чего нет в игре — пропускается (и пишется в лог),
-/// а сборка от этого не зависит.
 public static class PetHooks
 {
     static byte petCall = 255;
@@ -53,7 +47,6 @@ public static class PetHooks
         try { petCall = (byte)Convert.ToInt32(Enum.Parse(typeof(RpcCalls), "Pet")); }
         catch { Plugin.Logger.LogWarning("RpcCalls.Pet not found in this game version: pets of other players will not be detected"); }
 
-        // Диагностика: какие методы про питомцев есть в этой версии игры
         try
         {
             const BindingFlags all = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
@@ -64,10 +57,10 @@ public static class PetHooks
         }
         catch (Exception e) { Plugin.Logger.LogWarning("Pet scan: " + e.Message); }
 
-        Hook(h, typeof(PlayerControl), "TryPet", nameof(LocalPet));          // свой питомец (хост)
-        Hook(h, typeof(PlayerControl), "HandleRpc", nameof(RpcControl));     // питомец другого игрока приходит как RPC
-        Hook(h, typeof(PlayerPhysics), "HandleRpc", nameof(RpcPhysics));     // запасной путь
-        Hook(h, typeof(PlayerPhysics), "PetPet", nameof(PhysicsPet));        // если такие методы есть в этой версии
+        Hook(h, typeof(PlayerControl), "TryPet", nameof(LocalPet));
+        Hook(h, typeof(PlayerControl), "HandleRpc", nameof(RpcControl));
+        Hook(h, typeof(PlayerPhysics), "HandleRpc", nameof(RpcPhysics));
+        Hook(h, typeof(PlayerPhysics), "PetPet", nameof(PhysicsPet));
         Hook(h, typeof(PlayerPhysics), "CoPet", nameof(PhysicsPet));
     }
 

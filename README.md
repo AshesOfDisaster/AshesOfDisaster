@@ -1,116 +1,70 @@
-<div align="center">
+# Ashes of Disaster
 
-# 🔥 Ashes of Disaster
+Хост-мод с ролями для Among Us (host-only roles mod)
 
-**Host-only roles mod for Among Us** · **Хост-мод с ролями для Among Us**
+Ставить нужно только хосту остальные заходят с обычной игрой и всё считает хост
 
-![version](https://img.shields.io/badge/version-0.1.93-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/AI%20made-45%25-8a2be2)
+## Что есть
+- 76 ролей: 25 мирных 25 предателей и 26 нейтралов (описания в docs/ROLES.md или командой /r роль прямо в игре)
+- меню настроек в лобби с цветными вкладками
+- команды в чате работают и у игроков без мода
+- русский и английский (берётся из языка игры)
+- защита хоста от киков и бан-лист
+- ящики снабжения: в случайной комнате появляется ящик и кто первый дойдёт получает случайный эффект
+- мини-игры в лобби: /guess /roll /quiz /a /rps /games /top
 
-[English](#english) · [Русский](#русский) · [Discord](#discord)
+## Команды
+- /m - своя роль
+- /r - список ролей
+- /r роль - описание роли
+- /h - помощь
+- /id - айди игроков
+- /lang ru|en - язык ответов
 
-</div>
+## Установка
+1. Поставь BepInEx 6 IL2CPP под свою версию игры https://builds.bepinex.dev/projects/bepinex_be
+2. Скачай AshesOfDisaster.dll из Releases или собери сам
+3. Закинь dll в Among Us/BepInEx/plugins
+4. Запусти игру и создай лобби
 
-> 🤖 **AI disclosure / Сделано с помощью ИИ.** About **45%** of this mod was made by AI (Claude by Anthropic); the rest was made, directed and tested by its human authors. / Около **45%** мода сделано ИИ (Claude от Anthropic), остальное сделано, направлено и протестировано авторами-людьми.
+Если лезут конфликты убери старые хост-моды и AUnlocker
 
----
+## Сборка
+Нужны BepInEx 6 (запусти игру один раз) Python 3 и .NET SDK 8
+Дважды кликни Run all.bat или запусти python run_all.py - скрипт сам найдёт игру соберёт мод и положит dll в BepInEx/plugins
+Если сборка упала смотри build_errors.txt и build_log.txt
 
 ## English
+Host-only roles mod for Among Us so only the host needs it
+76 roles (25 crew 25 impostors 26 neutrals) full list in docs/ROLES.md or /r in game
+Install: BepInEx 6 IL2CPP then put AshesOfDisaster.dll into Among Us/BepInEx/plugins
+Build: run Run all.bat (needs Python 3 and .NET SDK 8)
+Commands are listed above
 
-Only the **host** needs the mod — other players join with a normal game and the host handles everything.
+## Античит и блокировка
+Античит включается в ноутбуке (настройки лобби - вкладка Система) он ловит чужие и подделанные RPC и пишет хосту кто это и что он делает
+Меню игроков открывается на F8: у каждого игрока там кнопки Жалоба и Блок (Блок кикает и вносит в бан-лист)
+Вебхук для жалоб впиши в BepInEx/config в строке DiscordWebhook секции Moderation
+Команды для хоста: /block ID /report ID /ac
 
-### Features
-- 🎭 Custom roles in three groups: **Crew**, **Impostors**, **Neutrals**
-- ⚙️ In-lobby settings menu with colored tabs (System, Game, Crew, Impostors, Neutrals)
-- 💬 Chat commands that work for players **without** the mod
-- 🌍 Russian and English, picked from the game language
-- 🛡️ Host-side protections against kicks, performance optimizations (caching, frame limit)
+## Режимы и мини-игры
+Перки: каждому игроку в начале игры выпадает довесок Везунчик (щит) Зоркий (узнаёшь одного не предателя) или Шустрый (раз за игру сброс перезарядок командой /perk)
+Охота за головами: у каждого тайная цель и если она погибла к собранию ты получаешь щит и новую цель (команда /bounty)
+События раунда: раз в несколько минут щит случайному игроку или сброс перезарядок у всех или тревога с числом живых предателей
+В лобби есть мини-игры /guess /roll /quiz /rps /coin /slots и список очков /top
+Всё включается и выключается в ноутбуке во вкладке Система в группе Режимы
 
-### Roles (75)
-**Crew — 25:** **Peasant** (Крестьянин), **Builder** (Строитель), **Psychologist** (Психолог), **Foreman** (Прораб), **Logger** (Логер), **Plumber** (Сантехник), **Dowser** (Лозоходец), **Navigator** (Штурман), **Sentry** (Часовой), **Statistician** (Статистик), **Intercessor** (Заступник), **Peacemaker** (Миротворец), **Eyewitness** (Очевидец), **Forensic** (Криминалист), **Watcher** (Наблюдатель), **Radioman** (Радист), **Companion** (Спутник), **Seismograph** (Сейсмограф), **Tracker** (Следопыт), **Accountant** (Бухгалтер), **Beacon** (Маяк), **Sapper** (Сапёр), **Herald** (Глашатай), **Coach** (Тренер), **Telegraphist** (Телеграфист)
-
-**Impostors — 25:** **Welder** (Сварщик), **Twin** (Близнец), **Shroomer** (Грибник), **Hound** (Ищейка), **Painter** (Маляр), **Spider** (Паук), **Minelayer** (Минёр), **Eclipser** (Затмитель), **Returner** (Возвращенец), **Lurer** (Приманщик), **Trapper** (Капканщик), **Banisher** (Выселитель), **Hush** (Беззвучный), **Bomber** (Подрывник), **Forger** (Фальсификатор), **Scatterer** (Разгонщик), **Spy** (Шпион), **Spotter** (Наводчик), **Fugitive** (Беглец), **Overseer** (Надзиратель), **Gravedigger** (Могильщик), **Meltdown** (Расплав), **Appraiser** (Оценщик), **Silencer** (Молчун), **Distracter** (Отвлекатель)
-
-**Neutrals — 25:** **Smoker** (Курильщик), **Pinkman** (Пинкман), **Prankster** (Шутник), **Crow** (Ворон), **Defector** (Перебежчик), **Reflector** (Отражатель), **Cloud** (Облако), **Vigilante** (Виджилант), **Avenger** (Мститель), **Hypnotist** (Гипнотизёр), **Clockmaker** (Часовщик), **Collector** (Коллекционер), **Whirlwind** (Вихрь), **Timestop** (Стоп-кадр), **Oracle** (Прорицатель), **Meteor** (Метеорит), **Siren** (Сирена), **Insider** (Знаток), **Broker** (Брокер), **Portalist** (Портальщик), **Photographer** (Фотограф), **Boomerang** (Бумеранг), **Chronicler** (Летописец), **Sorcerer** (Колдун), **Rescuer** (Спасатель)
-
-Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
-
-### Extras (host-side, no mod needed for others)
-- **Supply crates** (lobby menu → Game): a crate appears in a random room, the first player to reach it gets a random effect (shield, radar, teleport, swap places, alarm).
-- **Lobby mini-games** (on by default): `/guess`, `/roll`, `/quiz` + `/a`, `/rps`, `/games`, `/top`.
-
-### Commands
-| Command | Description |
-|---|---|
-| `/m` | Show your own role |
-| `/r` | List all roles by group (`/r 1` crew, `/r 2` impostors, `/r 3` neutrals) |
-| `/r <role>` | Role description |
-| `/h` | Help (`/h <command>` for details) |
-| `/id` | Player IDs |
-| `/lang ru\|en` | Reply language |
-
-### Install
-1. Install [BepInEx (IL2CPP, 6.x)](https://builds.bepinex.dev/projects/bepinex_be) for your Among Us version.
-2. Download `AshesOfDisaster.dll` from [Releases](../../releases), or build it yourself from source (see *Build from source*).
-3. Put it into `Among Us/BepInEx/plugins/`.
-4. Start the game, create a lobby — only you need the mod.
-
-> Remove other overlapping mods (e.g. old host mods, AUnlocker) if you see conflicts.
-
-### Build from source
-Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install BepInEx 6, run the game once, then double-click **`Run all.bat`** (or `python run_all.py`) — the script finds the game, builds the mod and puts `AshesOfDisaster.dll` into `BepInEx/plugins`. Needs Python 3 and .NET SDK 8. More notes (Russian): [docs/NOTES.ru.md](docs/NOTES.ru.md).
-
----
-
-## Русский
-
-Мод нужен **только хосту** — остальные заходят с обычной игрой, всё обрабатывает хост.
-
-### Возможности
-- 🎭 Свои роли в трёх группах: **мирные**, **предатели**, **нейтралы**
-- ⚙️ Меню настроек в лобби с цветными вкладками (Система, Игра, Мирные, Предатели, Нейтралы)
-- 💬 Команды в чате, работающие и у игроков **без** мода
-- 🌍 Русский и английский, язык берётся из языка игры
-- 🛡️ Защита хоста от киков и оптимизации (кэши, лимит кадров)
-
-### Роли (75)
-**Мирные — 25:** **Крестьянин** (Peasant), **Строитель** (Builder), **Психолог** (Psychologist), **Прораб** (Foreman), **Логер** (Logger), **Сантехник** (Plumber), **Лозоходец** (Dowser), **Штурман** (Navigator), **Часовой** (Sentry), **Статистик** (Statistician), **Заступник** (Intercessor), **Миротворец** (Peacemaker), **Очевидец** (Eyewitness), **Криминалист** (Forensic), **Наблюдатель** (Watcher), **Радист** (Radioman), **Спутник** (Companion), **Сейсмограф** (Seismograph), **Следопыт** (Tracker), **Бухгалтер** (Accountant), **Маяк** (Beacon), **Сапёр** (Sapper), **Глашатай** (Herald), **Тренер** (Coach), **Телеграфист** (Telegraphist)
-
-**Предатели — 25:** **Сварщик** (Welder), **Близнец** (Twin), **Грибник** (Shroomer), **Ищейка** (Hound), **Маляр** (Painter), **Паук** (Spider), **Минёр** (Minelayer), **Затмитель** (Eclipser), **Возвращенец** (Returner), **Приманщик** (Lurer), **Капканщик** (Trapper), **Выселитель** (Banisher), **Беззвучный** (Hush), **Подрывник** (Bomber), **Фальсификатор** (Forger), **Разгонщик** (Scatterer), **Шпион** (Spy), **Наводчик** (Spotter), **Беглец** (Fugitive), **Надзиратель** (Overseer), **Могильщик** (Gravedigger), **Расплав** (Meltdown), **Оценщик** (Appraiser), **Молчун** (Silencer), **Отвлекатель** (Distracter)
-
-**Нейтралы — 25:** **Курильщик** (Smoker), **Пинкман** (Pinkman), **Шутник** (Prankster), **Ворон** (Crow), **Перебежчик** (Defector), **Отражатель** (Reflector), **Облако** (Cloud), **Виджилант** (Vigilante), **Мститель** (Avenger), **Гипнотизёр** (Hypnotist), **Часовщик** (Clockmaker), **Коллекционер** (Collector), **Вихрь** (Whirlwind), **Стоп-кадр** (Timestop), **Прорицатель** (Oracle), **Метеорит** (Meteor), **Сирена** (Siren), **Знаток** (Insider), **Брокер** (Broker), **Портальщик** (Portalist), **Фотограф** (Photographer), **Бумеранг** (Boomerang), **Летописец** (Chronicler), **Колдун** (Sorcerer), **Спасатель** (Rescuer)
-
-Полные описания: [docs/ROLES.md](docs/ROLES.md) или `/r <роль>` в игре.
-
-### Дополнительно (на стороне хоста, мод у остальных не нужен)
-- **Ящики снабжения** (меню лобби → Игра): в случайной комнате появляется ящик, первый подошедший получает случайный эффект (щит, радар, телепорт, обмен местами, сигнализация).
-- **Мини-игры в лобби** (включены по умолчанию): `/guess`, `/roll`, `/quiz` и `/a`, `/rps`, `/games`, `/top`.
-
-### Команды
-`/m` — своя роль · `/r` — список ролей (`/r 1` мирные, `/r 2` предатели, `/r 3` нейтралы) · `/r <роль>` — описание · `/h` — помощь · `/id` — ID игроков · `/lang ru|en` — язык ответов.
-
-### Установка
-1. Установите [BepInEx (IL2CPP, 6.x)](https://builds.bepinex.dev/projects/bepinex_be) под вашу версию Among Us.
-2. Скачайте `AshesOfDisaster.dll` в [Releases](../../releases) или соберите сами из исходников (см. «Сборка из исходников»).
-3. Положите в `Among Us/BepInEx/plugins/`.
-4. Запустите игру и создайте лобби — мод нужен только вам.
-
-> При конфликтах уберите другие похожие моды (старые хост-моды, AUnlocker).
-
-### Сборка из исходников
-Исходный код — в [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Установите BepInEx 6, один раз запустите игру и дважды кликните **`Run all.bat`** (или `python run_all.py`): скрипт найдёт игру, соберёт мод и положит `AshesOfDisaster.dll` в `BepInEx/plugins`. Нужны Python 3 и .NET SDK 8. Подробности: [docs/NOTES.ru.md](docs/NOTES.ru.md).
-
----
-
-## Credits / Авторы
-- **niko** — author / автор
-- **Акакиш (Akakish)** — co-author / соавтор
-- **Claude (Anthropic)** — AI assistant, about 45% of the mod / ИИ-помощник, около 45% мода
+## Авторы
+niko и Акакиш (Akakish)
+Около 45% мода сделано ИИ (Claude от Anthropic) остальное сделано направлено и протестировано авторами
+About 45% of this mod was made by AI (Claude by Anthropic) the rest by its human authors
 
 ## Discord
-Join the community: https://discord.gg/CCB2rg3CHz — bug reports, suggestions, lobbies. / Баг-репорты, идеи, поиск игр.
+https://discord.gg/CCB2rg3CHz - баги идеи поиск игр
 
-## License / Лицензия
-GPL-3.0 — see [LICENSE](LICENSE). Copyright (C) 2026 niko, Акакиш. / Лицензия GPL-3.0, см. [LICENSE](LICENSE).
+## Лицензия
+GPL-3.0 смотри LICENSE
 
-## Disclaimer
-Unofficial fan project, not affiliated with or endorsed by Innersloth. Among Us is a trademark of Innersloth LLC. Use at your own risk; modded hosts can be flagged by anti-cheat on official servers.
+## Важно
+Неофициальный фан-проект и к Innersloth отношения не имеет Among Us - торговая марка Innersloth LLC
+Пользуйся на свой риск: хоста с модом на официальных серверах могут забанить

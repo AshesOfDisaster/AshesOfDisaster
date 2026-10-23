@@ -8,33 +8,25 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-/// Распределение ролей и способности. Всё считает хост; у игроков мод не нужен.
-///
-/// Ограничения серверного античита (выяснено на практике), поэтому здесь ТОЛЬКО то, что сервер считает нормальным:
-///  • чат-сообщения можно слать лишь в лобби и на собрании — все секретные сообщения доходят на собраниях;
-///  • лишние RpcSetRole / Exiled / «чужие» роли на клиентах — кик «Hacking», этого нет;
-///  • кнопка способности — питомец (игрок гладит питомца, хост получает это событие).
 public static class RoleLogic
 {
     static readonly System.Random rng = new();
 
-    public static readonly HashSet<byte> Informed = new();          // получили полное описание на собрании
-    /// Нейтралы, которым сервер выдаёт ванильную роль предателя (иначе их убийство = кик хоста)
-    public static readonly HashSet<string> RealImpNeutrals = new() { "Vigilante", "Cloud", "Smoker", "Meteor" };
-    public static readonly HashSet<byte> ShieldArmed = new();       // у Крестьянина защита готова
-    public static readonly HashSet<byte> ShieldUsed = new();        // уже использована
-    public static readonly Dictionary<byte, float> Painted = new(); // PlayerId трупа -> до какого времени закрашен
-    public static readonly HashSet<byte> Eaten = new();             // «съеденные» пауком трупы: доложить нельзя до конца игры
-    public static readonly HashSet<byte> VigUnlocked = new();       // убийство Виджиланта открыто
+    public static readonly HashSet<byte> Informed = new();
+    public static readonly HashSet<string> RealImpNeutrals = new() { "Vigilante", "Cloud", "Smoker", "Meteor", "Joker" };
+    public static readonly HashSet<byte> ShieldArmed = new();
+    public static readonly HashSet<byte> ShieldUsed = new();
+    public static readonly Dictionary<byte, float> Painted = new();
+    public static readonly HashSet<byte> Eaten = new();
+    public static readonly HashSet<byte> VigUnlocked = new();
     public static readonly Dictionary<byte, int> VigPenalty = new();
     public static readonly Dictionary<byte, float> VigLastKill = new();
     static readonly Dictionary<byte, float> petLast = new();
-    static readonly Queue<(byte id, string src, float at)> pendingAbility = new();      // способности выполняются в Tick, а не внутри обработчика RPC питомца (иначе кик «Hacking»)
-    public static float VigStart;       // момент раздачи ролей: от него отсчитывается открытие убийства Виджиланта
+    static readonly Queue<(byte id, string src, float at)> pendingAbility = new();
+    public static float VigStart;
     static bool VigReady(byte id, int total, int done)
         => VigWait(id) <= 0;
 
-    /// Сколько осталось до открытия убийства: «N с»
     static string VigLeft(PlayerControl p, bool ru) => $"{VigWait(p.PlayerId)} {(ru ? "с" : "s")}";
 
     static int VigWait(byte id) => Math.Max(0, (int)Math.Ceiling(Opts.VigilanteUnlockTime.Value - (Time.time - VigStart)));
@@ -45,7 +37,6 @@ public static class RoleLogic
     static readonly Dictionary<byte, float> BuilderLast = new();
     static int BuildWait(byte id) => BuilderLast.TryGetValue(id, out var t) ? Math.Max(0, (int)Math.Ceiling(Opts.BuilderCooldown.Value - (Time.time - t))) : 0;
 
-    /// Строитель: питомец закрывает ближайшую дверь (обычное закрытие дверей игры — видят и слышат все, она сама откроется)
     public static void PlaceWall(PlayerControl b)
     {
         bool ru = Translator.IsRu(b);
@@ -68,8 +59,6 @@ public static class RoleLogic
         Hint(b, ru ? "Дверь закрыта." : "Door closed.");
     }
 
-    // ---------------------------------------------------------------- Облако (нейтрал)
-
     public class Cloud { public Vector2 Pos; public byte Owner; public bool Storm; }
     static void RemoveCloud(Cloud c) { Clouds.Remove(c); }
     public static readonly List<Cloud> Clouds = new();
@@ -89,7 +78,7 @@ public static class RoleLogic
         Clouds.Add(newCloud);
         Plugin.Logger.LogInfo($"Cloud placed by {p.Data.PlayerName} at ({pos.x:F1},{pos.y:F1}) storm={storm}");
         int n = Clouds.Count(cl0 => cl0.Owner == p.PlayerId);
-        if (storm) Utils.SendSecret(p, ru ? $"ГРОЗА! Это облако ({n}/{Opts.CloudMax.Value}) — гроза: кто наступит, погибнет." : $"STORM! This cloud ({n}/{Opts.CloudMax.Value}) is a thunderstorm: whoever steps on it dies.");
+        if (storm) Utils.SendSecret(p, ru ? $"ГРОЗА! Это облако ({n}/{Opts.CloudMax.Value}) - гроза: кто наступит, погибнет." : $"STORM! This cloud ({n}/{Opts.CloudMax.Value}) is a thunderstorm: whoever steps on it dies.");
         else Hint(p, ru ? $"Облако оставлено ({n}/{Opts.CloudMax.Value})." : "Cloud placed.");
     }
 
@@ -102,7 +91,6 @@ public static class RoleLogic
         return SystemTypes.Reactor;
     }
 
-    /// Адресный RPC системы: у получателя экран мигает как при саботаже реактора . Остальные игроки ничего не видят.
     static void SendSystem(PlayerControl to, SystemTypes sys, int amount)
     {
         var w = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, Hazel.SendOption.Reliable, to.OwnerId);
@@ -126,7 +114,6 @@ public static class RoleLogic
         flashes.Add((owner, Time.time + Opts.CloudFlash.Value, sys));
     }
 
-    /// Мигание экрана у одного игрока на заданное число секунд (как у владельца облака)
     public static void FlashPlayer(PlayerControl p, float seconds)
     {
         try
@@ -139,26 +126,24 @@ public static class RoleLogic
         catch (Exception e) { Plugin.Logger.LogWarning("FlashPlayer: " + e.Message); }
     }
 
-    /// Гроза: наступивший погибает (через Kill: self-kill жертвы, работает без предателей).
     static bool StormHit(PlayerControl owner, PlayerControl victim)
     {
         bool ru = Translator.IsRu(owner);
         Plugin.Logger.LogInfo($"Storm triggered: owner={owner.Data.PlayerName} victim={victim.Data.PlayerName}");
-        if (ShieldArmed.Remove(victim.PlayerId))      // защита Крестьянина отменяет грозу
+        if (ShieldArmed.Remove(victim.PlayerId))
         {
             ShieldUsed.Add(victim.PlayerId);
             Utils.SendSecret(victim, ru ? "Защита сработала: гроза не тронула тебя!" : "Shield triggered: the storm missed you!");
-            Utils.SendSecret(owner, ru ? $"Гроза не убила {victim.Data.PlayerName} — сработала защита." : $"The storm did not kill {victim.Data.PlayerName}: a shield triggered.");
+            Utils.SendSecret(owner, ru ? $"Гроза не убила {victim.Data.PlayerName} - сработала защита." : $"The storm did not kill {victim.Data.PlayerName}: a shield triggered.");
             return true;
         }
-        if (!Kill(owner, victim, true)) return false;      // убийство не ушло (ошибка) — гроза остаётся на месте
+        if (!Kill(owner, victim, true)) return false;
         Utils.SendSecret(owner, ru ? $"Гроза убила: {victim.Data.PlayerName}" : $"The storm killed: {victim.Data.PlayerName}");
         return true;
     }
 
     static void CloudTick()
     {
-        // конец мигания — снять «саботаж» у получателя
         for (int i = flashes.Count - 1; i >= 0; i--)
         {
             var f = flashes[i];
@@ -197,25 +182,22 @@ public static class RoleLogic
         }
     }
 
-
     public static float StartRevealAt = -1f;
-    public static float AssignAt = -1f;     // роли раздаём через пару секунд после ванильных: к этому моменту у всех уже есть своя ванильная роль
+    public static float AssignAt = -1f;
     static float lastTick, lastFast;
 
-    // по имени роли, чтобы сборка не зависела от набора ролей в конкретной версии игры
     public static bool IsImpRole(RoleTypes r)
     {
         string s = r.ToString();
         return s == "Impostor" || s == "Shapeshifter" || s == "Phantom" || s == "Viper" || s == "ImpostorGhost";
     }
 
-    /// Короткая подсказка: хосту — всплывашка, остальным — в чат, если он сейчас открыт. Не копится до собрания.
     public static void Hint(PlayerControl to, string text) => Utils.SendSecret(to, text, 1, false);
 
     public static void Reset()
     {
         RoleState.Assigned.Clear(); ForcedImp.Clear(); Demoted.Clear(); Informed.Clear(); ShieldArmed.Clear(); ShieldUsed.Clear(); Painted.Clear(); Eaten.Clear();
-        Psy.Reset(); Welder.Reset(); NR.Reset(); Smoker.Reset(); Pinkman.Reset(); Plumber.Reset(); Shroomer.Reset(); VigUnlocked.Clear(); VigPenalty.Clear(); VigLastKill.Clear(); petLast.Clear(); pendingAbility.Clear(); Webs.Clear(); BuilderLast.Clear(); Clouds.Clear(); flashes.Clear(); lastPanic.Clear();
+        Psy.Reset(); Welder.Reset(); NR.Reset(); Smoker.Reset(); Joker.Reset(); Pinkman.Reset(); Plumber.Reset(); Shroomer.Reset(); VigUnlocked.Clear(); VigPenalty.Clear(); VigLastKill.Clear(); petLast.Clear(); pendingAbility.Clear(); Webs.Clear(); BuilderLast.Clear(); Clouds.Clear(); flashes.Clear(); lastPanic.Clear();
         StartRevealAt = -1f;
         Utils.ClearDeferred();
         deathNotices.Clear(); NameInfo.ClearNotes();
@@ -232,12 +214,8 @@ public static class RoleLogic
         return l;
     }
 
-    /// Вызывается хостом сразу после ванильного распределения ролей.
-    /// Предательские роли достаются тем, кто стал предателем; мирные и нейтралы — остальным. Ванильные роли не трогаем.
-    /// Смена ванильной роли без блокировки повторной смены (обычный RpcSetRole после начала игры игнорируется): локально + прямой RPC SetRole
     public static void SetVanillaRole(PlayerControl p, RoleTypes role)
     {
-        // локальная смена роли у хоста: в разных версиях игры метод называется по-разному — ищем через reflection
         try
         {
             bool done = false;
@@ -271,19 +249,17 @@ public static class RoleLogic
 
         int initialImps = imps.Count;
         var toImp = new List<PlayerControl>(); var toCrew = new List<PlayerControl>();
-        // Роли, выданные хостом заранее (/role в лобби), — раньше случайной раздачи
         foreach (var kv in RoleState.Preset.ToList())
         {
             var pp = all.Find(x => x.PlayerId == kv.Key);
-            if (pp == null) continue;      // игрок вышел — роль пропускаем (запись остаётся до /role clear)
+            if (pp == null) continue;
             bool wantImp = kv.Value.Tab == OptTab.Impostor;
-            if (RealImpNeutrals.Contains(kv.Value.Id)) wantImp = imps.Contains(pp);      // этим ролям нужна ванильная роль предателя — мод сам выдаст её ниже
+            if (RealImpNeutrals.Contains(kv.Value.Id)) wantImp = imps.Contains(pp);
             var from = wantImp ? imps : crew;
             if (!from.Remove(pp))
             {
                 if (Opts.TeamSwap.Value)
                 {
-                    // команда ванильной роли не совпадает с ролью мода — меняем ванильную роль игрока
                     (wantImp ? crew : imps).Remove(pp);
                     (wantImp ? toImp : toCrew).Add(pp);
                     RoleState.Assigned[pp.PlayerId] = kv.Value;
@@ -312,7 +288,6 @@ public static class RoleLogic
             {
                 if (pool.Count == 0)
                 {
-                    // предателей по ванильным правилам не хватило (например, игра вдвоём): делаем предателем одного из мирных, но хотя бы один мирный остаётся
                     if (team == OptTab.Impostor && Opts.TeamSwap.Value && initialImps == 0 && toImp.Count == 0 && crew.Count >= 2)
                     {
                         var cv = crew[0]; crew.RemoveAt(0); toImp.Add(cv);
@@ -337,7 +312,6 @@ public static class RoleLogic
             try { SetVanillaRole(cp, RoleTypes.Crewmate); Demoted.Add(cp.PlayerId); Plugin.Logger.LogInfo($"Team swap: {cp.Data.PlayerName} -> vanilla Crewmate"); }
             catch (Exception e) { Plugin.Logger.LogError("TeamSwap to Crewmate: " + e.GetBaseException().Message); }
         }
-        // Виджилант для сервера — настоящий предатель (иначе его убийство = кик хоста). Мод по-прежнему считает его нейтралом.
         foreach (var kv in RoleState.Assigned.ToList())
         {
             if (!RealImpNeutrals.Contains(kv.Value.Id)) continue;
@@ -357,7 +331,6 @@ public static class RoleLogic
         return $"{r.Colored(ru)}\n{(ru ? r.DescRu : r.DescEn)}";
     }
 
-    /// Короткая сводка по роли — приходит на каждом собрании
     public static string Status(PlayerControl p, RoleDef r)
     {
         bool ru = Translator.IsRu(p);
@@ -369,15 +342,15 @@ public static class RoleLogic
                     int pen = VigPenalty.TryGetValue(id, out var v) ? v : 0;
                     int max = Opts.VigilanteMaxPenalty.Value;
                     return ru
-                        ? $"{r.Colored(true)}: убийство через питомца — {(VigUnlocked.Contains(id) ? "открыто" : $"осталось {VigLeft(p, true)}")}. Штрафы {pen}/{max}."
-                        : $"{r.Colored(false)}: pet kill — {(VigUnlocked.Contains(id) ? "unlocked" : $"left: {VigLeft(p, false)}")}. Penalties {pen}/{max}.";
+                        ? $"{r.Colored(true)}: убийство через питомца - {(VigUnlocked.Contains(id) ? "открыто" : $"осталось {VigLeft(p, true)}")}. Штрафы {pen}/{max}."
+                        : $"{r.Colored(false)}: pet kill - {(VigUnlocked.Contains(id) ? "unlocked" : $"left: {VigLeft(p, false)}")}. Penalties {pen}/{max}.";
                 }
             case "Peasant":
                 {
                     string st = ShieldUsed.Contains(id) ? (ru ? "использована" : "used")
                               : ShieldArmed.Contains(id) ? (ru ? "готова" : "ready")
                               : (ru ? $"нужно {Opts.PeasantTasks.Value} заданий" : $"needs {Opts.PeasantTasks.Value} tasks");
-                    return ru ? $"{r.Colored(true)}: защита — {st}." : $"{r.Colored(false)}: shield — {st}.";
+                    return ru ? $"{r.Colored(true)}: защита - {st}." : $"{r.Colored(false)}: shield - {st}.";
                 }
             case "Cloud":
                 return ru ? $"{r.Colored(true)}: питомец оставляет невидимое облако; наступивший вызовет у тебя панику. Облаков {Clouds.Count(cl0 => cl0.Owner == id)}/{Opts.CloudMax.Value}." : $"{r.Colored(false)}: your pet leaves an invisible cloud; whoever steps on it triggers a panic. Clouds {Clouds.Count(cl0 => cl0.Owner == id)}/{Opts.CloudMax.Value}.";
@@ -395,12 +368,9 @@ public static class RoleLogic
         return NR.Status(p, r);
     }
 
-    public static readonly HashSet<byte> Demoted = new();      // предатели по ванильной раздаче, которых мод сделал мирными
-    public static readonly HashSet<byte> ForcedImp = new();      // кому мод выдал ванильную роль Impostor (Data.RoleType у хоста может не успеть обновиться)
+    public static readonly HashSet<byte> Demoted = new();
+    public static readonly HashSet<byte> ForcedImp = new();
 
-    /// Убийство от способности. Сервер принимает MurderPlayer только от настоящего предателя: «самоубийство жертвы»
-    /// (RpcMurderPlayer(target, target) от не-предателя) по логам тоже даёт кик Hacking, поэтому такого пути больше нет.
-    /// Не-предатель убить не может: ничего не отправляется (нет кика), игроку приходит подсказка.
     public static bool Kill(PlayerControl killer, PlayerControl target, bool succeeded)
     {
         if (killer == null || target == null || killer.Data == null || target.Data == null) return false;
@@ -426,7 +396,6 @@ public static class RoleLogic
         switch (n % 10) { case 1: return "задание"; case 2: case 3: case 4: return "задания"; default: return "заданий"; }
     }
 
-    /// Короткая строка статуса для ника игрока без мода: что осталось сделать и что сейчас доступно.
     public static string NameStatus(PlayerControl p, RoleDef r, bool ru)
     {
         int total = 0, done = 0;
@@ -436,10 +405,10 @@ public static class RoleLogic
         {
             case "Peasant":
                 {
-                    if (ShieldUsed.Contains(id)) return ru ? "щит использован" : "shield used";
-                    if (ShieldArmed.Contains(id)) return ru ? "<color=#7CFC00>щит готов</color>" : "<color=#7CFC00>shield ready</color>";
+                    if (ShieldUsed.Contains(id)) return ru ? "щит уже использован" : "shield already used";
+                    if (ShieldArmed.Contains(id)) return ru ? "<color=#7CFC00>щит включён: отменит нападение</color>" : "<color=#7CFC00>shield on: cancels an attack</color>";
                     int left = Math.Max(0, Opts.PeasantTasks.Value - done);
-                    return ru ? $"до щита: {left} {TaskWord(left)}" : $"{left} task(s) until shield";
+                    return ru ? $"до щита осталось: {left} {TaskWord(left)}" : $"{left} task(s) left until the shield";
                 }
             case "Vigilante":
                 {
@@ -461,21 +430,36 @@ public static class RoleLogic
                 }
             case "Cloud":
                 {
-                    // Метка облаков без кукол: список комнат, где стоят облака (⚡ — гроза). Видит только сам владелец.
                     var mine = Clouds.Where(cl0 => cl0.Owner == id).ToList();
-                    string rooms = string.Join(", ", mine.Select(cl0 => (cl0.Storm && Opts.CloudStormMarker.Value ? "<color=#FFD400>⚡</color>" : "") + Utils.RoomName(cl0.Pos, ru)));
+                    string rooms = string.Join(", ", mine.Select(cl0 => (cl0.Storm && Opts.CloudStormMarker.Value ? "<color=#FFD400></color>" : "") + Utils.RoomName(cl0.Pos, ru)));
                     return ru ? $"облаков {mine.Count}/{Opts.CloudMax.Value}" + (rooms.Length > 0 ? ": " + rooms : "") + ", питомец"
                               : $"clouds {mine.Count}/{Opts.CloudMax.Value}" + (rooms.Length > 0 ? ": " + rooms : "") + ", pet";
                 }
             case "Builder":
                 return BuildWait(id) > 0 ? (ru ? $"дверь: перезарядка {BuildWait(id)} с" : $"door cooling down {BuildWait(id)} s") : (ru ? "закрытие двери готово (питомец)" : "door closing ready (pet)");
             case "Dyer":
-                return ru ? "трупы закрашиваются" : "bodies get painted";
+                return ru ? "трупы твоих жертв закрашены" : "your victims' bodies are painted";
+            case "Joker":
+                return Joker.Short(p, ru);
         }
-        return null;
+        string live = Live(r, id, ru);
+        string hint = RoleHints.Get(r.Id, ru);
+        if (live == null) return hint;
+        return hint == null ? live : hint + "\n" + live;
     }
 
-    /// Название роли для сообщения о выброшенном: роль мода, иначе ванильная (экипаж / предатель)
+    public static string Live(RoleDef r, byte id, bool ru)
+    {
+        int cd = Math.Max(NR.CdLeft(r.Id, id), Math.Max(Roles30.CdLeft(r.Id, id), Roles75.CdLeft(r.Id, id)));
+        int left = Math.Max(Roles30.UsesLeft(r.Id, id), Roles75.UsesLeft(r.Id, id));
+        var parts = new List<string>();
+        if (left == 0) return ru ? "<color=#FF5555>использования закончились</color>" : "<color=#FF5555>no uses left</color>";
+        if (cd > 0) parts.Add(ru ? $"<color=#FFB74D>перезарядка {cd} с</color>" : $"<color=#FFB74D>cooldown {cd} s</color>");
+        else if (cd == 0) parts.Add(ru ? "<color=#7CFC00>готово</color>" : "<color=#7CFC00>ready</color>");
+        if (left > 0) parts.Add(ru ? $"осталось {left}" : $"{left} left");
+        return parts.Count == 0 ? null : string.Join(", ", parts);
+    }
+
     public static string RoleLabel(byte playerId, RoleTypes vanilla, bool ru)
     {
         if (RoleState.Assigned.TryGetValue(playerId, out var r)) return ru ? r.Ru : r.En;
@@ -486,20 +470,16 @@ public static class RoleLogic
         => k != null && t != null && k.Data != null && t.Data != null && !k.Data.IsDead && !t.Data.IsDead && k != t
            && MeetingHud.Instance == null;
 
-    // ---------------------------------------------------------------- питомец = кнопка способности
-
     public static void OnPet(PlayerControl p, string src = "")
     {
         if (!Utils.AmHost || p == null || p.Data == null) return;
-        if (AmongUsClient.Instance == null || AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Started) return;   // в лобби питомца гладят просто так
-        // одно событие приходит из нескольких перехватов — повторы в течение секунды не считаем
+        if (AmongUsClient.Instance == null || AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Started) return;
         if (petLast.TryGetValue(p.PlayerId, out var t) && Time.time - t < 1f) return;
         petLast[p.PlayerId] = Time.time;
         pendingAbility.Enqueue((p.PlayerId, src, Time.time));
         Plugin.Logger.LogInfo($"Ability queued [{src}]: {p.Data.PlayerName}");
     }
 
-    /// Способность роли: вызывается питомцем или командой /ab (хост)
     public static void UseAbility(PlayerControl p, string src)
     {
         bool has = RoleState.Assigned.TryGetValue(p.PlayerId, out var role);
@@ -522,8 +502,6 @@ public static class RoleLogic
         else if (role.Id == "Cloud") PlaceCloud(p);
         else if (p.AmOwner) Utils.Toast(ru ? "У этой роли нет активной способности (она работает сама)." : "This role has no active ability (it works passively).");
     }
-
-    // ---------------------------------------------------------------- Паук
 
     static bool CanBeTrapped(PlayerControl p)
     {
@@ -588,13 +566,11 @@ public static class RoleLogic
             {
                 var victim = Utils.GetPlayer((byte)web.Trapped);
                 if (victim == null || victim.Data == null || victim.Data.IsDead) { Webs.Remove(web); continue; }
-                // Телепорт только если жертва реально ушла от паутины и не чаще раза в 0.6 с
-                // (раньше — каждые 0.25 с без остановки, 4 RPC/с: серверный античит считает это спамом)
                 if (Vector2.Distance(victim.GetTruePosition(), web.Pos) > 0.4f && Time.time - web.LastSnap >= 0.5f)
                 {
                     web.LastSnap = Time.time;
                     Plugin.Logger.LogInfo($"RPC SnapTo: victim={victim.PlayerId} web=({web.Pos.x:F1},{web.Pos.y:F1})");
-                    Commands.Tp(victim, web.Pos);      // с повышением sequence id: иначе клиент игнорирует телепорт, пока жертва двигается
+                    Commands.Tp(victim, web.Pos);
                 }
 
                 bool rescuer = false;
@@ -614,9 +590,6 @@ public static class RoleLogic
         }
     }
 
-    // ---------------------------------------------------------------- Виджилант
-
-    /// Убийство ближайшего игрока (питомцем). Нужны: открытое убийство, прошедший кулдаун, цель рядом.
     static void VigilantePetKill(PlayerControl vig)
     {
         bool ru = Translator.IsRu(vig);
@@ -644,7 +617,7 @@ public static class RoleLogic
         bool ru = Translator.IsRu(vig);
         VigLastKill[vig.PlayerId] = Time.time;
 
-        if (ShieldArmed.Remove(target.PlayerId))      // у цели сработала защита Крестьянина
+        if (ShieldArmed.Remove(target.PlayerId))
         {
             ShieldUsed.Add(target.PlayerId);
             RoleLogic.Kill(vig, target, false);
@@ -661,16 +634,12 @@ public static class RoleLogic
         int max = Opts.VigilanteMaxPenalty.Value;
         if (pen > max)
         {
-            Utils.SendSecret(vig, ru ? $"Штрафов больше допустимого ({pen}/{max}) — ты погибаешь." : $"Too many penalties ({pen}/{max}) — you die.");
+            Utils.SendSecret(vig, ru ? $"Штрафов больше допустимого ({pen}/{max}) - ты погибаешь." : $"Too many penalties ({pen}/{max}) - you die.");
             RoleLogic.Kill(vig, vig, true);
         }
         else Utils.SendSecret(vig, ru ? $"Штраф за убийство невиновного: {pen}/{max}." : $"Penalty for killing an innocent: {pen}/{max}.");
     }
 
-    // ---------------------------------------------------------------- тик
-
-    /// Раз в кадр из ModGui.Update (только хост)
-    // Призракам: кто убил (шлётся через секунду после смерти, когда игра уже пометила игрока мёртвым)
     static readonly List<(byte victim, byte killer, float at)> deathNotices = new();
     public static void QueueDeathNotice(PlayerControl victim, PlayerControl killer)
     {
@@ -691,8 +660,7 @@ public static class RoleLogic
             string role = RoleLabel(k.PlayerId, k.Data.RoleType, ru);
             string text = ru ? $"Тебя убил: {k.Data.PlayerName} ({role}). Ты призрак: чат только для призраков."
                              : $"You were killed by {k.Data.PlayerName} ({role}). You are a ghost: chat is ghosts-only.";
-            Utils.SendSecret(v, text, 2, false);      // самой жертве (у хоста — локально)
-            // Остальным призракам — лента смертей в их чат (одним сообщением; живые его не видят)
+            Utils.SendSecret(v, text, 2, false);
             if (PlayerControl.AllPlayerControls.ToArray().Any(g => g != null && g.Data != null && g.Data.IsDead && g.PlayerId != v.PlayerId && !g.Data.Disconnected))
             {
                 bool rg = Translator.GameIsRu;
@@ -719,7 +687,7 @@ public static class RoleLogic
         if (AssignAt > 0 && Time.time >= AssignAt)
         {
             AssignAt = -1f;
-            try { Assign(); } catch (Exception e) { Plugin.Logger.LogError("Assign: " + e); }
+            try { Assign(); Extras.OnAssigned(); } catch (Exception e) { Plugin.Logger.LogError("Assign: " + e); }
         }
 
         if (StartRevealAt > 0 && Time.time >= StartRevealAt)
@@ -728,9 +696,9 @@ public static class RoleLogic
             foreach (var kv in RoleState.Assigned.ToList())
             {
                 var p = Utils.GetPlayer(kv.Key);
-                if (p == null || !p.AmOwner) continue;   // остальным роль приходит на собрании: чат вне собрания сервер считает читом
+                if (p == null || !p.AmOwner) continue;
                 bool ru = Translator.IsRu(p);
-                Utils.SendSecret(p, (ru ? "Твоя роль: " : "Your role: ") + kv.Value.Colored(ru) + (ru ? "  (/m — описание)" : "  (/m for details)"));
+                Utils.SendSecret(p, (ru ? "Твоя роль: " : "Your role: ") + kv.Value.Colored(ru) + (ru ? "  (/m - описание)" : "  (/m for details)"));
             }
         }
 
@@ -747,7 +715,6 @@ public static class RoleLogic
             int total = 0, done = 0;
             foreach (var t in p.Data.Tasks) { total++; if (t.Complete) done++; }
 
-            // Виджилант: убийство открывается после нужной доли заданий
             if (kv.Value.Id == "Vigilante" && !VigUnlocked.Contains(kv.Key)
                 && VigReady(kv.Key, total, done))
             {
@@ -756,7 +723,6 @@ public static class RoleLogic
                 Utils.SendSecret(p, Translator.IsRu(p) ? "Убийство открыто: погладь питомца рядом с целью." : "Kill unlocked: pet your pet next to a target.");
             }
 
-            // Крестьянин: после N выполненных заданий защита готова (один раз за игру)
             if (kv.Value.Id == "Peasant" && !ShieldArmed.Contains(kv.Key) && !ShieldUsed.Contains(kv.Key) && done >= Opts.PeasantTasks.Value)
             {
                 ShieldArmed.Add(kv.Key);
@@ -777,20 +743,16 @@ public static class SelectRolesPatch
     }
 }
 
-// Питомец = кнопка способности (Паук, Виджилант): хуки ставит PetHooks (Hooks.cs) по именам методов,
-// поэтому отсутствие метода в какой-то версии игры не ломает ни сборку, ни остальные патчи.
-
-// Крестьянин: готовая защита отменяет обычное убийство предателя
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
 public static class CheckMurderPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         if (!Utils.AmHost || target == null) return true;
-        if (RoleState.Assigned.TryGetValue(__instance.PlayerId, out var killerRole) && RoleLogic.RealImpNeutrals.Contains(killerRole.Id)) return false;      // Виджилант убивает только питомцем
+        if (RoleState.Assigned.TryGetValue(__instance.PlayerId, out var killerRole) && RoleLogic.RealImpNeutrals.Contains(killerRole.Id)) return false;
         if (NR.TryReflect(__instance, target)) return false;
         if (Roles30.BlockKill(__instance, target)) return false;
-        if (Smoker.InOwnSmoke(target))      // Курильщика в его собственном дыму убить нельзя
+        if (Smoker.InOwnSmoke(target))
         {
             RoleLogic.Kill(__instance, target, false);
             Utils.SendSecret(target, Translator.IsRu(target) ? "Дымовая завеса спасла тебя!" : "The smoke screen saved you!");
@@ -801,7 +763,7 @@ public static class CheckMurderPatch
             RoleLogic.ShieldUsed.Add(target.PlayerId);
             if (NR.ShieldGiver.TryGetValue(target.PlayerId, out var giverId) && Utils.GetPlayer(giverId) is PlayerControl gp)
                 RoleLogic.Hint(gp, Translator.IsRu(gp) ? $"Твой щит спас {target.Data.PlayerName}!" : $"Your shield saved {target.Data.PlayerName}!");
-            RoleLogic.Kill(__instance, target, false);      // «неудачное» убийство: убийца видит щит, кулдаун сбрасывается
+            RoleLogic.Kill(__instance, target, false);
             Utils.SendSecret(target, Translator.IsRu(target) ? "Защита сработала!" : "Shield triggered!");
             return false;
         }
@@ -809,7 +771,6 @@ public static class CheckMurderPatch
     }
 }
 
-// Маляр: труп закрашен; Паук: съеденный труп нельзя доложить
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 public static class MurderPlayerPatch
 {
@@ -847,15 +808,14 @@ public static class ReportDeadBodyPatch
         if (eaten || painted)
         {
             RoleLogic.Hint(__instance, Translator.IsRu(__instance)
-                ? (eaten ? "От тела почти ничего не осталось — доложить нельзя." : "Труп закрашен — доложить о нём пока нельзя.")
-                : (eaten ? "Nothing is left of the body — it can't be reported." : "The body is painted over — it can't be reported yet."));
+                ? (eaten ? "От тела почти ничего не осталось - доложить нельзя." : "Труп закрашен - доложить о нём пока нельзя.")
+                : (eaten ? "Nothing is left of the body - it can't be reported." : "The body is painted over - it can't be reported yet."));
             return false;
         }
         return true;
     }
 }
 
-// Роль — на первом собрании, дальше короткая сводка на каждом
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
 public static class MeetingStartPatch
 {
@@ -863,11 +823,12 @@ public static class MeetingStartPatch
     {
         if (!Utils.AmHost) return;
         MeetingIds.Add();
-        Utils.FlushDeferred();   // что копилось в раунде (чат был закрыт) — отдаём сейчас
+        Utils.FlushDeferred();
         NameInfo.OnMeetingStart();
         RoleLogic.Painted.Clear();
         Welder.OnMeeting();
         NR.OnMeeting();
+        Extras.OnMeeting();
         RoleLogic.Webs.Clear();
         RoleLogic.Clouds.Clear();
         foreach (var kv in RoleState.Assigned.ToList())
@@ -877,9 +838,8 @@ public static class MeetingStartPatch
             bool first = RoleLogic.Informed.Add(kv.Key);
             bool ru = Translator.IsRu(p);
             string st = RoleLogic.Status(p, kv.Value);
-            // автоматически — одно короткое сообщение; полное описание по команде /m (ответы на команды идут вне очереди)
             string msg = first
-                ? (ru ? "Твоя роль: " : "Your role: ") + (st ?? kv.Value.Colored(ru)) + (ru ? " /m — описание." : " /m for details.")
+                ? (ru ? "Твоя роль: " : "Your role: ") + (st ?? kv.Value.Colored(ru)) + (ru ? " /m - описание." : " /m for details.")
                 : st;
             if (!string.IsNullOrWhiteSpace(msg)) Utils.SendSecret(p, msg.Trim());
         }

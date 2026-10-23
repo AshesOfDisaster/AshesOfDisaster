@@ -6,8 +6,6 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Мини-игры в лобби (чтобы игрокам не было скучно ждать): угадай число, кубик, викторина, камень-ножницы-бумага.
-// Работает только в лобби, на стороне хоста; у остальных мод не нужен — играют командами в чате.
 public static class LobbyGames
 {
     public static BoolOpt On;
@@ -15,11 +13,8 @@ public static class LobbyGames
     static readonly Dictionary<byte, int> points = new();
     static readonly Dictionary<byte, int> streak = new();
 
-    // угадай число
     static int secret;
-    // кубик
     static byte bestId = 255; static int bestRoll; static float rollEnds;
-    // викторина
     static int quizAnswer; static string quizText; static float quizEnds;
 
     public static void Define(ConfigFile c)
@@ -41,7 +36,6 @@ public static class LobbyGames
         foreach (var p in PlayerControl.AllPlayerControls.ToArray()) if (Valid(p)) Tell(p, ru, en);
     }
 
-    /// Возвращает true, если это команда мини-игры (тогда она не уходит в чат)
     public static bool Handle(PlayerControl me, string cmd, string[] a)
     {
         if (On == null || !On.Value) return false;
@@ -50,13 +44,13 @@ public static class LobbyGames
             case "games":
             case "game":
                 if (!Utils.InLobby) { Tell(me, "Мини-игры работают только в лобби.", "Mini-games work in the lobby only."); return true; }
-                Tell(me, "Мини-игры: /guess число — угадай число 1-100; /roll — кубик 1-100; /quiz и /a ответ — викторина; /rps к|н|б — камень-ножницы-бумага; /top — очки.",
-                         "Mini-games: /guess N - guess 1-100; /roll - dice 1-100; /quiz and /a answer - quiz; /rps r|p|s - rock-paper-scissors; /top - points.");
+                Tell(me, "Мини-игры: /guess число - угадай число 1-100; /roll - кубик 1-100; /quiz и /a ответ - викторина; /rps к|н|б - камень-ножницы-бумага; /coin о|р - монетка; /slots - слоты; /top - очки.",
+                         "Mini-games: /guess N - guess 1-100; /roll - dice 1-100; /quiz and /a answer - quiz; /rps r|p|s - rock-paper-scissors; /coin h|t - coin; /slots - slot machine; /top - points.");
                 return true;
             case "top":
                 {
                     if (points.Count == 0) { Tell(me, "Очков пока нет. Играй: /games", "No points yet. Play: /games"); return true; }
-                    var rows = points.OrderByDescending(x => x.Value).Take(5).Select((x, i) => $"{i + 1}. {Nm(x.Key)} — {x.Value}");
+                    var rows = points.OrderByDescending(x => x.Value).Take(5).Select((x, i) => $"{i + 1}. {Nm(x.Key)} - {x.Value}");
                     Tell(me, "Топ лобби:\n" + string.Join("\n", rows), "Lobby top:\n" + string.Join("\n", rows));
                     return true;
                 }
@@ -65,6 +59,8 @@ public static class LobbyGames
             case "quiz": Quiz(me); return true;
             case "a": Answer(me, a); return true;
             case "rps": Rps(me, a); return true;
+            case "coin": Coin(me, a); return true;
+            case "slots": Slots(me); return true;
         }
         return false;
     }
@@ -99,7 +95,7 @@ public static class LobbyGames
         if (r > bestRoll)
         {
             bestRoll = r; bestId = me.PlayerId; rollEnds = now + 30f;
-            All($"{me.Data.PlayerName} бросил {r} — лучший бросок! Осталось 30 с, чтобы побить.", $"{me.Data.PlayerName} rolled {r} - the best roll! 30 s left to beat it.");
+            All($"{me.Data.PlayerName} бросил {r} - лучший бросок! Осталось 30 с, чтобы побить.", $"{me.Data.PlayerName} rolled {r} - the best roll! 30 s left to beat it.");
         }
         else Tell(me, $"Ты бросил {r}. Лучший: {bestRoll} ({Nm(bestId)}).", $"You rolled {r}. Best: {bestRoll} ({Nm(bestId)}).");
     }
@@ -145,7 +141,7 @@ public static class LobbyGames
         int bot = rng.Next(3);
         string[] ruN = { "камень", "ножницы", "бумага" }, enN = { "rock", "scissors", "paper" };
         if (pick == bot) { Tell(me, $"Я тоже {ruN[bot]}. Ничья.", $"I also chose {enN[bot]}. Draw."); return; }
-        bool win = (pick + 1) % 3 == bot;       // камень бьёт ножницы, ножницы бьют бумагу, бумага бьёт камень
+        bool win = (pick + 1) % 3 == bot;
         if (win)
         {
             int st = (streak.TryGetValue(me.PlayerId, out var v) ? v : 0) + 1; streak[me.PlayerId] = st;
@@ -153,6 +149,41 @@ public static class LobbyGames
             Tell(me, $"У меня {ruN[bot]}. Ты победил! +{gain} (серия {st}).", $"I chose {enN[bot]}. You win! +{gain} (streak {st}).");
         }
         else { streak[me.PlayerId] = 0; Tell(me, $"У меня {ruN[bot]}. Ты проиграл.", $"I chose {enN[bot]}. You lose."); }
+    }
+
+    static void Coin(PlayerControl me, string[] a)
+    {
+        if (LobbyOnly(me)) return;
+        int pick = -1;
+        if (a.Length > 0)
+        {
+            string s = a[0].ToLowerInvariant();
+            if (s is "о" or "орёл" or "орел" or "h" or "heads") pick = 0;
+            else if (s is "р" or "решка" or "t" or "tails") pick = 1;
+        }
+        if (pick < 0) { Tell(me, "Пиши: /coin о (орёл) или /coin р (решка)", "Type: /coin h (heads) or /coin t (tails)"); return; }
+        int flip = rng.Next(2);
+        string[] ruN = { "орёл", "решка" }, enN = { "heads", "tails" };
+        if (pick == flip) { Add(me.PlayerId, 1); Tell(me, $"Выпал {ruN[flip]}. Угадал, +1 очко.", $"It is {enN[flip]}. Right, +1 point."); }
+        else Tell(me, $"Выпал {ruN[flip]}. Не угадал.", $"It is {enN[flip]}. Wrong.");
+    }
+
+    static void Slots(PlayerControl me)
+    {
+        if (LobbyOnly(me)) return;
+        int x = rng.Next(1, 7), y = rng.Next(1, 7), z = rng.Next(1, 7);
+        string line = $"[{x}] [{y}] [{z}]";
+        if (x == y && y == z)
+        {
+            Add(me.PlayerId, 5);
+            All($"{me.Data.PlayerName} выбил {line} в слотах! +5 очков.", $"{me.Data.PlayerName} hit {line} in slots! +5 points.");
+        }
+        else if (x == y || y == z || x == z)
+        {
+            Add(me.PlayerId, 1);
+            Tell(me, line + " Пара, +1 очко.", line + " A pair, +1 point.");
+        }
+        else Tell(me, line + " Мимо.", line + " No luck.");
     }
 
     static float nextTick;

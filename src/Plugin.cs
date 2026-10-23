@@ -13,6 +13,7 @@ public class Plugin : BasePlugin
     public const string Name = "Ashes of Disaster";
     public const string Version = "0.1.93";
     public const string Creators = "niko & Акакиш";
+    public const string Discord = "discord.gg/CCB2rg3CHz";
 
     public static Plugin Instance;
     public static BepInEx.Logging.ManualLogSource Logger;
@@ -24,14 +25,13 @@ public class Plugin : BasePlugin
         Opts.Init(Config);
         Lists.Init();
 
-        // Сначала окно мода и логика (от патчей не зависят), потом патчи — по одному, ошибки уходят в лог
         ClassInjector.RegisterTypeInIl2Cpp<ModGui>();
         AddComponent<ModGui>();
 
         var harmony = new Harmony(Id);
         ModHooks.PatchAllSafe(harmony);
         PetHooks.Install(harmony);
-        NameInfo.Install(harmony);      // только ставит перехват; отправка идёт лишь при включённой настройке «Статус над ником»
+        NameInfo.Install(harmony);
         Log.LogInfo($"{Name} {Version} loaded");
     }
 }

@@ -140,7 +140,6 @@ def main():
             if " error " in line and line.strip() not in errs:
                 errs.append(line.strip())
         say("\n".join(errs[:15]) or r.stdout[-2000:])
-        # Короткий файл только с ошибками — его удобно прислать
         try:
             ver = subprocess.run([dotnet, "--version"], capture_output=True, text=True).stdout.strip()
         except OSError:

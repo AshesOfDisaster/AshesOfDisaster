@@ -7,8 +7,6 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Родное меню: одна кнопка «Ashes of Disaster» в меню настроек лобби,
-// внутри — строка выбора страницы (◄ ►) и настройки выбранной страницы.
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
 public static class SettingMenuStartPatch
 {
@@ -37,6 +35,7 @@ public static class ModMenu
         new() { Ru = "Мирные",      En = "Crewmates",   Filter = o => o.Tab == OptTab.Crewmate },
         new() { Ru = "Предатели",   En = "Impostors",   Filter = o => o.Tab == OptTab.Impostor },
         new() { Ru = "Нейтралы",    En = "Neutrals",    Filter = o => o.Tab == OptTab.Neutral },
+        new() { Ru = "Призраки",    En = "Ghosts",      Filter = o => o.Tab == OptTab.Ghost },
     };
 
     static GameSettingMenu menu;
@@ -55,7 +54,6 @@ public static class ModMenu
 
     static string PageName(int i) => Translator.GameIsRu ? Pages[i].Ru : Pages[i].En;
     
-
     static readonly List<PassiveButton> pageButtons = new();
 
     public static void Build(GameSettingMenu m)
@@ -68,9 +66,6 @@ public static class ModMenu
         Dump("RoleSettings", m.RoleSettingsButton);
         mask = GameOptionsMenu.MASK_LAYER;
 
-        // ванильные кнопки не трогаем, свои цветные вкладки — двумя колонками под ними
-        // Все кнопки одного размера, сеткой в 2 колонки: «Настройки» | «Настройки ролей», дальше 5 вкладок мода.
-        // «Пресеты» прячем (освобождаем место). Позиции считаются от реальных позиций ванильных кнопок.
         Vector3 pPre = m.GamePresetsButton.transform.localPosition;
         float colX = pPre.x, w = 1.5f, rowH = 0.3f;
         Vector3 btnScale = new Vector3(0.45f, 0.35f, 1f);
@@ -84,11 +79,11 @@ public static class ModMenu
         catch (Exception e) { Plugin.Logger.LogWarning("ModMenu shift buttons: " + e.Message); }
         Color[] cols =
         {
-            new Color32(0, 165, 255, 255),     // Система
-            new Color32(60, 200, 110, 255),    // Игра
-            new Color32(120, 220, 230, 255),   // Мирные
-            new Color32(255, 25, 25, 255),     // Предатели
-            new Color32(255, 171, 27, 255),    // Нейтралы
+            new Color32(0, 165, 255, 255),
+            new Color32(60, 200, 110, 255),
+            new Color32(120, 220, 230, 255),
+            new Color32(255, 25, 25, 255),
+            new Color32(255, 171, 27, 255),
         };
 
         for (int i = 0; i < Pages.Length; i++)
@@ -122,7 +117,7 @@ public static class ModMenu
         Plugin.Logger.LogInfo($"ModMenu: built {Pages.Length} tabs (grid layout)");
     }
 
-    static void Style(PassiveButton b) { }      // цвета кнопок задаются один раз при создании 
+    static void Style(PassiveButton b) { }
 
     static void Dump(string n, PassiveButton b)
     {
@@ -136,7 +131,7 @@ public static class ModMenu
     static void BuildPanel(GameSettingMenu m)
     {
         var src = m.GameSettingsTab;
-        panel = UnityEngine.Object.Instantiate(src.gameObject, src.transform.parent);   // оригинал не трогаем
+        panel = UnityEngine.Object.Instantiate(src.gameObject, src.transform.parent);
         panel.name = "AoD_Panel";
 
         var cm = panel.GetComponent<GameOptionsMenu>();
@@ -159,7 +154,7 @@ public static class ModMenu
 
         scroller = scroll;
         y0 = container.localPosition.y;
-        try { scroller.enabled = Opts.NativeScroll.Value; } catch { }     // родная прокрутка (границы задаются в Populate,); NativeScroll=false — старая ручная
+        try { scroller.enabled = Opts.NativeScroll.Value; } catch { }
         UnityEngine.Object.DestroyImmediate(cm);
         panel.SetActive(false);
     }
@@ -249,7 +244,6 @@ public static class ModMenu
 
         if (page >= 2 && page <= 4)
         {
-            // Роли: заголовок роли -> шанс появления -> (если шанс > 0) количество
             var team = page == 2 ? OptTab.Crewmate : page == 3 ? OptTab.Impostor : OptTab.Neutral;
             foreach (var role in Opts.Roles.Where(r => r.Tab == team))
             {
@@ -274,6 +268,23 @@ public static class ModMenu
                 }
             }
         }
+        else if (page == 5)
+        {
+            foreach (var gr in Ghosts.Roles)
+            {
+                var g = gr;
+                Add(MakeCategory($"<color={g.color}>{(ru ? g.ru : g.en)}</color>", y), y);
+                y -= GameOptionsMenu.HEADER_HEIGHT;
+                var enabled = MakeToggle(g.on, x, y);
+                enabled.Short = true; Refresh(enabled); Add(enabled, y); y -= sp;
+                foreach (var ex in g.extras)
+                {
+                    var e = ex;
+                    var er = MakeNumber(e, x, y, d => e.Inc(d));
+                    er.Short = true; Refresh(er); Add(er, y); y -= sp;
+                }
+            }
+        }
         else
         {
             foreach (var o in Opt.All)
@@ -286,7 +297,7 @@ public static class ModMenu
             }
         }
 
-        scrollMax = Mathf.Max(0f, (startY - y) - Opts.ViewHeight.Value + sp);   // + запас, чтобы последняя строка прокручивалась целиком
+        scrollMax = Mathf.Max(0f, (startY - y) - Opts.ViewHeight.Value + sp);
         scrollY = Mathf.Clamp(keep, 0f, scrollMax);
         if (Opts.NativeScroll.Value && scroller != null)
         {
@@ -303,13 +314,12 @@ public static class ModMenu
         container.localPosition = new Vector3(container.localPosition.x, y0 + scrollY, container.localPosition.z);
     }
 
-    /// Каждый кадр: прокрутка колесом/стрелками и скрытие строк, вышедших за рамку
     public static void Tick()
     {
         KeepTabs();
         if (panel == null || !panel.activeSelf || container == null) return;
 
-        if (Opts.NativeScroll.Value) scrollY = Mathf.Clamp(container.localPosition.y - y0, 0f, scrollMax);      // позицию двигает родной Scroller
+        if (Opts.NativeScroll.Value) scrollY = Mathf.Clamp(container.localPosition.y - y0, 0f, scrollMax);
         else if (scrollMax > 0f)
         {
             float d = -Input.mouseScrollDelta.y * Opts.ScrollStep.Value;
@@ -334,7 +344,6 @@ public static class ModMenu
         }
     }
 
-    // Подписи вкладок мода: после наведения/клика на ванильные кнопки текст мог пропасть — восстанавливаем каждый кадр
     static void KeepTabs()
     {
         for (int i = 0; i < pageButtons.Count; i++)
@@ -356,7 +365,7 @@ public static class ModMenu
 
     static void Refresh(Row r)
     {
-        if (r.Opt == null) return;      // строка выбора страницы обновляется в Populate
+        if (r.Opt == null) return;
         r.Title.text = r.Short ? r.Opt.Short : r.Opt.Name;
         if (r.Opt is BoolOpt b) { if (r.Check != null) r.Check.enabled = b.Value; }
         else if (r.Value != null) r.Value.text = r.Opt.ValueText;
@@ -379,7 +388,7 @@ public static class ModMenu
             scrollY = 0f;
             Populate();
             if (menu.MenuDescriptionText != null)
-                menu.MenuDescriptionText.text = PageName(idx) + (scrollMax > 0f ? (Translator.GameIsRu ? "\n(колесо мыши — прокрутка)" : "\n(mouse wheel to scroll)") : "");
+                menu.MenuDescriptionText.text = PageName(idx) + (scrollMax > 0f ? (Translator.GameIsRu ? "\n(колесо мыши - прокрутка)" : "\n(mouse wheel to scroll)") : "");
         }
         catch (Exception e) { Plugin.Logger.LogError("ModMenu.Show: " + e); }
     }

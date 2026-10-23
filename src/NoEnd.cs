@@ -2,10 +2,6 @@ using HarmonyLib;
 
 namespace AshesOfDisaster;
 
-/// «Игра не заканчивается»: отключаем автоматические проверки конца игры (убийства, задания, голосование, саботаж).
-/// Закончить вручную можно командой /end.
-/// Методы указаны строками и проверяются при запуске: если такого метода нет в этой версии игры,
-/// патч просто пропускается (а не ломает сборку и остальные патчи).
 public static class NoEnd
 {
     public static bool Active
@@ -48,7 +44,6 @@ public static class NoEndTasksPatch
     }
 }
 
-// В части версий игры проверка заданий называется иначе
 [HarmonyPatch(typeof(GameManager), "CheckTaskCompletion")]
 public static class NoEndTaskCompletionPatch
 {

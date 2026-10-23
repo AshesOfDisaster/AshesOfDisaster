@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Сантехник (мирный): питомец чинит активный саботаж, а если саботажа нет — открывает все закрытые двери.
 public static class Plumber
 {
     static readonly System.Collections.Generic.Dictionary<byte, float> last = new();
     static readonly System.Collections.Generic.Dictionary<byte, int> uses = new();
 
     public static void Reset() { last.Clear(); uses.Clear(); }
+    public static void ResetCooldowns(byte id) { last.Remove(id); }
     static int Left(byte id) => Math.Max(0, Opts.PlumberUses.Value - (uses.TryGetValue(id, out var u) ? u : 0));
 
     public static string Status(PlayerControl p, RoleDef r)

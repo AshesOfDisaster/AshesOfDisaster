@@ -5,13 +5,11 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Грибник (предатель): питомец запускает «грибной» саботаж.
-// На Фангле — настоящий саботаж путаницы; на остальных картах — копия эффекта: все живые игроки становятся серыми и без шапок/питомцев, а их ники перемешиваются на несколько секунд.
 public static class Shroomer
 {
     static readonly Dictionary<byte, float> last = new();
     static readonly Dictionary<byte, int> uses = new();
-    static readonly Dictionary<byte, byte> original = new();      // игрок -> его настоящий цвет
+    static readonly Dictionary<byte, byte> original = new();
     static readonly Dictionary<byte, string> originalNames = new();
     static readonly Dictionary<byte, (string hat, string skin, string visor, string pet)> originalCos = new();
     static float restoreAt = -1f;
@@ -62,7 +60,6 @@ public static class Shroomer
         return true;
     }
 
-    /// Все серые (цвет 15), а ники перемешаны между игроками: по виду и имени никого не узнать
     static void Shuffle()
     {
         var alive = PlayerControl.AllPlayerControls.ToArray().Where(o => o != null && o.Data != null && !o.Data.IsDead && !o.Data.Disconnected).ToList();
@@ -70,7 +67,7 @@ public static class Shroomer
         original.Clear(); originalNames.Clear();
         foreach (var o in alive) { original[o.PlayerId] = (byte)o.Data.DefaultOutfit.ColorId; originalNames[o.PlayerId] = o.Data.PlayerName; var oc = o.Data.DefaultOutfit; originalCos[o.PlayerId] = (oc.HatId, oc.SkinId, oc.VisorId, oc.PetId); }
         int shift = rng.Next(1, alive.Count);
-        restoreAt = Time.time + Opts.ShroomSeconds.Value;      // выставляем сразу: пока идёт эффект, статусы над ником не рассылаются
+        restoreAt = Time.time + Opts.ShroomSeconds.Value;
         for (int i = 0; i < alive.Count; i++)
         {
             try { alive[i].RpcSetColor(15); } catch (Exception e) { Plugin.Logger.LogWarning("Shroomer color: " + e.Message); }

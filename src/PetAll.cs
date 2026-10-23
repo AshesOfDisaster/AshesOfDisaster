@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Всем игрокам в раунде выдаётся тот же питомец, что стоит у хоста (нужен для способностей ролей через питомца)
 public static class PetAll
 {
     static float next;
@@ -55,7 +54,7 @@ public static class PetAll
             w.WritePacked(p.Data.NetId);
             p.Data.Serialize(w, false);
             w.EndMessage();
-            w.StartMessage(2);                      // Shapeshift «в себя» без анимации — клиент перерисовывает образ с питомцем
+            w.StartMessage(2);
             w.WritePacked(p.NetId);
             w.Write((byte)RpcCalls.Shapeshift);
             w.WritePacked(p.NetId);

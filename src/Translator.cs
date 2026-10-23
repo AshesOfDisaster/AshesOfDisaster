@@ -4,7 +4,6 @@ namespace AshesOfDisaster;
 
 public static class Translator
 {
-    // язык определяется по языку игры; игрок может сменить командой /lang
     public static bool GameIsRu
     {
         get
@@ -50,22 +49,22 @@ public static class Translator
         ["opt.KickNoFriendCode"] = ("Кик без friend code", "Kick without friend code"),
         ["opt.ShowCredits"] = ("Создатели в меню", "Credits in menu"),
 
-        ["welcome"] = ("Привет! Это мод-рум {2} (создатели: {3}). Напиши /r, чтобы увидеть роли. Приятной игры!", "Hi! This is the {2} mod room (by {3}). Type /r to see the roles. Have fun!"),
+        ["welcome"] = ("Привет, {0}! Это комната с модом «{1}» (сделали {2}). Тут больше 70 ролей и у каждой своя способность - погладь питомца и она сработает. Команды: /m - твоя роль, /r - список ролей, /h - все команды. Наш Discord: {3}", "Hi {0}! This is a room with the \"{1}\" mod (made by {2}). There are over 70 roles and each one has its own ability - pet your pet to use it. Commands: /m - your role, /r - role list, /h - all commands. Our Discord: {3}"),
         ["kick.level"] = ("{0} кикнут: низкий уровень", "{0} kicked: level too low"),
         ["kick.fc"] = ("{0} кикнут: нет friend code", "{0} kicked: no friend code"),
         ["kick.ban"] = ("{0} кикнут: бан-лист", "{0} kicked: banned"),
         ["kick.name"] = ("{0} кикнут: запрещённый ник", "{0} kicked: denied name"),
 
-        ["cmd.noperm"] = ("Нет прав на эту команду.", "No permission for this command."),
-        ["cmd.unknown"] = ("Неизвестная команда. /h — список.", "Unknown command. /h for list."),
+        ["cmd.noperm"] = ("Эта команда только для хоста.", "This command is for the host only."),
+        ["cmd.unknown"] = ("Такой команды нет. Список команд: /h", "No such command. Command list: /h"),
         ["cmd.nolobby"] = ("Только в лобби.", "Lobby only."),
-        ["cmd.noplayer"] = ("Игрок не найден.", "Player not found."),
+        ["cmd.noplayer"] = ("Игрок не найден. Номера игроков смотри в /id", "Player not found. Player numbers: /id"),
         ["cmd.done"] = ("Готово.", "Done."),
-        ["cmd.help.all"] = ("/h — помощь, /id — ID игроков, /lang ru|en — язык ответов", "/h help, /id player IDs, /lang ru|en reply language"),
+        ["cmd.help.all"] = ("/h - помощь, /id - ID игроков, /lang ru|en - язык ответов", "/h help, /id player IDs, /lang ru|en reply language"),
         ["cmd.help.host"] = ("Хост: /o [№ [знач]] настройки, /kick ID, /ban ID, /unban FC, /say текст, /start, /cancel, /end, /dump", "Host: /o [# [val]] options, /kick ID, /ban ID, /unban FC, /say text, /start, /cancel, /end, /dump"),
         ["cmd.lang"] = ("Язык ответов: русский", "Reply language: English"),
-        ["cmd.norole"] = ("Такой роли нет. /r — список ролей.", "No such role. /r for the list."),
-        ["cmd.norolenow"] = ("У тебя сейчас нет роли.", "You have no role right now."),
+        ["cmd.norole"] = ("Такой роли нет. Список ролей: /r", "No such role. Role list: /r"),
+        ["cmd.norolenow"] = ("У тебя сейчас нет роли (роли выдаются, когда начинается игра).", "You have no role right now (roles are given when the game starts)."),
         ["cmd.cancel"] = ("Запуск отменён.", "Start cancelled."),
         ["cmd.dump"] = ("Сохранено: {0}", "Saved: {0}"),
         ["cmd.opts"] = ("Настройки (/o № значение):", "Options (/o # value):"),

@@ -5,11 +5,9 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Сварщик (предатель): питомец у двери — комната запирается и остаётся закрытой до собрания
-// (мод каждые несколько секунд закрывает её двери заново). Одновременно заперто не больше N комнат, столовую запереть нельзя.
 public static class Welder
 {
-    static readonly Dictionary<SystemTypes, byte> locked = new();     // комната -> владелец
+    static readonly Dictionary<SystemTypes, byte> locked = new();
     static readonly Dictionary<byte, float> lastUse = new();
     static float nextTick;
 
@@ -56,7 +54,6 @@ public static class Welder
         H(ru ? "Комната заперта до собрания." : "Room locked until the meeting.");
     }
 
-    /// Каждые несколько секунд закрываем двери запертых комнат заново — они сами открываются через ~10 секунд
     public static void Tick()
     {
         if (!Utils.AmHost || locked.Count == 0 || Time.time < nextTick) return;

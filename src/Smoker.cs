@@ -5,19 +5,16 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Курильщик (нейтрал): питомец — выкурить сигарету на месте. Там остаётся облако дыма; кто просидел внутри нужное время подряд — умирает.
-// Владелец дыма в нём не страдает. Для сервера Курильщик — настоящий предатель (как Виджилант и Облако), убийство делает мод.
 public static class Smoker
 {
     class Smoke { public byte Owner; public Vector2 Pos; public float Until; }
     static readonly List<Smoke> clouds = new();
-    static readonly Dictionary<byte, float> inside = new();       // сколько секунд игрок подряд в дыму
+    static readonly Dictionary<byte, float> inside = new();
     static readonly Dictionary<byte, float> warned = new();
     static readonly Dictionary<byte, float> last = new();
     static float nextTick;
 
     public static void Reset() { clouds.Clear(); inside.Clear(); warned.Clear(); last.Clear(); }
-    /// Буст курильщика: пока он стоит в собственном дыму, убить его нельзя
     public static bool InOwnSmoke(PlayerControl p)
     {
         if (p == null || p.Data == null || !RoleLogic.Has(p, "Smoker")) return false;
@@ -30,8 +27,8 @@ public static class Smoker
     {
         bool ru = Translator.IsRu(p);
         int n = clouds.Count(c => c.Owner == p.PlayerId);
-        return ru ? $"{r.Colored(true)}: питомец — выкурить сигарету, на месте остаётся дым. Кто просидит в нём {Opts.SmokeKill.Value} с подряд — умрёт (в своём дыму тебя нельзя убить). Дымов {n}/{Opts.SmokeMax.Value}."
-                  : $"{r.Colored(false)}: pet — smoke a cigarette, leaving a smoke cloud. Whoever stays inside {Opts.SmokeKill.Value} s in a row dies (you are safe in your own smoke). Clouds {n}/{Opts.SmokeMax.Value}.";
+        return ru ? $"{r.Colored(true)}: питомец - выкурить сигарету, на месте остаётся дым. Кто просидит в нём {Opts.SmokeKill.Value} с подряд - умрёт (в своём дыму тебя нельзя убить). Дымов {n}/{Opts.SmokeMax.Value}."
+                  : $"{r.Colored(false)}: pet - smoke a cigarette, leaving a smoke cloud. Whoever stays inside {Opts.SmokeKill.Value} s in a row dies (you are safe in your own smoke). Clouds {n}/{Opts.SmokeMax.Value}.";
     }
 
     public static bool Use(PlayerControl p)
@@ -85,7 +82,7 @@ public static class Smoker
             }
             if (RoleLogic.Kill(owner, o, true))
             {
-                last.Remove(owner.PlayerId);      // буст: после убийства дымом сигарета готова сразу
+                last.Remove(owner.PlayerId);
                 RoleLogic.Hint(owner, Translator.IsRu(owner) ? $"Дым убил: {o.Data.PlayerName}. Новая сигарета готова." : $"The smoke killed: {o.Data.PlayerName}. A new cigarette is ready.");
             }
         }

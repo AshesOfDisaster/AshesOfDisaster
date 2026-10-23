@@ -5,15 +5,14 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Роли: мирные (Прораб, Логер, Штурман, Лозоходец, Сантехник), предатели (Близнец, Ищейка, Грибник),
-// нейтралы (Шутник, Ворон, Перебежчик, Отражатель, Курильщик, Пинкман).
 public static class NR
 {
     static readonly System.Random rng = new();
-    static readonly Dictionary<string, float> lastUse = new();      // "роль:id" -> время
+    static readonly Dictionary<string, float> lastUse = new();
+    static readonly Dictionary<string, int> lastCd = new();
     static readonly Dictionary<byte, int> uses = new();
     static readonly Dictionary<byte, Vector2> anchors = new();
-    public static readonly Dictionary<byte, byte> ShieldGiver = new();      // кому выдан щит -> кто выдал
+    public static readonly Dictionary<byte, byte> ShieldGiver = new();
     static readonly Dictionary<byte, int> foreDone = new();
     static float nextTask, nextLog;
     static bool inTwin;
@@ -24,7 +23,7 @@ public static class NR
     static bool defectorDone;
     static float nextTick;
 
-    public static void Reset() { lastUse.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); Crates.Reset(); LobbyGames.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
+    public static void Reset() { lastUse.Clear(); lastCd.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); Crates.Reset(); LobbyGames.Reset(); Extras.Reset(); Ghosts.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
 
     static bool Alive(PlayerControl p) => p != null && p.Data != null && !p.Data.IsDead && !p.Data.Disconnected;
     static bool IsImp(PlayerControl p) => !RoleLogic.Demoted.Contains(p.PlayerId) && (RoleLogic.IsImpRole(p.Data.RoleType) || RoleLogic.ForcedImp.Contains(p.PlayerId));
@@ -34,11 +33,19 @@ public static class NR
     static bool Wait(string role, PlayerControl p, int cd, bool ru)
     {
         string k = role + ":" + p.PlayerId;
+        lastCd[k] = cd;
         if (lastUse.TryGetValue(k, out var l) && Time.time - l < cd)
-        { Say(p, ru ? $"Перезарядка: ещё {Mathf.CeilToInt(cd - (Time.time - l))} с." : "Cooling down."); return true; }
+        { Say(p, ru ? $"Перезарядка: ещё {Mathf.CeilToInt(cd - (Time.time - l))} с." : $"Cooldown: {Mathf.CeilToInt(cd - (Time.time - l))} s left."); return true; }
         return false;
     }
     static void Stamp(string role, PlayerControl p) => lastUse[role + ":" + p.PlayerId] = Time.time;
+
+    public static int CdLeft(string role, byte id)
+    {
+        string k = role + ":" + id;
+        if (!lastUse.TryGetValue(k, out var t0) || !lastCd.TryGetValue(k, out var c0)) return -1;
+        return Mathf.Max(0, Mathf.CeilToInt(c0 - (Time.time - t0)));
+    }
     static int Used(byte id) => uses.TryGetValue(id, out var u) ? u : 0;
 
     static PlayerControl Nearest(PlayerControl me, float maxDist, Func<PlayerControl, bool> ok)
@@ -54,7 +61,6 @@ public static class NR
         return best;
     }
 
-    // ---------------------------------------------------------------- Статус (краткая сводка на собрании)
     public static string Status(PlayerControl p, RoleDef r)
     {
         bool ru = Translator.IsRu(p); string n = r.Colored(ru);
@@ -66,19 +72,19 @@ public static class NR
             case "Plumber": return Plumber.Status(p, r);
             case "Shroomer": return Shroomer.Status(p, r);
             case "Smoker": return Smoker.Status(p, r);
+            case "Joker": return Joker.Status(p, r);
             case "Pinkman": return Pinkman.Status(p, r);
             case "Dowser": return ru ? $"{n}: питомец показывает комнату ближайшего трупа и сколько живых игроков рядом (в радиусе {Opts.DowserRadius.Value} м). Перезарядка {Opts.DowserCooldown.Value} с." : $"{n}: pet shows the room of the nearest body and how many living players are nearby (within {Opts.DowserRadius.Value} m). Cooldown {Opts.DowserCooldown.Value} s.";
-            case "Navigator": return ru ? $"{n}: питомец ставит метку, повторно — возвращает тебя к метке." : $"{n}: pet sets a mark, pet again returns you to it.";
+            case "Navigator": return ru ? $"{n}: питомец ставит метку, повторно - возвращает тебя к метке." : $"{n}: pet sets a mark, pet again returns you to it.";
             case "Hound": return ru ? $"{n}: питомец показывает, в какой комнате и как далеко ближайший член экипажа." : $"{n}: pet shows the room and distance of the nearest crewmate.";
             case "Prankster": return ru ? $"{n}: питомец меняет тебя местами с ближайшим игроком." : $"{n}: pet swaps you with the nearest player.";
             case "Crow": return ru ? $"{n}: питомец переносит тебя к последнему трупу. Осталось {Math.Max(0, Opts.CrowUses.Value - Used(p.PlayerId))}." : $"{n}: pet teleports you to the last body. Left: {Math.Max(0, Opts.CrowUses.Value - Used(p.PlayerId))}.";
             case "Defector": return ru ? $"{n}: на первом собрании ты получишь имя одного из предателей (с вероятностью {Opts.DefectorWrong.Value}% оно ложное)." : $"{n}: at the first meeting you get a name of an impostor ({Opts.DefectorWrong.Value}% chance it's false).";
-            case "Reflector": return ru ? $"{n}: первое нападение на тебя с шансом {Opts.ReflectChance.Value}% отражается — убийца гибнет сам." : $"{n}: the first attack on you has a {Opts.ReflectChance.Value}% chance to be reflected — the killer dies.";
+            case "Reflector": return ru ? $"{n}: первое нападение на тебя с шансом {Opts.ReflectChance.Value}% отражается - убийца гибнет сам." : $"{n}: the first attack on you has a {Opts.ReflectChance.Value}% chance to be reflected - the killer dies.";
         }
         return Roles30.Status(p, r) ?? Roles75.Status(p, r);
     }
 
-    // ---------------------------------------------------------------- Способности питомца
     public static bool Pet(PlayerControl p, RoleDef role)
     {
         bool ru = Translator.IsRu(p);
@@ -87,6 +93,7 @@ public static class NR
             case "Plumber": return Plumber.Use(p);
             case "Pinkman": return Pinkman.Use(p);
             case "Smoker": return Smoker.Use(p);
+            case "Joker": return Joker.Use(p);
             case "Shroomer": return Shroomer.Use(p);
             case "Dowser":
                 {
@@ -157,7 +164,6 @@ public static class NR
         return Roles30.Pet(p, role) || Roles75.Pet(p, role);
     }
 
-    // ---------------------------------------------------------------- Логер: журнал входов в комнаты
     public static string RoomKey(Vector2 pos)
     {
         try
@@ -201,7 +207,7 @@ public static class NR
             string key = RoomKey(pos);
             lastRoom.TryGetValue(o.PlayerId, out var prev);
             if (key == prev) continue;
-            if (key == null) { lastRoom.Remove(o.PlayerId); continue; }      // вышел в коридор — запись не нужна, но следующий вход в комнату запишется
+            if (key == null) { lastRoom.Remove(o.PlayerId); continue; }
             lastRoom[o.PlayerId] = key;
             logBook.Add((Time.time, o.PlayerId, pos, rng.Next(100) < Opts.LogAnon.Value));
             if (logBook.Count > 80) logBook.RemoveAt(0);
@@ -224,7 +230,6 @@ public static class NR
         Utils.SendSecret(p, sb.ToString());
     }
 
-    // ---------------------------------------------------------------- Хуки
     public static void OnKill(PlayerControl killer, PlayerControl target)
     {
         try
@@ -265,7 +270,6 @@ public static class NR
         catch (Exception e) { Plugin.Logger.LogWarning("NR.OnKill: " + e.Message); }
     }
 
-    /// Отражатель: true — убийство отменено
     public static bool TryReflect(PlayerControl attacker, PlayerControl target)
     {
         try
@@ -286,7 +290,7 @@ public static class NR
     {
         try
         {
-            Shroomer.Restore(); Smoker.OnMeeting(); Roles30.OnMeeting(); Roles75.OnMeeting(); Crates.OnMeeting();
+            Shroomer.Restore(); Smoker.OnMeeting(); Roles30.OnMeeting(); Roles75.OnMeeting(); Crates.OnMeeting(); Ghosts.OnMeeting();
             anchors.Clear(); bodies.Clear();
             var alive = PlayerControl.AllPlayerControls.ToArray().Where(Alive).ToList();
             foreach (var kv in RoleState.Assigned.ToList())
@@ -304,18 +308,17 @@ public static class NR
                     var pick = (wrong || imps.Count == 0 ? inn : imps);
                     if (pick.Count == 0) continue;
                     var named = pick[rng.Next(pick.Count)];
-                    Utils.SendSecret(p, ru ? $"Ты слышал, что предатель — {named.Data.PlayerName}. (информация может быть ложной)" : $"You heard that {named.Data.PlayerName} is an impostor. (could be false)");
+                    Utils.SendSecret(p, ru ? $"Ты слышал, что предатель - {named.Data.PlayerName}. (информация может быть ложной)" : $"You heard that {named.Data.PlayerName} is an impostor. (could be false)");
                 }
             }
         }
         catch (Exception e) { Plugin.Logger.LogWarning("NR.OnMeeting: " + e.Message); }
     }
 
-    /// Прораб: каждое выполненное им задание с шансом засчитывает задание случайному члену экипажа
     public static void Tick()
     {
         if (!Utils.AmHost) return;
-        Shroomer.Tick(); Smoker.Tick(); Pinkman.Tick(); Roles30.Tick(); Roles75.Tick(); Crates.Tick(); LobbyGames.Tick();
+        Shroomer.Tick(); Smoker.Tick(); Pinkman.Tick(); Roles30.Tick(); Roles75.Tick(); Crates.Tick(); LobbyGames.Tick(); Ghosts.Tick(); Extras.Tick();
         try { LogTick(); } catch (Exception e) { Plugin.Logger.LogWarning("NR.LogTick: " + e.Message); }
         if (RoleState.Assigned.Count == 0 || Time.time < nextTask) return;
         nextTask = Time.time + 1f;

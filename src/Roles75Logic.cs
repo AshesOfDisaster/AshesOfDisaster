@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Файл 2/2: состояние, способности питомца, хуки (убийство, собрание, тик).
 public static partial class Roles75
 {
     class Cam { public Vector2 Pos; public HashSet<byte> Seen = new(); }
@@ -34,16 +33,14 @@ public static partial class Roles75
 
     public static void Reset()
     {
-        lastUse.Clear(); uses.Clear(); cams.Clear(); tagged.Clear(); beacon.Clear(); link.Clear(); trophies.Clear();
+        lastUse.Clear(); lastCd.Clear(); useMax.Clear(); uses.Clear(); cams.Clear(); tagged.Clear(); beacon.Clear(); link.Clear(); trophies.Clear();
         portalA.Clear(); portalB.Clear(); hush.Clear(); muted.Clear(); cursed.Clear(); bombs.Clear(); meteors.Clear();
         prophecies.Clear(); boomerangs.Clear(); tpQueue.Clear(); photos.Clear(); nearTime.Clear(); taskCounts.Clear();
         bodies.Clear(); insiderDone.Clear(); killCount = 0;
     }
 
-    /// Беззвучный сейчас «невидим» для журналов, камер, постов и маяков
     public static bool Stealth(byte id) => hush.TryGetValue(id, out var until) && Time.time < until;
 
-    /// Способность питомцем заглушена Молчуном или проклята Колдуном (проклятие тратится)
     public static bool IsMuted(PlayerControl p)
     {
         if (p == null) return false;
@@ -52,7 +49,6 @@ public static partial class Roles75
         return false;
     }
 
-    /// Сброс перезарядок игрока (для Тренера)
     public static void ResetCooldowns(byte id)
     {
         string suffix = ":" + id;
@@ -121,7 +117,6 @@ public static partial class Roles75
         }
     }
 
-    // ---------------------------------------------------------------- Способности питомца
     public static bool Pet(PlayerControl p, RoleDef role)
     {
         bool ru = Translator.IsRu(p); byte id = p.PlayerId; var pos = p.GetTruePosition();
@@ -197,7 +192,7 @@ public static partial class Roles75
                     var t = Nearest(p, 3f, o => !IsImp(o));
                     if (t == null) { Say(p, T(ru, "Рядом нет члена экипажа.", "No crewmate nearby.")); return true; }
                     Stamp("Coach", p); Use("coach", id);
-                    ResetCooldowns(t.PlayerId); Roles30.ResetCooldowns(t.PlayerId); NR.ResetCooldowns(t.PlayerId);
+                    ResetCooldowns(t.PlayerId); Roles30.ResetCooldowns(t.PlayerId); NR.ResetCooldowns(t.PlayerId); Plumber.ResetCooldowns(t.PlayerId); Pinkman.ResetCooldowns(t.PlayerId);
                     Say(p, T(ru, $"Ты потренировал {t.Data.PlayerName}: перезарядки сброшены.", $"You trained {t.Data.PlayerName}: cooldowns reset."));
                     Say(t, T(Translator.IsRu(t), "Тренер сбросил тебе перезарядки!", "The Coach reset your cooldowns!"));
                     return true;
@@ -294,7 +289,7 @@ public static partial class Roles75
                         if (d < bd) { bd = d; bp = o.GetTruePosition(); }
                     }
                     Stamp("Appraiser", p);
-                    Say(p, n == 0 ? T(ru, "Щитов сейчас нет.", "No shields right now.") : T(ru, $"Щитов: {n}. Ближайший — «{Room(bp, true)}».", $"Shields: {n}. Nearest in \"{Room(bp, false)}\"."));
+                    Say(p, n == 0 ? T(ru, "Щитов сейчас нет.", "No shields right now.") : T(ru, $"Щитов: {n}. Ближайший - «{Room(bp, true)}».", $"Shields: {n}. Nearest in \"{Room(bp, false)}\"."));
                     return true;
                 }
             case "Silencer":
@@ -317,7 +312,7 @@ public static partial class Roles75
                     if (n >= G("CollectorNeed"))
                     {
                         var imps = Players().Where(o => o.PlayerId != id && IsImp(o)).ToList();
-                        if (imps.Count > 0) { Say(p, T(ru, $"Трофей {n}. Один из предателей — {imps[rng.Next(imps.Count)].Data.PlayerName}.", $"Trophy {n}. One of the impostors is {imps[rng.Next(imps.Count)].Data.PlayerName}.")); return true; }
+                        if (imps.Count > 0) { Say(p, T(ru, $"Трофей {n}. Один из предателей - {imps[rng.Next(imps.Count)].Data.PlayerName}.", $"Trophy {n}. One of the impostors is {imps[rng.Next(imps.Count)].Data.PlayerName}.")); return true; }
                     }
                     Say(p, T(ru, $"Трофей забран: {n}/{G("CollectorNeed")}.", $"Trophy taken: {n}/{G("CollectorNeed")}."));
                     return true;
@@ -379,7 +374,7 @@ public static partial class Roles75
                     if (t == null) { Say(p, T(ru, "Рядом никого нет.", "Nobody nearby.")); return true; }
                     Stamp("Broker", p); Use("broker", id);
                     string rn = RoleState.Assigned.TryGetValue(t.PlayerId, out var rd) ? rd.Colored(ru) : T(ru, "без роли мода", "no mod role");
-                    Say(p, T(ru, $"Сделка: {t.Data.PlayerName} — {rn}.", $"Deal: {t.Data.PlayerName} is {rn}."));
+                    Say(p, T(ru, $"Сделка: {t.Data.PlayerName} - {rn}.", $"Deal: {t.Data.PlayerName} is {rn}."));
                     float bd = 999f; Vector2 bp = default; bool found = false;
                     foreach (var b in bodies) { float d = Vector2.Distance(t.GetTruePosition(), b.pos); if (d < bd) { bd = d; bp = b.pos; found = true; } }
                     bool r2 = Translator.IsRu(t);
@@ -410,7 +405,7 @@ public static partial class Roles75
                 {
                     if (NoUses("photo", p, G("PhotoUses"), ru) || Wait("Photographer", p, G("PhotoCd"), ru)) return true;
                     Stamp("Photographer", p); Use("photo", id);
-                    var parts = Players().Where(o => o.PlayerId != id).Select(o => o.Data.PlayerName + " — " + Room(o.GetTruePosition(), ru)).ToList();
+                    var parts = Players().Where(o => o.PlayerId != id).Select(o => o.Data.PlayerName + " - " + Room(o.GetTruePosition(), ru)).ToList();
                     if (!photos.TryGetValue(id, out var pl)) photos[id] = pl = new List<string>();
                     pl.Add(string.Join("; ", parts));
                     Say(p, T(ru, "Снимок сделан: получишь его на собрании.", "Snapshot taken: you will get it at the meeting."));
@@ -450,7 +445,6 @@ public static partial class Roles75
         return false;
     }
 
-    // ---------------------------------------------------------------- Хуки
     public static void OnKill(PlayerControl killer, PlayerControl target)
     {
         try
@@ -462,7 +456,6 @@ public static partial class Roles75
             killCount++;
             float now = Time.time;
 
-            // Сейсмограф
             foreach (var kv in RoleState.Assigned.ToList())
             {
                 if (kv.Value.Id != "Seismograph" || kv.Key == target.PlayerId) continue;
@@ -472,7 +465,6 @@ public static partial class Roles75
                 Say(s, T(ru, $"Толчок на {Compass(d, true)}: {band}.", $"A tremor to the {Compass(d, false)}: {band}."));
             }
 
-            // Телеграфист
             foreach (var kv in link.ToList())
             {
                 byte other;
@@ -485,7 +477,6 @@ public static partial class Roles75
 
             if (self) return;
 
-            // Летописец
             bool neutralKiller = RoleState.Assigned.TryGetValue(killer.PlayerId, out var kr) && kr.Tab == OptTab.Neutral;
             foreach (var kv in RoleState.Assigned.ToList())
             {
@@ -493,10 +484,9 @@ public static partial class Roles75
                 var c = Utils.GetPlayer(kv.Key); if (!Alive(c)) continue;
                 bool ru = Translator.IsRu(c);
                 string grp = neutralKiller ? T(ru, "нейтрал", "a neutral") : T(ru, "предатель", "an impostor");
-                Say(c, T(ru, $"Летопись: погиб {target.Data.PlayerName}. Убийца — {grp}.", $"Chronicle: {target.Data.PlayerName} died. The killer is {grp}."));
+                Say(c, T(ru, $"Летопись: погиб {target.Data.PlayerName}. Убийца - {grp}.", $"Chronicle: {target.Data.PlayerName} died. The killer is {grp}."));
             }
 
-            // Разгонщик
             if (RoleLogic.Has(killer, "Scatterer") && Ready("Scatterer", killer, G("ScatterCd")))
             {
                 Stamp("Scatterer", killer);
@@ -506,7 +496,6 @@ public static partial class Roles75
                     if (RandomDoor(out var dest)) tpQueue.Add((o.PlayerId, dest, now + 0.5f));
                 }
             }
-            // Беглец
             if (RoleLogic.Has(killer, "Fugitive") && Ready("Fugitive", killer, G("FugitiveCd")) && RandomDoor(out var fdest))
             {
                 Stamp("Fugitive", killer); tpQueue.Add((killer.PlayerId, fdest, now + 1f));
@@ -519,7 +508,6 @@ public static partial class Roles75
     {
         try
         {
-            // отчёты откладываются до собрания (Secret)
             foreach (var kv in RoleState.Assigned.ToList())
             {
                 var p = Utils.GetPlayer(kv.Key);
@@ -587,7 +575,6 @@ public static partial class Roles75
         bombs.Clear(); meteors.Clear(); prophecies.Clear(); boomerangs.Clear(); tpQueue.Clear(); bodies.Clear(); hush.Clear();
     }
 
-    // ---------------------------------------------------------------- Тик
     public static void Tick()
     {
         if (!Utils.AmHost || Time.time < nextTick) return;
@@ -615,7 +602,6 @@ public static partial class Roles75
                     var owner = Utils.GetPlayer(m.owner);
                     if (Alive(owner))
                     {
-                        // метеорит бьёт всех в радиусе, кроме хозяина (предателей тоже)
                         foreach (var v in Players())
                         {
                             if (v.PlayerId == owner.PlayerId || Vector2.Distance(v.GetTruePosition(), m.pos) > G("MeteorRadius")) continue;
@@ -634,7 +620,7 @@ public static partial class Roles75
                 {
                     var pr = prophecies[i]; prophecies.RemoveAt(i);
                     var o = Utils.GetPlayer(pr.owner);
-                    if (Alive(o)) Say(o, T(Translator.IsRu(o), $"Пророчество сбылось: за {G("OracleSecs")} с убийств — {killCount - pr.start}.", $"The prophecy came true: {killCount - pr.start} kills in {G("OracleSecs")} s."));
+                    if (Alive(o)) Say(o, T(Translator.IsRu(o), $"Пророчество сбылось: за {G("OracleSecs")} с убийств - {killCount - pr.start}.", $"The prophecy came true: {killCount - pr.start} kills in {G("OracleSecs")} s."));
                 }
 
             for (int i = boomerangs.Count - 1; i >= 0; i--)
@@ -680,7 +666,6 @@ public static partial class Roles75
                 }
             }
 
-            // Надзиратель: замечает завершённые задания
             var overseers = players.Where(o => RoleLogic.Has(o, "Overseer")).ToList();
             foreach (var o in players)
             {

@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-/// Фоновая логика хоста: автозапуск, приветствия, тики ролей.
 public class ModGui : MonoBehaviour
 {
     public ModGui(IntPtr ptr) : base(ptr) { }
@@ -21,8 +20,22 @@ public class ModGui : MonoBehaviour
         pausedCount = Utils.PlayerCount();
     }
 
+    static bool guiFailed;
+
+    void OnGUI()
+    {
+        if (guiFailed) return;
+        try { ModPanel.Draw(); }
+        catch (Exception e)
+        {
+            guiFailed = true;
+            Plugin.Logger.LogWarning("ModPanel: " + e.Message);
+        }
+    }
+
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F8)) ModPanel.Toggle();
         Optimizer.Tick();
         Psy.Tick();
         Welder.Tick();
@@ -53,7 +66,7 @@ public class ModGui : MonoBehaviour
                 if (!Opts.Welcome.Value) continue;
                 string host = PlayerControl.LocalPlayer?.Data?.PlayerName ?? "Host";
                 string creators = Translator.IsRu(c.Character) ? Plugin.Creators.Replace(" & ", " и ") : Plugin.Creators;
-                string msg = Translator.T("welcome", c.Character, c.PlayerName, host, Plugin.Name, creators);
+                string msg = Translator.T("welcome", c.Character, c.PlayerName, Plugin.Name, creators, Plugin.Discord);
                 Utils.SendPrivate(c.Character, msg);
             }
             catch (Exception ex) { Plugin.Logger.LogError(ex); }

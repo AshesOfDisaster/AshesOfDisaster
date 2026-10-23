@@ -5,7 +5,6 @@ using InnerNet;
 
 namespace AshesOfDisaster;
 
-// Создатели мода в главном меню
 [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
 public static class VersionShowerPatch
 {
@@ -16,7 +15,6 @@ public static class VersionShowerPatch
     }
 }
 
-// Команды хоста из своего чата
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.SendChat))]
 public static class SendChatPatch
 {
@@ -30,7 +28,6 @@ public static class SendChatPatch
     }
 }
 
-// Команды других игроков (у них мод не нужен): игра сама зовёт AddChat, когда хост получает их сообщение
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.AddChat))]
 public static class AddChatPatch
 {
@@ -47,8 +44,6 @@ public static class AddChatPatch
     }
 }
 
-// При входе игрока только ставим его в очередь: уровень, friend code и персонаж
-// приходят позже, поэтому проверки делаются отложенно (ModGui.Update -> JoinCheck.Run)
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
 public static class OnPlayerJoinedPatch
 {
@@ -61,7 +56,6 @@ public static class OnPlayerJoinedPatch
 
 public static class JoinCheck
 {
-    /// true — игрок кикнут
     public static bool Run(ClientData c)
     {
         string name = c.PlayerName ?? "";
@@ -78,7 +72,6 @@ public static class JoinCheck
     }
 }
 
-// Старт с любого числа игроков
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Update))]
 public static class GameStartManagerPatch
 {

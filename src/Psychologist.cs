@@ -5,8 +5,6 @@ using UnityEngine;
 
 namespace AshesOfDisaster;
 
-// Психолог (член экипажа): на собрании командой /ab ID (или /psy ID) проверяет психическое состояние игрока.
-// 0-39 — спокоен, 40-59 — видел труп, 60-100 — убийца. Есть перезарядка, лимит использований и шанс неудачи.
 public static class Psy
 {
     static readonly System.Random rng = new();
@@ -21,7 +19,6 @@ public static class Psy
     public static void OnKill(PlayerControl killer) { if (killer != null) killers.Add(killer.PlayerId); }
     public static void OnReport(PlayerControl reporter) { if (reporter != null) sawBody.Add(reporter.PlayerId); }
 
-    /// Раз в секунду: кто стоял рядом с трупом, тот его «видел»
     public static void Tick()
     {
         if (!Utils.AmHost || RoleState.Assigned.Count == 0 || Time.time < nextTick) return;
@@ -47,7 +44,7 @@ public static class Psy
     public static string Status(PlayerControl p, RoleDef r)
     {
         bool ru = Translator.IsRu(p);
-        return ru ? $"{r.Colored(true)}: на собрании /ab ID — проверить психическое состояние игрока. Осталось проверок: {Left(p.PlayerId)}."
+        return ru ? $"{r.Colored(true)}: на собрании /ab ID - проверить психическое состояние игрока. Осталось проверок: {Left(p.PlayerId)}."
                   : $"{r.Colored(false)}: in a meeting use /ab ID to check a player's mental state. Checks left: {Left(p.PlayerId)}.";
     }
 
@@ -59,7 +56,6 @@ public static class Psy
         return null;
     }
 
-    /// Вызывается из /ab. Возвращает true, если команда обработана
     public static bool Use(PlayerControl p, string[] args)
     {
         if (!RoleState.Assigned.TryGetValue(p.PlayerId, out var role) || role.Id != "Psychologist") return false;
@@ -67,7 +63,7 @@ public static class Psy
         void Say(string s) => Utils.SendSecret(p, s);
         if (p.Data.IsDead) { Say(ru ? "Мёртвые не проверяют." : "The dead can't check."); return true; }
         if (MeetingHud.Instance == null) { Say(ru ? "Проверка работает только на собрании." : "Checking works only during a meeting."); return true; }
-        if (args.Length == 0) { Say(ru ? "/ab ID — кого проверить. ID можно посмотреть командой /id." : "/ab ID — who to check."); return true; }
+        if (args.Length == 0) { Say(ru ? "/ab ID - кого проверить. ID можно посмотреть командой /id." : "/ab ID - who to check."); return true; }
         var t = Find(string.Join(" ", args));
         if (t == null || t.Data == null) { Say(ru ? "Игрок не найден." : "Player not found."); return true; }
         if (Left(p.PlayerId) <= 0) { Say(ru ? "Проверки закончились." : "No checks left."); return true; }
@@ -92,7 +88,7 @@ public static class Psy
         }
         string col = c.cat == 0 ? "#7CFC00" : c.cat == 1 ? "#FFD700" : "#FF4D4D";
         string meaning = ru ? (c.cat == 0 ? "спокоен" : c.cat == 1 ? "видел труп" : "убийца") : (c.cat == 0 ? "calm" : c.cat == 1 ? "saw a body" : "killer");
-        Say((ru ? "Психическое состояние " : "Mental state of ") + nm + $": <color={col}>{c.val}/100 — {meaning}</color>. " + (ru ? "Проверок осталось: " : "Checks left: ") + Left(p.PlayerId));
+        Say((ru ? "Психическое состояние " : "Mental state of ") + nm + $": <color={col}>{c.val}/100 - {meaning}</color>. " + (ru ? "Проверок осталось: " : "Checks left: ") + Left(p.PlayerId));
         Plugin.Logger.LogInfo($"Psychologist {p.Data.PlayerName}: {nm} = {c.val} (cat {c.cat})");
         return true;
     }

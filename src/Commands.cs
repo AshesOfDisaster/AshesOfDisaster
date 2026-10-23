@@ -19,10 +19,8 @@ public class CmdInfo
 
 public static class RoleState
 {
-    /// Назначенные роли игроков: PlayerId -> роль. Заполняется логикой ролей (когда она будет подключена).
     public static readonly Dictionary<byte, RoleDef> Assigned = new();
 
-    /// Роли, выданные хостом заранее (в лобби): PlayerId -> роль. Применяются при старте игры раньше случайной раздачи.
     public static readonly Dictionary<byte, RoleDef> Preset = new();
 }
 
@@ -30,31 +28,42 @@ public static class Commands
 {
     public static readonly List<CmdInfo> All = new()
     {
-        new() { Name = "h", Aliases = new[] { "help" }, UsageRu = "[команда]", UsageEn = "[command]", DescRu = "список команд / помощь по команде", DescEn = "command list / help for a command" },
-        new() { Name = "r", Aliases = new[] { "roles" }, UsageRu = "[роль]", UsageEn = "[role]", DescRu = "список ролей / описание роли", DescEn = "role list / role description" },
-        new() { Name = "m", Aliases = new[] { "myrole" }, DescRu = "твоя роль и её описание", DescEn = "your role and its description" },
-        new() { Name = "id", DescRu = "ID игроков", DescEn = "player IDs" },
-        new() { Name = "lang", UsageRu = "ru|en", UsageEn = "ru|en", DescRu = "язык ответов", DescEn = "reply language" },
-        new() { Name = "v", Aliases = new[] { "version" }, DescRu = "версия мода", DescEn = "mod version" },
-        new() { Name = "now", DescRu = "текущие настройки мода", DescEn = "current mod settings" },
-        new() { Name = "t", Aliases = new[] { "time" }, DescRu = "время до автозапуска", DescEn = "time until auto-start" },
-        new() { Name = "color", UsageRu = "0-17", UsageEn = "0-17", DescRu = "сменить свой цвет (в лобби)", DescEn = "change your color (lobby)" },
-        new() { Name = "o", Aliases = new[] { "opt" }, HostOnly = true, UsageRu = "[№ [знач]]", UsageEn = "[# [val]]", DescRu = "настройки мода", DescEn = "mod options" },
-        new() { Name = "kick", HostOnly = true, UsageRu = "ID", UsageEn = "ID", DescRu = "кикнуть игрока", DescEn = "kick a player" },
-        new() { Name = "ban", HostOnly = true, UsageRu = "ID", UsageEn = "ID", DescRu = "забанить игрока", DescEn = "ban a player" },
-        new() { Name = "unban", HostOnly = true, UsageRu = "friendcode", UsageEn = "friendcode", DescRu = "убрать из бан-листа", DescEn = "remove from ban list" },
-        new() { Name = "say", Aliases = new[] { "s" }, HostOnly = true, UsageRu = "текст", UsageEn = "text", DescRu = "сообщение от хоста", DescEn = "message from host" },
-        new() { Name = "start", HostOnly = true, DescRu = "запустить игру сейчас", DescEn = "start the game now" },
-        new() { Name = "cancel", HostOnly = true, DescRu = "отменить запуск / автозапуск", DescEn = "cancel start / auto-start" },
-        new() { Name = "end", HostOnly = true, DescRu = "завершить игру", DescEn = "end the game" },
-        new() { Name = "tag", HostOnly = true, UsageRu = "ID текст | ID", UsageEn = "ID text | ID", DescRu = "тег над ником игрока (без текста — снять); хранится, пока жива комната", DescEn = "tag above a player's name (no text — remove); kept while the room lives" },
-        new() { Name = "tpout", UsageRu = "", UsageEn = "", DescRu = "телепорт за корабль (только в лобби)", DescEn = "teleport outside the ship (lobby only)" },
-        new() { Name = "tpin", UsageRu = "", UsageEn = "", DescRu = "телепорт обратно в корабль (только в лобби)", DescEn = "teleport back into the ship (lobby only)" },
-        new() { Name = "kill", Aliases = new[] { "exe" }, HostOnly = true, UsageRu = "ID", UsageEn = "ID", DescRu = "убить игрока", DescEn = "kill a player" },
-        new() { Name = "ab", Aliases = new[] { "psy" }, DescRu = "применить способность роли (то же, что погладить питомца)", DescEn = "use your role ability (same as petting the pet)" },
-        new() { Name = "who", HostOnly = true, DescRu = "кто какую роль получил (для хоста)", DescEn = "who got which role (host)" },
-        new() { Name = "role", HostOnly = true, UsageRu = "ID|ник роль | none | clear", UsageEn = "ID|name role | none | clear", DescRu = "выдать роль игроку заранее (в лобби) или сейчас; без аргументов — список", DescEn = "give a player a role in advance (lobby) or now; no arguments — list" },
-        new() { Name = "dump", HostOnly = true, DescRu = "сохранить список игроков в файл", DescEn = "save player list to a file" },
+        new() { Name = "h", Aliases = new[] { "help" }, UsageRu = "[команда]", UsageEn = "[command]", DescRu = "список всех команд, а /h m расскажет подробно про команду /m", DescEn = "list of all commands; /h m explains the /m command in detail" },
+        new() { Name = "r", Aliases = new[] { "roles" }, UsageRu = "[роль]", UsageEn = "[role]", DescRu = "все роли по группам, а /r Сантехник покажет, что умеет эта роль", DescEn = "all roles by group; /r Plumber shows what that role does" },
+        new() { Name = "m", Aliases = new[] { "myrole" }, DescRu = "твоя роль: что она делает, готова ли способность и сколько использований осталось", DescEn = "your role: what it does, whether the ability is ready and how many uses are left" },
+        new() { Name = "id", DescRu = "номера игроков в комнате (они нужны для /kick /ban /role и других команд)", DescEn = "player numbers in the room (needed for /kick /ban /role and other commands)" },
+        new() { Name = "lang", UsageRu = "ru|en", UsageEn = "ru|en", DescRu = "на каком языке тебе отвечает мод: /lang ru или /lang en", DescEn = "which language the mod answers you in: /lang ru or /lang en" },
+        new() { Name = "v", Aliases = new[] { "version" }, DescRu = "версия мода и кто его сделал", DescEn = "mod version and who made it" },
+        new() { Name = "now", DescRu = "все текущие настройки мода", DescEn = "all current mod settings" },
+        new() { Name = "t", Aliases = new[] { "time" }, DescRu = "сколько секунд осталось до автозапуска игры", DescEn = "seconds left until the game starts by itself" },
+        new() { Name = "color", UsageRu = "0-17", UsageEn = "0-17", DescRu = "сменить цвет своего персонажа, например /color 5 (число от 0 до 17, только в лобби)", DescEn = "change your character color, for example /color 5 (a number from 0 to 17, lobby only)" },
+        new() { Name = "o", Aliases = new[] { "opt" }, HostOnly = true, UsageRu = "[№ [знач]]", UsageEn = "[# [val]]", DescRu = "настройки мода: /o покажет список с номерами, /o 5 покажет настройку 5, /o 5 30 поставит ей значение 30", DescEn = "mod settings: /o shows the numbered list, /o 5 shows setting 5, /o 5 30 sets it to 30" },
+        new() { Name = "kick", HostOnly = true, UsageRu = "ID", UsageEn = "ID", DescRu = "выгнать игрока из комнаты, например /kick 3 (номер смотри в /id)", DescEn = "kick a player out of the room, for example /kick 3 (get the number from /id)" },
+        new() { Name = "ban", HostOnly = true, UsageRu = "ID", UsageEn = "ID", DescRu = "выгнать игрока и забанить его насовсем, например /ban 3 (номер смотри в /id)", DescEn = "kick a player and ban him for good, for example /ban 3 (get the number from /id)" },
+        new() { Name = "unban", HostOnly = true, UsageRu = "friendcode", UsageEn = "friendcode", DescRu = "убрать игрока из бан-листа по его friend code", DescEn = "remove a player from the ban list by his friend code" },
+        new() { Name = "say", Aliases = new[] { "s" }, HostOnly = true, UsageRu = "текст", UsageEn = "text", DescRu = "написать в чат от имени хоста, например /say всем привет", DescEn = "write to the chat as the host, for example /say hello everyone" },
+        new() { Name = "start", HostOnly = true, DescRu = "запустить игру прямо сейчас", DescEn = "start the game right now" },
+        new() { Name = "cancel", HostOnly = true, DescRu = "отменить запуск игры или автозапуск", DescEn = "cancel the game start or the auto-start" },
+        new() { Name = "end", HostOnly = true, DescRu = "закончить игру прямо сейчас", DescEn = "end the game right now" },
+        new() { Name = "tag", HostOnly = true, UsageRu = "ID текст | ID", UsageEn = "ID text | ID", DescRu = "надпись над ником игрока: /tag 3 Главный поставит её, /tag 3 уберёт (хранится, пока жива комната)", DescEn = "a label above a player name: /tag 3 Boss sets it, /tag 3 removes it (kept while the room lives)" },
+        new() { Name = "tpout", UsageRu = "", UsageEn = "", DescRu = "выйти за пределы корабля (только в лобби)", DescEn = "teleport outside the ship (lobby only)" },
+        new() { Name = "tpin", UsageRu = "", UsageEn = "", DescRu = "вернуться в корабль (только в лобби)", DescEn = "teleport back into the ship (lobby only)" },
+        new() { Name = "kill", Aliases = new[] { "exe" }, HostOnly = true, UsageRu = "ID", UsageEn = "ID", DescRu = "убить игрока, например /kill 3 (номер смотри в /id)", DescEn = "kill a player, for example /kill 3 (get the number from /id)" },
+        new() { Name = "ab", Aliases = new[] { "psy" }, DescRu = "применить способность роли командой: Психолог на собрании пишет /ab 3, Статистик просто /ab, а хост может так включить любую способность без питомца", DescEn = "use a role ability by command: the Psychologist writes /ab 3 in a meeting, the Statistician just /ab, and the host can trigger any ability without a pet" },
+        new() { Name = "boo", Aliases = new[] { "poltergeist" }, UsageRu = "[текст]", UsageEn = "[text]", DescRu = "призрак-полтергейст: шепнуть всем случайное слово на собрании (или своё: /boo слово)", DescEn = "Poltergeist ghost: whisper a random word to everyone in a meeting (or your own: /boo word)" },
+        new() { Name = "haunt", Aliases = new[] { "possess" }, UsageRu = "[ID]", UsageEn = "[ID]", DescRu = "призрак-предатель: вселиться в живого предателя, /haunt покажет список, /haunt 3 вселит в игрока 3", DescEn = "impostor ghost: possess a living impostor, /haunt shows the list, /haunt 3 possesses player 3" },
+        new() { Name = "hk", DescRu = "вселенец: убить ближайшего мирного руками того, в кого ты вселился", DescEn = "possessor: kill the nearest crewmate with the hands of the one you possess" },
+        new() { Name = "task", Aliases = new[] { "helper" }, UsageRu = "[ID]", UsageEn = "[ID]", DescRu = "призрак-мирный: помочь игроку с заданием, /task покажет список, /task 3 выберет игрока 3", DescEn = "crewmate ghost: help a player with a task, /task shows the list, /task 3 picks player 3" },
+        new() { Name = "solve", UsageRu = "число", UsageEn = "number", DescRu = "ответить на задачу помощника, например /solve 42", DescEn = "answer the helper puzzle, for example /solve 42" },
+        new() { Name = "who", HostOnly = true, DescRu = "кто какую роль получил (только хост)", DescEn = "who got which role (host only)" },
+        new() { Name = "role", HostOnly = true, UsageRu = "ID|ник роль | none | clear", UsageEn = "ID|name role | none | clear", DescRu = "выдать роль игроку, например /role 3 Сантехник (в лобби заранее или сразу в игре), /role 3 none забирает роль, /role clear сбрасывает всё, /role без аргументов показывает список", DescEn = "give a player a role, for example /role 3 Plumber (in the lobby in advance or right now), /role 3 none takes it away, /role clear resets everything, /role alone shows the list" },
+        new() { Name = "perk", DescRu = "твой перк: случайный довесок на игру, а Шустрый применяет его этой же командой", DescEn = "your perk: a random bonus for the game, the Quick perk is used by this same command" },
+        new() { Name = "bounty", DescRu = "твоя тайная цель: если она погибнет к собранию, получишь щит", DescEn = "your secret target: if it is dead by a meeting you get a shield" },
+        new() { Name = "games", DescRu = "мини-игры в лобби: угадай число, кубик, викторина, монетка, слоты и другие", DescEn = "lobby mini-games: guess, dice, quiz, coin, slots and more" },
+        new() { Name = "dump", HostOnly = true, DescRu = "сохранить список игроков в файл", DescEn = "save the player list to a file" },
+        new() { Name = "block", HostOnly = true, UsageRu = "ID [причина]", UsageEn = "ID [reason]", DescRu = "заблокировать игрока: кик и бан-лист, например /block 3 читер", DescEn = "block a player: kick and ban list, for example /block 3 cheater" },
+        new() { Name = "report", HostOnly = true, UsageRu = "ID [причина]", UsageEn = "ID [reason]", DescRu = "отправить жалобу на игрока в Discord, например /report 3 читер", DescEn = "send a report about a player to Discord, for example /report 3 cheater" },
+        new() { Name = "ac", HostOnly = true, DescRu = "что нашёл античит и включён ли он", DescEn = "what the anticheat found and whether it is on" },
     };
 
     static CmdInfo Find(string n) => All.Find(c => c.Is(n));
@@ -67,21 +76,19 @@ public static class Commands
     static string CmdLine(CmdInfo c, PlayerControl p)
     {
         bool ru = Translator.IsRu(p);
-        return $"/{c.Name} {(ru ? c.UsageRu : c.UsageEn)} — {(ru ? c.DescRu : c.DescEn)}".Replace("  ", " ");
+        return $"/{c.Name} {(ru ? c.UsageRu : c.UsageEn)} - {(ru ? c.DescRu : c.DescEn)}".Replace("  ", " ");
     }
 
-    /// Возвращает true, если сообщение было командой (тогда оно не уходит в чат).
     public static bool Handle(PlayerControl sender, string text)
     {
-        Utils.CommandContext = true;     // ответы на команды отправляются вне общей очереди
+        Utils.CommandContext = true;
         try { return HandleInner(sender, text); }
         finally { Utils.CommandContext = false; }
     }
 
-    static readonly Vector2 TpOutPos = new(0.1f, 3.8f);          // за кораблём в лобби
-    static readonly Vector2 TpInDefault = new(-0.2f, 1.3f);     // внутри корабля
+    static readonly Vector2 TpOutPos = new(0.1f, 3.8f);
+    static readonly Vector2 TpInDefault = new(-0.2f, 1.3f);
 
-    // Телепорт: хост двигает свою копию с запасом sequence id и шлёт SnapTo с ещё большим номером
     public static void Tp(PlayerControl pc, Vector2 pos)
     {
         try
@@ -115,6 +122,8 @@ public static class Commands
         void Say(string s) => Utils.SendPrivate(sender, s);
 
         if (LobbyGames.Handle(sender, cmd, a)) return true;
+        if (Extras.Handle(sender, cmd, a)) return true;
+        if (Ghosts.Handle(sender, cmd, a)) return true;
 
         var info = Find(cmd);
         if (info != null && info.HostOnly && !host) { Say(R("cmd.noperm")); return true; }
@@ -134,39 +143,33 @@ public static class Commands
                         string Names(bool hostOnly) => string.Join(" ", All.Where(c => c.HostOnly == hostOnly).Select(c => "/" + c.Name));
                         var help = (ru ? "Команды: " : "Commands: ") + Names(false);
                         if (host) help += "\n" + (ru ? "Хост: " : "Host: ") + Names(true);
-                        help += "\n" + (ru ? "/h <команда> — подробно" : "/h <command> for details");
+                        help += "\n" + (ru ? "Подробно про команду: /h команда" : "Details about a command: /h command");
                         Say(help);
                         return true;
                     }
 
                 case "r":
                     {
-                        string q0 = string.Join(" ", a).ToLowerInvariant();
-                        OptTab? cls = q0 is "1" or "экипаж" or "мирные" or "crew" ? OptTab.Crewmate
-                                    : q0 is "2" or "предатели" or "impostors" ? OptTab.Impostor
-                                    : q0 is "3" or "нейтралы" or "neutrals" ? OptTab.Neutral : (OptTab?)null;
-                        if (a.Length == 0 || cls != null)
+                        if (a.Length == 0)
                         {
-                            // в одно сообщение все роли не влезают (чат режется до 3 сообщений) — список выдаётся по классам
-                            if (cls == null)
+                            string Grp(OptTab t, string title)
                             {
-                                int nc = Opts.Roles.Count(r => r.Tab == OptTab.Crewmate), ni = Opts.Roles.Count(r => r.Tab == OptTab.Impostor), nn = Opts.Roles.Count(r => r.Tab == OptTab.Neutral);
-                                SayChunks(sender, new[]
-                                {
-                                    ru ? $"/r 1 — экипаж ({nc})" : $"/r 1 - crew ({nc})",
-                                    ru ? $"/r 2 — предатели ({ni})" : $"/r 2 - impostors ({ni})",
-                                    ru ? $"/r 3 — нейтралы ({nn})" : $"/r 3 - neutrals ({nn})",
-                                    ru ? "/r <роль> — описание" : "/r <role> - description"
-                                });
-                                return true;
+                                var names = Opts.Roles.Where(r => r.Tab == t).Select(r => ru ? r.Ru : r.En).ToList();
+                                return title + " (" + names.Count + "): " + string.Join(", ", names);
                             }
-                            var names = Opts.Roles.Where(r => r.Tab == cls.Value).Select(r => ru ? r.Ru : r.En);
-                            Utils.SendPrivate(sender, string.Join(", ", names), 6);
+                            Utils.SendPrivate(sender, string.Join("\n", new[]
+                            {
+                                Grp(OptTab.Crewmate, ru ? "Мирные" : "Crew"),
+                                Grp(OptTab.Impostor, ru ? "Предатели" : "Impostors"),
+                                Grp(OptTab.Neutral, ru ? "Нейтралы" : "Neutrals"),
+                                Ghosts.List(ru),
+                                ru ? "Что умеет роль: /r Сантехник (своя роль: /m)" : "What a role does: /r Plumber (your own role: /m)"
+                            }), 14);
                             return true;
                         }
                         string q = string.Join(" ", a).ToLowerInvariant();
                         var role = Opts.Roles.Find(r => r.Id.ToLowerInvariant().StartsWith(q) || r.Ru.ToLowerInvariant().StartsWith(q) || r.En.ToLowerInvariant().StartsWith(q));
-                        if (role == null) { Say(R("cmd.norole")); return true; }
+                        if (role == null) { var gd = Ghosts.Find(q, ru); if (gd != null) { Utils.SendPrivate(sender, gd, 5); return true; } Say(R("cmd.norole")); return true; }
                         Utils.SendPrivate(sender, $"{role.Colored(ru)}\n{(ru ? role.DescRu : role.DescEn)}", 5);
                         return true;
                     }
@@ -174,8 +177,11 @@ public static class Commands
                 case "m":
                     {
                         if (RoleState.Assigned.TryGetValue(sender.PlayerId, out var mine))
-                            Utils.SendSecret(sender, RoleLogic.Describe(sender, mine) + "\n" + (RoleLogic.Status(sender, mine) ?? ""), 5);
-                        else Utils.SendSecret(sender, R("cmd.norolenow"));
+                        {
+                            string liveNow = RoleLogic.Live(mine, sender.PlayerId, ru);
+                            Utils.SendSecret(sender, RoleLogic.Describe(sender, mine) + "\n" + (RoleLogic.Status(sender, mine) ?? "") + (liveNow != null ? "\n" + liveNow : ""), 5);
+                        }
+                        else { var gr = Ghosts.MyRole(sender, ru); Utils.SendSecret(sender, gr ?? R("cmd.norolenow")); }
                         return true;
                     }
 
@@ -183,7 +189,7 @@ public static class Commands
                     {
                         var sb = new StringBuilder();
                         foreach (var p in PlayerControl.AllPlayerControls)
-                            if (p != null) sb.Append(p.PlayerId).Append(" — ").Append(p.Data?.PlayerName).Append('\n');
+                            if (p != null) sb.Append(p.PlayerId).Append(" - ").Append(p.Data?.PlayerName).Append('\n');
                         Say(sb.ToString().TrimEnd());
                         return true;
                     }
@@ -194,7 +200,7 @@ public static class Commands
                     return true;
 
                 case "v":
-                    Say($"{Plugin.Name} v{Plugin.Version} — {Plugin.Creators}");
+                    Say($"{Plugin.Name} v{Plugin.Version} - {Plugin.Creators}");
                     return true;
 
                 case "now":
@@ -251,6 +257,22 @@ public static class Commands
                         Say(R("cmd.done"));
                         return true;
                     }
+
+                case "block":
+                case "report":
+                    {
+                        if (a.Length == 0 || !byte.TryParse(a[0], out var tid)) { Say(R("cmd.noplayer")); return true; }
+                        var tp = Utils.GetPlayer(tid);
+                        if (tp == null || tp.AmOwner || tp.Data == null) { Say(R("cmd.noplayer")); return true; }
+                        string reason = a.Length > 1 ? string.Join(" ", a.Skip(1)) : null;
+                        if (info.Name == "block") Say(ModPanel.Block(tp, reason ?? "блок хостом") ? R("cmd.done") : R("cmd.noplayer"));
+                        else Say(ModPanel.Complain(tp, reason));
+                        return true;
+                    }
+
+                case "ac":
+                    Say(Anticheat.Summary(ru));
+                    return true;
 
                 case "unban":
                     if (a.Length > 0) Lists.Unban(a[0]);
@@ -310,7 +332,7 @@ public static class Commands
 
                 case "ab":
                     if (Psy.Use(sender, a) || Roles30.UseMeeting(sender, a)) return true;
-                    if (!host) { Say(R("cmd.noperm")); return true; }
+                    if (!host) { Say(ru ? "Эту способность включает питомец: погладь его. Командой /ab работают только способности на собрании." : "This ability is used with the pet: pet it. Only meeting abilities work with /ab."); return true; }
                     RoleLogic.UseAbility(sender, "cmd");
                     return true;
 
@@ -329,17 +351,15 @@ public static class Commands
                 case "role":
                     {
                         bool lobby = Utils.InLobby;
-                        // /role — список выданных заранее ролей
                         if (a.Length == 0)
                         {
-                            if (RoleState.Preset.Count == 0) { Say(ru ? "Роли заранее не выданы. /role ID роль — выдать." : "No preset roles. /role ID role — assign."); return true; }
-                            var lines = RoleState.Preset.Select(kv => $"{kv.Key} {Utils.GetPlayer(kv.Key)?.Data?.PlayerName ?? "?"} — {kv.Value.Colored(ru)}");
+                            if (RoleState.Preset.Count == 0) { Say(ru ? "Роли заранее не выданы. /role ID роль - выдать." : "No preset roles. /role ID role - assign."); return true; }
+                            var lines = RoleState.Preset.Select(kv => $"{kv.Key} {Utils.GetPlayer(kv.Key)?.Data?.PlayerName ?? "?"} - {kv.Value.Colored(ru)}");
                             SayChunks(sender, new[] { ru ? "Выданные роли:" : "Preset roles:" }.Concat(lines));
                             return true;
                         }
                         string first = a[0].ToLowerInvariant();
                         if (first == "clear") { RoleState.Preset.Clear(); Say(R("cmd.done")); return true; }
-                        // игрок: ID или часть ника
                         PlayerControl target = null;
                         if (byte.TryParse(a[0], out var rid)) target = Utils.GetPlayer(rid);
                         if (target == null)
@@ -358,9 +378,9 @@ public static class Commands
                         var role = Opts.Roles.Find(r => r.Id.ToLowerInvariant().StartsWith(q) || r.Ru.ToLowerInvariant().StartsWith(q) || r.En.ToLowerInvariant().StartsWith(q));
                         if (role == null) { Say(R("cmd.norole")); return true; }
                         RoleState.Preset[target.PlayerId] = role;
-                        if (!lobby) RoleState.Assigned[target.PlayerId] = role;      // в игре — сразу (для тестов)
-                        Say(ru ? $"{target.Data.PlayerName}: {role.Colored(true)} — {(lobby ? "роль будет выдана на старте игры" : "роль выдана сейчас")}."
-                               : $"{target.Data.PlayerName}: {role.Colored(false)} — {(lobby ? "will be given at game start" : "given now")}.");
+                        if (!lobby) RoleState.Assigned[target.PlayerId] = role;
+                        Say(ru ? $"{target.Data.PlayerName}: {role.Colored(true)} - {(lobby ? "роль будет выдана на старте игры" : "роль выдана сейчас")}."
+                               : $"{target.Data.PlayerName}: {role.Colored(false)} - {(lobby ? "will be given at game start" : "given now")}.");
                         return true;
                     }
 
