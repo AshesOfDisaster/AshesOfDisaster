@@ -1,21 +1,13 @@
-# Discord server setup (copy-paste)
+# Discord
 
-**Server name:** Ashes of Disaster · **Icon:** 🔥
+Invite / Приглашение: https://discord.gg/CCB2rg3CHz
 
-## Categories & channels
-- 📌 INFO: `#welcome` (read-only), `#rules` (read-only), `#announcements` (read-only), `#download` (read-only, link to GitHub Releases)
-- 💬 COMMUNITY: `#general`, `#suggestions`, `#showcase`, `#find-a-lobby`
-- 🛠 SUPPORT: `#install-help`, `#bug-reports`
-- 🔊 Voice: `Lobby`, `Game 1`, `Game 2`
-- Roles: `Owner` (niko), `Co-author` (Akakish), `Moderator`, `Player`
+## Channels / Каналы
+`#welcome` · `#rules` · `#announcements` · `#download` · `#general` · `#suggestions` · `#find-a-lobby` · `#install-help` · `#bug-reports`
 
-## #welcome
-Welcome to **Ashes of Disaster** — a host-only roles mod for Among Us! 🔥
-Only the host needs the mod. Download: GitHub Releases. About 45% of the mod was made by AI (Claude).
-Добро пожаловать! Мод нужен только хосту. Скачать — в #download.
-
-## #rules
-1. Be respectful. 2. No spam/ads. 3. Bugs → #bug-reports with version + log. 4. English or Russian. 5. This is an unofficial fan project, not affiliated with Innersloth.
-
-## Bug report pin
-Version / game version / steps / `BepInEx/LogOutput.log`.
+## Rules / Правила
+1. Be respectful / Уважайте друг друга
+2. No spam or ads / Без спама и рекламы
+3. Bugs go to `#bug-reports` with version and `BepInEx/LogOutput.log` / Баги в `#bug-reports` с версией и логом
+4. English or Russian / Английский или русский
+5. Unofficial fan project, not affiliated with Innersloth / Неофициальный фан-проект, не связан с Innersloth
