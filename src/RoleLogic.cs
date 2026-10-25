@@ -197,7 +197,7 @@ public static class RoleLogic
     public static void Reset()
     {
         RoleState.Assigned.Clear(); ForcedImp.Clear(); Demoted.Clear(); Informed.Clear(); ShieldArmed.Clear(); ShieldUsed.Clear(); Painted.Clear(); Eaten.Clear();
-        Psy.Reset(); Welder.Reset(); NR.Reset(); Smoker.Reset(); Joker.Reset(); Pinkman.Reset(); Plumber.Reset(); Shroomer.Reset(); VigUnlocked.Clear(); VigPenalty.Clear(); VigLastKill.Clear(); petLast.Clear(); pendingAbility.Clear(); Webs.Clear(); BuilderLast.Clear(); Clouds.Clear(); flashes.Clear(); lastPanic.Clear();
+        Psy.Reset(); Welder.Reset(); NR.Reset(); Smoker.Reset(); Joker.Reset(); Alchemist.Reset(); MysticRoles.Reset(); Witch.Reset(); NeutralWin.Reset(); Fat.Reset(); Pinkman.Reset(); Plumber.Reset(); Shroomer.Reset(); VigUnlocked.Clear(); VigPenalty.Clear(); VigLastKill.Clear(); petLast.Clear(); pendingAbility.Clear(); Webs.Clear(); BuilderLast.Clear(); Clouds.Clear(); flashes.Clear(); lastPanic.Clear();
         StartRevealAt = -1f;
         Utils.ClearDeferred();
         deathNotices.Clear(); NameInfo.ClearNotes();
@@ -277,7 +277,7 @@ public static class RoleLogic
             Plugin.Logger.LogInfo($"Preset role: {pp.Data.PlayerName} = {kv.Value.Id}");
         }
 
-        foreach (var team in new[] { OptTab.Impostor, OptTab.Crewmate, OptTab.Neutral })
+        foreach (var team in new[] { OptTab.Impostor, OptTab.Crewmate, OptTab.Neutral, OptTab.Mystic })
         {
             var pool = team == OptTab.Impostor ? imps : crew;
             var list = new List<RoleDef>();
@@ -401,6 +401,7 @@ public static class RoleLogic
         int total = 0, done = 0;
         foreach (var t in p.Data.Tasks) { total++; if (t.Complete) done++; }
         byte id = p.PlayerId;
+        if (Extra33.Handles(r.Id)) return Extra33.Short(p, r.Id, ru);
         switch (r.Id)
         {
             case "Peasant":
@@ -441,6 +442,16 @@ public static class RoleLogic
                 return ru ? "трупы твоих жертв закрашены" : "your victims' bodies are painted";
             case "Joker":
                 return Joker.Short(p, ru);
+            case "Alchemist":
+                return Alchemist.Short(p, ru);
+            case "Witch":
+                return Witch.Short(p, ru);
+            case "Freeman":
+                return Freeman.Short(p, ru);
+            case "Herbalist": case "FortuneTeller":
+                return MysticRoles.Short(p, r.Id, ru);
+            case "Fat":
+                return Fat.Short(p, ru);
         }
         string live = Live(r, id, ru);
         string hint = RoleHints.Get(r.Id, ru);
@@ -687,7 +698,7 @@ public static class RoleLogic
         if (AssignAt > 0 && Time.time >= AssignAt)
         {
             AssignAt = -1f;
-            try { Assign(); Extras.OnAssigned(); } catch (Exception e) { Plugin.Logger.LogError("Assign: " + e); }
+            try { Assign(); Extras.OnAssigned(); NameInfo.Refresh(); } catch (Exception e) { Plugin.Logger.LogError("Assign: " + e); }
         }
 
         if (StartRevealAt > 0 && Time.time >= StartRevealAt)
@@ -696,9 +707,9 @@ public static class RoleLogic
             foreach (var kv in RoleState.Assigned.ToList())
             {
                 var p = Utils.GetPlayer(kv.Key);
-                if (p == null || !p.AmOwner) continue;
-                bool ru = Translator.IsRu(p);
-                Utils.SendSecret(p, (ru ? "Твоя роль: " : "Your role: ") + kv.Value.Colored(ru) + (ru ? "  (/m - описание)" : "  (/m for details)"));
+                if (p == null || p.Data == null || p.Data.Disconnected) continue;
+                try { Utils.SendSecret(p, RoleGuide.Card(p, kv.Value), 4); }
+                catch (Exception e) { Plugin.Logger.LogWarning("RoleGuide.Card: " + e.Message); }
             }
         }
 
@@ -739,7 +750,6 @@ public static class SelectRolesPatch
     {
         if (!Utils.AmHost) return;
         RoleLogic.Reset();
-        if (MiniMode.Active) return;
         RoleLogic.AssignAt = Time.time + 2f;
     }
 }
@@ -765,6 +775,7 @@ public static class CheckMurderPatch
             if (NR.ShieldGiver.TryGetValue(target.PlayerId, out var giverId) && Utils.GetPlayer(giverId) is PlayerControl gp)
                 RoleLogic.Hint(gp, Translator.IsRu(gp) ? $"Твой щит спас {target.Data.PlayerName}!" : $"Your shield saved {target.Data.PlayerName}!");
             RoleLogic.Kill(__instance, target, false);
+            Fat.AfterShield(target);
             Utils.SendSecret(target, Translator.IsRu(target) ? "Защита сработала!" : "Shield triggered!");
             return false;
         }

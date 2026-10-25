@@ -24,7 +24,7 @@ public static class LobbyGames
         On.GroupRu = "Мини-игры"; On.GroupEn = "Mini-games";
     }
 
-    static bool GamesOn => MiniMode.Active || (On != null && On.Value);
+    static bool GamesOn => On != null && On.Value;
     static float nextHint;
 
     public static void Reset() { points.Clear(); streak.Clear(); secret = 0; bestId = 255; bestRoll = 0; quizAnswer = 0; quizText = null; }
@@ -198,11 +198,6 @@ public static class LobbyGames
         try
         {
             float now = Time.time;
-            if (MiniMode.Active && now > nextHint)
-            {
-                nextHint = now + 120f;
-                All("Режим мини-игр! Ролей нет. Играй: /games", "Mini-games mode! No roles. Play: /games");
-            }
             if (bestId != 255 && now > rollEnds)
             {
                 Add(bestId, 2);

@@ -4,7 +4,7 @@ using BepInEx.Configuration;
 
 namespace AshesOfDisaster;
 
-public enum OptTab { System, Game, Crewmate, Impostor, Neutral, Other, Ghost, Mini }
+public enum OptTab { System, Game, Crewmate, Impostor, Neutral, Other, Ghost, Mini, Hidden, Mystic }
 
 public abstract class Opt
 {
@@ -62,13 +62,14 @@ public class RoleDef
 public static class Opts
 {
     public static ConfigEntry<string> ChatPrivate;
+    public static ConfigEntry<bool> MapMarkers, MarkersAll;
     public static ConfigEntry<bool> NativeMenu, ReplacePresets, UseMask, NativeScroll, HostBadge, HostOnlyForce, NameRefresh, NameViaRpc, OptEnable, OptNoVsync, OptBackground, OptCleanup;
     public static ConfigEntry<int> OptFps;
     public static ConfigEntry<float> ViewHeight, ClipMargin, ScrollStep;
-    public static ConfigEntry<float> RowX, RowY, RowSpacing;
+    public static ConfigEntry<float> RowX, RowY, RowSpacing, RowShift;
     public static readonly List<RoleDef> Roles = new();
 
-    public static BoolOpt AnyPlayers, AutoStart, Welcome, PlayerCommands, ChatColors;
+    public static BoolOpt AnyPlayers, AutoStart, Welcome, PlayerCommands, ChatColors, ChatNoLimit;
     public static IntOpt AutoStartPlayers, AutoStartDelay;
     public static BoolOpt UseBanList, UseDenyNames, KickLowLevel, KickNoFriendCode;
     public static IntOpt MinLevel;
@@ -77,6 +78,13 @@ public static class Opts
     public static IntOpt DyerDuration, BuilderCooldown, CloudMax, CloudRadius, CloudFlash, CloudStormChance, PeasantTasks, SpiderMaxWebs, VigilanteMaxPenalty, VigilanteUnlockTime, VigilanteCooldown, PsyCooldown, PsyMaxUses, PsyFailChance, WelderMax, WelderCooldown, DowserCooldown, DowserRadius, PinkCook, PinkMax, PinkPurity, PinkSaleCooldown, SmokeMax, SmokeLife, SmokeKill, SmokeRadius, SmokeCooldown, ShroomUses, ShroomCooldown, ShroomSeconds, PlumberUses, PlumberCooldown, TwinRadius, TwinCooldown, LogCooldown, LogLines, LogAnon, ForemanChance, NavCooldown, HoundCooldown, PrankCooldown, CrowCooldown, CrowUses, DefectorWrong, ReflectChance;
     public static BoolOpt SpiderPassThrough, CloudStormMarker, HostAuthority;
     public static BoolOpt ShowCredits;
+
+    static readonly HashSet<string> Retired = new()
+    {
+        "Seismograph", "Oracle", "Watcher", "Photographer", "Companion", "Beacon", "Siren", "Timestop", "Defector", "Insider",
+        "Boomerang", "Sorcerer", "Navigator", "Eclipser", "Spotter", "Trapper"
+    };
+    static readonly List<RoleDef> RetiredRoles = new();
 
     internal static void AddRole(ConfigFile c, string id, string ru, string en, string color, OptTab tab, string descRu, string descEn)
     {
@@ -91,12 +99,13 @@ public static class Opts
         r.Count.NameEn = $"<color={color}>{en}</color>: count";
         r.Chance.GroupRu = r.Count.GroupRu = $"<color={color}>{ru}</color>";
         r.Chance.GroupEn = r.Count.GroupEn = $"<color={color}>{en}</color>";
+        if (Retired.Contains(id)) { r.Chance.Value = 0; RetiredRoles.Add(r); return; }
         Roles.Add(r);
     }
 
     internal static T Extra<T>(string id, T o, string ru, string en) where T : Opt
     {
-        var r = Roles.Find(x => x.Id == id);
+        var r = Roles.Find(x => x.Id == id) ?? RetiredRoles.Find(x => x.Id == id);
         o.ShortRu = ru; o.ShortEn = en;
         o.NameRu = $"{r.Colored(true)}: {ru}";
         o.NameEn = $"{r.Colored(false)}: {en}";
@@ -125,6 +134,9 @@ public static class Opts
         UseMask       = c.Bind("Layout", "UseMask", false, "Обрезать строки по рамке (если строки пропадают - оставь false)");
         ClipMargin    = c.Bind("Layout", "ClipMargin", 0.25f, "Запас сверху/снизу при скрытии строк, вышедших за рамку");
         RowX          = c.Bind("Layout", "RowXOffset", 0f, "Сдвиг строк по X");
+        RowShift      = c.Bind("Layout", "RowButtonsShift", -0.25f, "Сдвиг только строк с кнопками по X (минус - влево), чтобы кнопки не уходили за рамку");
+        MapMarkers    = c.Bind("Experimental", "MapMarkersEnabled", true, "Значки на карте у того, кто что-то поставил (силки, мины, руны...). Если кикает или ломает игру - поставь false.");
+        MarkersAll    = c.Bind("Experimental", "MarkersVisibleToAll", true, "Значки на карте видят все игроки (false - только тот, кто поставил).");
         RowY          = c.Bind("Layout", "RowYOffset", 0f, "Сдвиг строк по Y");
         RowSpacing    = c.Bind("Layout", "RowSpacingMult", 1f, "Множитель шага строк");
         ViewHeight    = c.Bind("Layout", "ViewHeight", 3.1f, "Высота видимой области списка настроек (по высоте рамки ноутбука)");
@@ -136,7 +148,8 @@ public static class Opts
         AutoStartDelay   = new("AutoStartDelay",   OptTab.System, 20, 5, 120, 5, c);
         Welcome          = new("Welcome",          OptTab.System, true,  c);
         PlayerCommands   = new("PlayerCommands",   OptTab.System, true,  c);
-        ChatColors       = new("ChatColors",       OptTab.System, true,  c);
+        ChatColors       = new("ChatColors",       OptTab.Hidden, true,  c);
+        ChatNoLimit      = new("ChatNoLimit",      OptTab.Hidden, true,  c);
         UseBanList       = new("UseBanList",       OptTab.System, true,  c);
         UseDenyNames     = new("UseDenyNames",     OptTab.System, false, c);
         KickLowLevel     = new("KickLowLevel",     OptTab.System, false, c);
@@ -149,13 +162,13 @@ public static class Opts
         SyncedButtonCount   = new("SyncedButtonCount",   OptTab.Game, 10, 1, 100, 1, c);
         KillCooldownPercent = new("KillCooldownPercent", OptTab.Game, 100, 25, 200, 5, c);
         DisableCloseDoors   = new("DisableCloseDoors",   OptTab.Game, false, c);
-        GhostSeeRoles       = new("GhostSeeRoles",       OptTab.Game, true, c);
-        NameStatus          = new("NameStatus",          OptTab.Game, true, c);
+        GhostSeeRoles       = new("GhostSeeRoles",       OptTab.Hidden, true, c);
+        NameStatus          = new("NameStatus",          OptTab.Hidden, true, c);
         TeamSwap            = new("TeamSwap",            OptTab.Game, true, c);
-        PetForAll           = new("PetForAll",           OptTab.Game, true, c);
-        RevealOnExile       = new("RevealOnExile",       OptTab.Game, true, c);
+        PetForAll           = new("PetForAll",           OptTab.Hidden, true, c);
+        RevealOnExile       = new("RevealOnExile",       OptTab.Hidden, true, c);
 
-        Grp("Лобби", "Lobby", AnyPlayers, AutoStart, AutoStartPlayers, AutoStartDelay, Welcome, PlayerCommands, ChatColors);
+        Grp("Лобби", "Lobby", AnyPlayers, AutoStart, AutoStartPlayers, AutoStartDelay, Welcome, PlayerCommands, ChatColors, ChatNoLimit);
         Grp("Защита", "Protection", UseBanList, UseDenyNames, KickLowLevel, MinLevel, KickNoFriendCode);
         Grp("Настройки игры", "Game settings", NoGameEnd, NoEndFewPlayers, SyncButtonMode, SyncedButtonCount, KillCooldownPercent, DisableCloseDoors, GhostSeeRoles, NameStatus, RevealOnExile, PetForAll, TeamSwap);
 
@@ -198,18 +211,18 @@ public static class Opts
         AddRole(c, "Smoker", "Курильщик", "Smoker", "#BDBDBD", OptTab.Neutral,
             "Нейтрал. Питомец: выкури сигарету в любом месте, там останется облако дыма. Кто просидит в дыму подряд нужное время (по умолчанию 10 с), умрёт. Игрок в дыму получает предупреждение. Буст: в своём дыму тебя нельзя убить, а после убийства дымом сигарета готова сразу. Для сервера ты настоящий предатель. [Питомец]",
             "Neutral. Pet: smoke a cigarette anywhere and a smoke cloud stays there. Whoever stays in the smoke for the set time in a row (10 s by default) dies. The player in the smoke gets a warning. Boost: you cannot be killed inside your own smoke and after a smoke kill your cigarette is ready at once. The server sees you as a real impostor. [Pet]");
-        AddRole(c, "Pinkman", "Пинкман", "Pinkman", "#FF6FB5", OptTab.Neutral,
-            "Нейтрал, по мотивам «Во все тяжкие». Питомец вдали от людей варит партию (по умолчанию 30 с). Питомец рядом с игроком продаёт ему товар. Чистый товар (шанс в настройках) даёт покупателю щит, а брак мигает ему экраном. Каждые две удачные продажи дают щит тебе. Yeah, science! [Питомец]",
-            "Neutral, inspired by Breaking Bad. The pet away from people cooks a batch (30 s by default). The pet next to a player sells him the product. Pure product (chance in the settings) gives the buyer a shield, a bad batch flashes his screen. Every two good sales give you a shield. Yeah, science! [Pet]");
-        AddRole(c, "Prankster", "Шутник", "Prankster", "#F06292", OptTab.Neutral,
-            "Нейтрал. Питомец меняет тебя местами с ближайшим игроком (до 3,5 м). [Питомец]",
-            "Neutral. The pet swaps you with the nearest player (within 3.5 m). [Pet]");
-        AddRole(c, "Crow", "Ворон", "Crow", "#455A64", OptTab.Neutral,
-            "Нейтрал. Питомец переносит тебя к последнему трупу, о котором ещё не доложили. Перелётов: 3, перезарядка 40 с. [Питомец]",
-            "Neutral. The pet teleports you to the last body that has not been reported. Flights: 3, cooldown 40 s. [Pet]");
-        AddRole(c, "Defector", "Перебежчик", "Defector", "#A1887F", OptTab.Neutral,
-            "Нейтрал. На первом собрании ты узнаёшь имя игрока, который якобы предатель. С некоторым шансом (настройка) информация ложная. [Сама]",
-            "Neutral. At the first meeting you learn the name of a player who is supposedly an impostor. With some chance (setting) the information is false. [Passive]");
+        AddRole(c, "Pinkman", "Пинкман", "Pinkman", "#FF6FB5", OptTab.Crewmate,
+            "Мирный, по мотивам «Во все тяжкие». Питомец вдали от людей варит партию (по умолчанию 30 с). Питомец рядом с игроком продаёт ему товар. Чистый товар (шанс в настройках) даёт покупателю щит, а брак мигает ему экраном. Каждые две удачные продажи дают щит тебе. Yeah, science! [Питомец]",
+            "Crewmate, inspired by Breaking Bad. The pet away from people cooks a batch (30 s by default). The pet next to a player sells him the product. Pure product (chance in the settings) gives the buyer a shield, a bad batch flashes his screen. Every two good sales give you a shield. Yeah, science! [Pet]");
+        AddRole(c, "Prankster", "Шутник", "Prankster", "#F06292", OptTab.Crewmate,
+            "Мирный. Питомец меняет тебя местами с ближайшим игроком (до 3,5 м). [Питомец]",
+            "Crewmate. The pet swaps you with the nearest player (within 3.5 m). [Pet]");
+        AddRole(c, "Crow", "Ворон", "Crow", "#455A64", OptTab.Crewmate,
+            "Мирный. Питомец переносит тебя к последнему трупу, о котором ещё не доложили. Перелётов: 3, перезарядка 40 с. [Питомец]",
+            "Crewmate. The pet teleports you to the last body that has not been reported. Flights: 3, cooldown 40 s. [Pet]");
+        AddRole(c, "Defector", "Перебежчик", "Defector", "#A1887F", OptTab.Crewmate,
+            "Мирный. На первом собрании ты узнаёшь имя игрока, который якобы предатель. С некоторым шансом (настройка) информация ложная. [Сама]",
+            "Crewmate. At the first meeting you learn the name of a player who is supposedly an impostor. With some chance (setting) the information is false. [Passive]");
         AddRole(c, "Reflector", "Отражатель", "Reflector", "#B0BEC5", OptTab.Neutral,
             "Нейтрал. Первое нападение на тебя с некоторым шансом (настройка) отражается: убийца погибает сам. Срабатывает один раз за игру. [Сама]",
             "Neutral. The first attack on you is reflected with some chance (setting): the killer dies instead. Works once per game. [Passive]");
@@ -277,10 +290,13 @@ public static class Opts
         Roles30.Define(c);
         Roles75.Define(c);
         Joker.Define(c);
+        Alchemist.Define(c);
+        MysticRoles.Define(c);
+        Witch.Define(c); Extra33.Define(c); Freeman.Define(c);
+        Fat.Define(c);
         Anticheat.Define(c);
         Extras.Define(c);
-        Crates.Define(c);
-        MiniMode.Define(c); LobbyGames.Define(c); Ghosts.Define(c);
+        LobbyGames.Define(c); Ghosts.Define(c);
 
         ShowCredits = new("ShowCredits", OptTab.Other, true, c);
 
@@ -292,6 +308,13 @@ public static class Opts
                 mig.Value = true;
                 NameStatus.Value = true;
                 CloudStormMarker.Value = true;
+            }
+            var mig2 = c.Bind("Internal", "Migrated48", false);
+            if (!mig2.Value)
+            {
+                mig2.Value = true;
+                foreach (var b in new[] { NameStatus, PetForAll, RevealOnExile, GhostSeeRoles, ChatColors, ChatNoLimit }) b.Value = true;
+                HostOnlyForce.Value = true; NameViaRpc.Value = true; NameRefresh.Value = true;
             }
         }
         catch { }

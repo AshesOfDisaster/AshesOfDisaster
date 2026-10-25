@@ -15,4 +15,10 @@
     <Reference Include="$(GameDir)/BepInEx/core/*.dll" Private="false" />
     <Reference Include="$(GameDir)/BepInEx/interop/*.dll" Private="false" />
   </ItemGroup>
+  <ItemGroup Condition="Exists('$(GameDir)/BepInEx/core/BepInEx.Core.dll')">
+    <Reference Remove="$(GameDir)/BepInEx/core/BepInEx.dll" />
+    <Reference Remove="$(GameDir)/BepInEx/core/BepInEx.Harmony.dll" />
+    <Reference Remove="$(GameDir)/BepInEx/core/BepInEx.Preloader.dll" />
+    <Reference Remove="$(GameDir)/BepInEx/core/0Harmony20.dll" />
+  </ItemGroup>
 </Project>

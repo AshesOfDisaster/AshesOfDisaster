@@ -46,6 +46,8 @@ public static class Utils
         ["BoilerRoom"] = ("котельная", "boiler room"), ["Vault"] = ("хранилище", "vault"), ["Outside"] = ("снаружи", "outside"),
     };
 
+    public static string RoomLabel(string id, bool ru) => RoomNames.TryGetValue(id, out var n) ? (ru ? n.ru : n.en) : id;
+
     public static string RoomName(Vector2 pos, bool ru)
     {
         try
@@ -85,8 +87,10 @@ public static class Utils
     static readonly Queue<(byte id, string text, bool broadcast, float at)> urgent = new();
     static float nextSendAt;
     public static bool CommandContext;
-    const int MaxLen = 95;
-    static int MaxMessagesPerReply => AnticheatLikely ? 3 : 8;
+    static bool NoLimit => Opts.ChatNoLimit == null || Opts.ChatNoLimit.Value;
+    static int MaxLen => NoLimit ? 450 : 95;
+    static int MaxMessagesPerReply => NoLimit ? 1000 : AnticheatLikely ? 3 : 8;
+    static int QueueCap => NoLimit ? 100000 : AnticheatLikely ? 16 : 40;
     static float SendGap => AnticheatLikely ? 3.2f : 0.6f;
 
     static IEnumerable<string> SplitLines(string text)
@@ -107,7 +111,7 @@ public static class Utils
 
     static List<string> Pack(string text, int max = -1)
     {
-        if (max < 0) max = MaxMessagesPerReply;
+        if (max < 0 || NoLimit) max = MaxMessagesPerReply;
         var res = new List<string>();
         string cur = "";
         foreach (var line in SplitLines(text))
@@ -132,7 +136,7 @@ public static class Utils
 
     public static List<string> PackText(string text, int max) => Pack(text, max);
 
-    public const int ChatLimit = MaxLen;
+    public static int ChatLimit => MaxLen;
 
     public static void SendRich(PlayerControl to, IEnumerable<string> messages)
     {
@@ -150,7 +154,7 @@ public static class Utils
         var q = CommandContext ? urgent : outbox;
         foreach (var m in list)
         {
-            if (q.Count >= (AnticheatLikely ? 16 : 40)) { Plugin.Logger.LogInfo("Chat queue full, message dropped"); break; }
+            if (q.Count >= QueueCap) { Plugin.Logger.LogInfo("Chat queue full, message dropped"); break; }
             q.Enqueue((to.PlayerId, m, !TargetedMode, UnityEngine.Time.time));
         }
     }
@@ -217,7 +221,7 @@ public static class Utils
         var q = CommandContext ? urgent : outbox;
         foreach (var m in Pack(text, maxMessages))
         {
-            if (q.Count >= (AnticheatLikely ? 16 : 40)) { Plugin.Logger.LogInfo("Chat queue full, message dropped"); break; }
+            if (q.Count >= QueueCap) { Plugin.Logger.LogInfo("Chat queue full, message dropped"); break; }
             q.Enqueue((to.PlayerId, m, !targeted, UnityEngine.Time.time));
         }
     }
@@ -231,7 +235,7 @@ public static class Utils
         try { var h = PlayerControl.LocalPlayer; if (h != null && h.Data != null && !h.Data.IsDead) Toast(text); } catch { }
         foreach (var m in Pack(text, 1))
         {
-            if (outbox.Count >= 16) { Plugin.Logger.LogInfo("Chat queue full, ghost message dropped"); break; }
+            if (outbox.Count >= (NoLimit ? 100000 : 16)) { Plugin.Logger.LogInfo("Chat queue full, ghost message dropped"); break; }
             outbox.Enqueue((GhostId, m, true, UnityEngine.Time.time));
         }
     }

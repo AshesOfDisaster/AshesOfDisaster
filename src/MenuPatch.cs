@@ -37,6 +37,7 @@ public static class ModMenu
         new() { Ru = "Нейтралы",    En = "Neutrals",    Filter = o => o.Tab == OptTab.Neutral },
         new() { Ru = "Призраки",    En = "Ghosts",      Filter = o => o.Tab == OptTab.Ghost },
         new() { Ru = "Мини-игры",   En = "Mini-games",  Filter = o => o.Tab == OptTab.Mini },
+        new() { Ru = "Мистики",     En = "Mystics",     Filter = o => o.Tab == OptTab.Mystic },
     };
 
     static GameSettingMenu menu;
@@ -238,14 +239,14 @@ public static class ModMenu
         dynRows.Clear();
 
         bool ru = Translator.GameIsRu;
-        float x = GameOptionsMenu.START_POS_X + Opts.RowX.Value;
+        float x = GameOptionsMenu.START_POS_X + Opts.RowX.Value + Opts.RowShift.Value;
         float startY = GameOptionsMenu.START_POS_Y + Opts.RowY.Value;
         float sp = GameOptionsMenu.SPACING_Y * Opts.RowSpacing.Value;
         float y = startY;
 
-        if (page >= 2 && page <= 4)
+        if ((page >= 2 && page <= 4) || page == 7)
         {
-            var team = page == 2 ? OptTab.Crewmate : page == 3 ? OptTab.Impostor : OptTab.Neutral;
+            var team = page == 2 ? OptTab.Crewmate : page == 3 ? OptTab.Impostor : page == 7 ? OptTab.Mystic : OptTab.Neutral;
             foreach (var role in Opts.Roles.Where(r => r.Tab == team))
             {
                 var rr = role;

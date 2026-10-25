@@ -39,7 +39,8 @@ public static class Ghosts
         "silence hides the impostor", "ash falls on the guilty", "check everyone in medbay", "do not trust the quiet one"
     };
 
-    public static (string ru, string en, string color, BoolOpt on, Opt[] extras)[] Roles => new[]
+    public static (string ru, string en, string color, BoolOpt on, Opt[] extras)[] Roles => RolesBase.Concat(Extra33.GhostRoles()).ToArray();
+    static (string ru, string en, string color, BoolOpt on, Opt[] extras)[] RolesBase => new[]
     {
         ("Полтергейст", "Poltergeist", "#CE93D8", On, new Opt[] { Uses }),
         ("Помощник по заданиям", "Task Helper", "#80CBC4", HelperOn, new Opt[] { HelperMax, HelperCd, HelperTime }),
@@ -109,7 +110,6 @@ public static class Ghosts
 
     public static void Tick()
     {
-        if (MiniMode.Active) return;
         try { TickInner(); } catch (Exception e) { Plugin.Logger.LogWarning("Ghosts.Tick: " + e.Message); }
     }
 
@@ -122,6 +122,7 @@ public static class Ghosts
         {
             if (!Dead(p) || p.AmOwner || told.Contains(p.PlayerId)) continue;
             bool ru = Translator.IsRu(p);
+            if (Extra33.TryGhost(p, ImpTeam(p) ? "imp" : IsNeutral(p) ? "other" : "crew")) { told.Add(p.PlayerId); continue; }
             if (ImpTeam(p))
             {
                 if (PossOn == null || !PossOn.Value) continue;
@@ -272,6 +273,7 @@ public static class Ghosts
     public static string MyRole(PlayerControl p, bool ru)
     {
         if (!Dead(p)) return null;
+        var xg = Extra33.GhostOf(p); if (xg != null) return Extra33.GhostDesc(xg, ru);
         if (ImpTeam(p)) return PossOn != null && PossOn.Value ? Desc("possessor", ru) : null;
         if (IsHelper(p)) return Desc("helper", ru);
         return On != null && On.Value ? Desc("poltergeist", ru) : null;
@@ -282,7 +284,7 @@ public static class Ghosts
         q = q.ToLowerInvariant();
         foreach (var k in new[] { "poltergeist", "possessor", "helper" })
             if (Name(k, true).ToLowerInvariant().StartsWith(q) || Name(k, false).ToLowerInvariant().StartsWith(q)) return Name(k, ru) + " (" + (ru ? "роль призраков" : "ghost role") + ")\n" + Desc(k, ru);
-        return null;
+        return Extra33.GhostFind(q, ru);
     }
 
     public static string List(bool ru) => (ru ? "Призраки: " : "Ghosts: ") + string.Join(", ", new[] { "poltergeist", "possessor", "helper" }.Select(k => Name(k, ru)));
@@ -303,6 +305,7 @@ public static class Ghosts
 
     public static bool Handle(PlayerControl me, string cmd, string[] a = null)
     {
+        if (Extra33.HandleGhost(me, cmd, a ?? Array.Empty<string>())) return true;
         if (cmd == "haunt" || cmd == "possess" || cmd == "hk") return HandlePossess(me, cmd, a ?? Array.Empty<string>());
         if (cmd == "task" || cmd == "helper" || cmd == "solve") return HandleHelper(me, cmd, a ?? Array.Empty<string>());
         return HandleBoo(me, cmd, a);
@@ -338,6 +341,8 @@ public static class Ghosts
         }
         return Shuffle(w, false);
     }
+
+    public static string Mumble(string w) => Glitch(Scramble(w));
 
     static readonly string[] Fill = { ".", "..", "~", "'", "*", "-", "`", "," };
 

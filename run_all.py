@@ -151,6 +151,9 @@ def main():
             say("\nПохоже, мод не совпадает с версией игры (нет такого типа/метода/поля в interop). "
                 "Если игра недавно обновилась: запусти её один раз с BepInEx, чтобы папка interop пересоздалась, и снова Run all. "
                 "Если не помогло — пришли build_errors.txt.")
+        elif "CS0433" in text:
+            say("\nВ BepInEx\\core смешаны файлы BepInEx 5 и BepInEx 6 (BepInEx.dll 5.x рядом с BepInEx.Core.dll 6.x, 0Harmony20.dll). "
+                "Скрипт их уже пропускает, но если ошибка осталась - переустанови BepInEx 6 в чистую папку игры (удали BepInEx, winhttp.dll, doorstop_config.ini) и один раз запусти игру.")
         elif re.search(r"NU1101|NU1301|NETSDK1004|MSB4236", text):
             say("\nНе скачался пакет .NET (нужен интернет) или не найден .NET SDK. Проверь сеть и что установлен .NET SDK 8.")
         die("Сборка не удалась. Пришли мне файл build_errors.txt (лежит рядом со скриптом); полный лог — build_log.txt.")

@@ -14,6 +14,13 @@ public static class Smoker
     static readonly Dictionary<byte, float> last = new();
     static float nextTick;
 
+    public static List<(string key, byte owner, Vector2 pos, string ru, string en, string color)> Items()
+    {
+        var l = new List<(string key, byte owner, Vector2 pos, string ru, string en, string color)>();
+        foreach (var c in clouds) if (Time.time < c.Until) l.Add(("sk" + c.Owner + "_" + c.Pos.x.ToString("0.0") + "_" + c.Pos.y.ToString("0.0"), c.Owner, c.Pos, "Дым", "Smoke", "#BDBDBD"));
+        return l;
+    }
+
     public static void Reset() { clouds.Clear(); inside.Clear(); warned.Clear(); last.Clear(); }
     public static bool InOwnSmoke(PlayerControl p)
     {
