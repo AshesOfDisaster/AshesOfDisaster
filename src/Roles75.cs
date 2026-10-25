@@ -96,48 +96,48 @@ public static partial class Roles75
             "Предатель. Питомец захлопывает двери случайной комнаты далеко от тебя (от 15 м), чтобы отвлечь экипаж. Использований: 4, перезарядка 60 с. [Питомец]",
             "Impostor. The pet slams the doors of a random room far from you (15 m or more) to distract the crew. Uses: 4, cooldown 60 s. [Pet]");
 
-        R("Collector", "Коллекционер", "Collector", "#FFE082", N,
-            "Нейтрал. Питомец рядом с телом (до 2 м) забирает трофей (с одного тела один раз). Когда наберёшь нужное число трофеев, узнаешь имя настоящего предателя. [Питомец]",
-            "Neutral. The pet next to a body (within 2 m) takes a trophy (once per body). When you have enough trophies you learn the name of a real impostor. [Pet]");
-        R("Whirlwind", "Вихрь", "Whirlwind", "#80CBC4", N,
-            "Нейтрал. Питомец закручивает вихрь: все игроки вокруг (радиус в настройках) разлетаются к случайным дверям. Использований: 3, перезарядка 60 с. [Питомец]",
-            "Neutral. The pet spins up a whirlwind: every player around (radius in the settings) is thrown to random doors. Uses: 3, cooldown 60 s. [Pet]");
-        R("Timestop", "Стоп-кадр", "Timestop", "#B0BEC5", N,
-            "Нейтрал. Питомец останавливает время: все игроки вокруг, кроме тебя, замирают на несколько секунд. [Питомец]",
-            "Neutral. The pet stops time: every player around you, except you, freezes for a few seconds. [Pet]");
-        R("Oracle", "Прорицатель", "Oracle", "#B39DDB", N,
-            "Нейтрал. Питомец запускает пророчество: через заданное время ты узнаёшь, сколько убийств за это время случилось. [Питомец]",
-            "Neutral. The pet starts a prophecy: after the set time you learn how many kills happened in that period. [Pet]");
+        R("Collector", "Коллекционер", "Collector", "#FFE082", C,
+            "Мирный. Питомец рядом с телом (до 2 м) забирает трофей (с одного тела один раз). Когда наберёшь нужное число трофеев, узнаешь имя настоящего предателя. [Питомец]",
+            "Crewmate. The pet next to a body (within 2 m) takes a trophy (once per body). When you have enough trophies you learn the name of a real impostor. [Pet]");
+        R("Whirlwind", "Вихрь", "Whirlwind", "#80CBC4", C,
+            "Мирный. Питомец закручивает вихрь: все игроки вокруг (радиус в настройках) разлетаются к случайным дверям. Использований: 3, перезарядка 60 с. [Питомец]",
+            "Crewmate. The pet spins up a whirlwind: every player around (radius in the settings) is thrown to random doors. Uses: 3, cooldown 60 s. [Pet]");
+        R("Timestop", "Стоп-кадр", "Timestop", "#B0BEC5", C,
+            "Мирный. Питомец останавливает время: все игроки вокруг, кроме тебя, замирают на несколько секунд. [Питомец]",
+            "Crewmate. The pet stops time: every player around you, except you, freezes for a few seconds. [Pet]");
+        R("Oracle", "Прорицатель", "Oracle", "#B39DDB", C,
+            "Мирный. Питомец запускает пророчество: через заданное время ты узнаёшь, сколько убийств за это время случилось. [Питомец]",
+            "Crewmate. The pet starts a prophecy: after the set time you learn how many kills happened in that period. [Pet]");
         R("Meteor", "Метеорит", "Meteor", "#FF7043", N,
             "Нейтрал. Для сервера ты настоящий предатель. Питомец отмечает точку: через несколько секунд туда падает метеорит и убивает всех в радиусе (щит спасает). [Питомец]",
             "Neutral. The server sees you as a real impostor. The pet marks a spot: a few seconds later a meteor hits it and kills everyone in the radius (a shield saves). [Pet]");
-        R("Siren", "Сирена", "Siren", "#FF8A80", N,
-            "Нейтрал. Питомец включает сирену: у всех предателей рядом (радиус в настройках) мигает экран, а ты узнаёшь, сколько их было. [Питомец]",
-            "Neutral. The pet sounds a siren: the screens of all impostors nearby (radius in the settings) flash and you learn how many there were. [Pet]");
-        R("Insider", "Знаток", "Insider", "#AED581", N,
-            "Нейтрал. На первом собрании ты узнаёшь имена остальных нейтралов. [Сама]",
-            "Neutral. At the first meeting you learn the names of the other neutrals. [Passive]");
-        R("Broker", "Брокер", "Broker", "#FFF176", N,
-            "Нейтрал. Питомец рядом с игроком (до 3 м) заключает сделку: ты узнаёшь его роль, а он узнаёт, в какой комнате ближайшее тело. Сделок: 3. [Питомец]",
-            "Neutral. The pet next to a player (within 3 m) makes a deal: you learn his role and he learns which room the nearest body is in. Deals: 3. [Pet]");
-        R("Portalist", "Портальщик", "Portalist", "#4FC3F7", N,
-            "Нейтрал. Питомец ставит первый портал, потом второй. Когда оба стоят, питомец у одного портала переносит тебя ко второму. Питомец вдали от порталов начинает новую пару. [Питомец]",
-            "Neutral. The pet places a first portal and then a second one. When both stand, the pet next to one portal carries you to the other. The pet away from the portals starts a new pair. [Pet]");
-        R("Photographer", "Фотограф", "Photographer", "#CE93D8", N,
-            "Нейтрал. Питомец делает снимок: кто где был в этот момент. На ближайшем собрании ты получаешь все свои снимки. Снимков: 3. [Питомец]",
-            "Neutral. The pet takes a snapshot of who was where at that moment. At the next meeting you receive all your snapshots. Snapshots: 3. [Pet]");
-        R("Boomerang", "Бумеранг", "Boomerang", "#FFB74D", N,
-            "Нейтрал. Питомец рядом с игроком (до 5 м) запускает бумеранг: через несколько секунд игрок возвращается к тебе, туда, где ты стоишь. [Питомец]",
-            "Neutral. The pet next to a player (within 5 m) throws a boomerang: a few seconds later that player is carried back to wherever you stand. [Pet]");
-        R("Chronicler", "Летописец", "Chronicler", "#BCAAA4", N,
-            "Нейтрал. Когда кого-то убивают, ты сразу узнаёшь, кто погиб и к какой группе принадлежал убийца (предатель или нейтрал). [Сама]",
-            "Neutral. When someone is killed you learn at once who died and which group the killer belonged to (impostor or neutral). [Passive]");
-        R("Sorcerer", "Колдун", "Sorcerer", "#7E57C2", N,
-            "Нейтрал. Питомец рядом с игроком (до 3 м) накладывает проклятие: его следующая способность питомцем не сработает, а экран замигает. [Питомец]",
-            "Neutral. The pet next to a player (within 3 m) casts a curse: his next pet ability fails and his screen flashes. [Pet]");
-        R("Rescuer", "Спасатель", "Rescuer", "#A5D6A7", N,
-            "Нейтрал. Питомец рядом с игроком, застрявшим в паутине (до 2,5 м), сразу освобождает его. Спасений: 3. [Питомец]",
-            "Neutral. The pet next to a player stuck in a web (within 2.5 m) frees him at once. Rescues: 3. [Pet]");
+        R("Siren", "Сирена", "Siren", "#FF8A80", C,
+            "Мирный. Питомец включает сирену: у всех предателей рядом (радиус в настройках) мигает экран, а ты узнаёшь, сколько их было. [Питомец]",
+            "Crewmate. The pet sounds a siren: the screens of all impostors nearby (radius in the settings) flash and you learn how many there were. [Pet]");
+        R("Insider", "Знаток", "Insider", "#AED581", C,
+            "Мирный. На первом собрании ты узнаёшь имена остальных нейтралов. [Сама]",
+            "Crewmate. At the first meeting you learn the names of the other neutrals. [Passive]");
+        R("Broker", "Брокер", "Broker", "#FFF176", C,
+            "Мирный. Питомец рядом с игроком (до 3 м) заключает сделку: ты узнаёшь его роль, а он узнаёт, в какой комнате ближайшее тело. Сделок: 3. [Питомец]",
+            "Crewmate. The pet next to a player (within 3 m) makes a deal: you learn his role and he learns which room the nearest body is in. Deals: 3. [Pet]");
+        R("Portalist", "Портальщик", "Portalist", "#4FC3F7", C,
+            "Мирный. Питомец ставит первый портал, потом второй. Когда оба стоят, питомец у одного портала переносит тебя ко второму. Питомец вдали от порталов начинает новую пару. [Питомец]",
+            "Crewmate. The pet places a first portal and then a second one. When both stand, the pet next to one portal carries you to the other. The pet away from the portals starts a new pair. [Pet]");
+        R("Photographer", "Фотограф", "Photographer", "#CE93D8", C,
+            "Мирный. Питомец делает снимок: кто где был в этот момент. На ближайшем собрании ты получаешь все свои снимки. Снимков: 3. [Питомец]",
+            "Crewmate. The pet takes a snapshot of who was where at that moment. At the next meeting you receive all your snapshots. Snapshots: 3. [Pet]");
+        R("Boomerang", "Бумеранг", "Boomerang", "#FFB74D", C,
+            "Мирный. Питомец рядом с игроком (до 5 м) запускает бумеранг: через несколько секунд игрок возвращается к тебе, туда, где ты стоишь. [Питомец]",
+            "Crewmate. The pet next to a player (within 5 m) throws a boomerang: a few seconds later that player is carried back to wherever you stand. [Pet]");
+        R("Chronicler", "Летописец", "Chronicler", "#BCAAA4", C,
+            "Мирный. Когда кого-то убивают, ты сразу узнаёшь, кто погиб и к какой группе принадлежал убийца (предатель или нейтрал). [Сама]",
+            "Crewmate. When someone is killed you learn at once who died and which group the killer belonged to (impostor or neutral). [Passive]");
+        R("Sorcerer", "Колдун", "Sorcerer", "#7E57C2", C,
+            "Мирный. Питомец рядом с игроком (до 3 м) накладывает проклятие: его следующая способность питомцем не сработает, а экран замигает. [Питомец]",
+            "Crewmate. The pet next to a player (within 3 m) casts a curse: his next pet ability fails and his screen flashes. [Pet]");
+        R("Rescuer", "Спасатель", "Rescuer", "#A5D6A7", C,
+            "Мирный. Питомец рядом с игроком, застрявшим в паутине (до 2,5 м), сразу освобождает его. Спасений: 3. [Питомец]",
+            "Crewmate. The pet next to a player stuck in a web (within 2.5 m) frees him at once. Rescues: 3. [Pet]");
 
         E("Watcher", "WatcherCd", C, 30, 5, 120, 5, "Перезарядка камеры (сек)", "Camera cooldown (sec)");
         E("Watcher", "WatcherMax", C, 2, 1, 4, 1, "Камер одновременно", "Cameras at a time");

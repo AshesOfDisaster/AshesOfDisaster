@@ -23,7 +23,14 @@ public static class NR
     static bool defectorDone;
     static float nextTick;
 
-    public static void Reset() { lastUse.Clear(); lastCd.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); Crates.Reset(); LobbyGames.Reset(); Extras.Reset(); Ghosts.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
+    public static List<(string key, byte owner, Vector2 pos, string ru, string en, string color)> Items()
+    {
+        var l = new List<(string key, byte owner, Vector2 pos, string ru, string en, string color)>();
+        foreach (var kv in anchors) l.Add(("an" + kv.Key + "_" + kv.Value.x.ToString("0.0") + "_" + kv.Value.y.ToString("0.0"), kv.Key, kv.Value, "Метка", "Mark", "#81C784"));
+        return l;
+    }
+
+    public static void Reset() { lastUse.Clear(); lastCd.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); LobbyGames.Reset(); Extras.Reset(); Ghosts.Reset(); Extra33.Reset(); Freeman.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
 
     static bool Alive(PlayerControl p) => p != null && p.Data != null && !p.Data.IsDead && !p.Data.Disconnected;
     static bool IsImp(PlayerControl p) => !RoleLogic.Demoted.Contains(p.PlayerId) && (RoleLogic.IsImpRole(p.Data.RoleType) || RoleLogic.ForcedImp.Contains(p.PlayerId));
@@ -73,6 +80,11 @@ public static class NR
             case "Shroomer": return Shroomer.Status(p, r);
             case "Smoker": return Smoker.Status(p, r);
             case "Joker": return Joker.Status(p, r);
+            case "Alchemist": return Alchemist.Status(p, r);
+            case "Witch": return Witch.Status(p, r);
+            case "Freeman": return Freeman.Status(p, r);
+            case "Herbalist": case "FortuneTeller": return MysticRoles.Status(p, r);
+            case "Fat": return Fat.Status(p, r);
             case "Pinkman": return Pinkman.Status(p, r);
             case "Dowser": return ru ? $"{n}: питомец показывает комнату ближайшего трупа и сколько живых игроков рядом (в радиусе {Opts.DowserRadius.Value} м). Перезарядка {Opts.DowserCooldown.Value} с." : $"{n}: pet shows the room of the nearest body and how many living players are nearby (within {Opts.DowserRadius.Value} m). Cooldown {Opts.DowserCooldown.Value} s.";
             case "Navigator": return ru ? $"{n}: питомец ставит метку, повторно - возвращает тебя к метке." : $"{n}: pet sets a mark, pet again returns you to it.";
@@ -82,18 +94,24 @@ public static class NR
             case "Defector": return ru ? $"{n}: на первом собрании ты получишь имя одного из предателей (с вероятностью {Opts.DefectorWrong.Value}% оно ложное)." : $"{n}: at the first meeting you get a name of an impostor ({Opts.DefectorWrong.Value}% chance it's false).";
             case "Reflector": return ru ? $"{n}: первое нападение на тебя с шансом {Opts.ReflectChance.Value}% отражается - убийца гибнет сам." : $"{n}: the first attack on you has a {Opts.ReflectChance.Value}% chance to be reflected - the killer dies.";
         }
-        return Roles30.Status(p, r) ?? Roles75.Status(p, r);
+        return Extra33.Status(p, r) ?? Roles30.Status(p, r) ?? Roles75.Status(p, r);
     }
 
     public static bool Pet(PlayerControl p, RoleDef role)
     {
         bool ru = Translator.IsRu(p);
+        if (Extra33.Handles(role.Id)) return Extra33.Use(p, role.Id);
         switch (role.Id)
         {
             case "Plumber": return Plumber.Use(p);
             case "Pinkman": return Pinkman.Use(p);
             case "Smoker": return Smoker.Use(p);
             case "Joker": return Joker.Use(p);
+            case "Alchemist": return Alchemist.Use(p);
+            case "Witch": return Witch.Use(p);
+            case "Freeman": return Freeman.Use(p);
+            case "Herbalist": case "FortuneTeller": return MysticRoles.Use(p, role.Id);
+            case "Fat": return Fat.Use(p);
             case "Shroomer": return Shroomer.Use(p);
             case "Dowser":
                 {
@@ -234,7 +252,7 @@ public static class NR
     {
         try
         {
-            Roles30.OnKill(killer, target); Roles75.OnKill(killer, target);
+            Roles30.OnKill(killer, target); Roles75.OnKill(killer, target); Extra33.OnKill(killer, target);
             var vpos = target.GetTruePosition();
             bodies.Add((target.PlayerId, vpos));
             if (!inTwin && killer != null && killer.PlayerId != target.PlayerId && RoleLogic.Has(killer, "Twin")
@@ -290,7 +308,7 @@ public static class NR
     {
         try
         {
-            Shroomer.Restore(); Smoker.OnMeeting(); Roles30.OnMeeting(); Roles75.OnMeeting(); Crates.OnMeeting(); Ghosts.OnMeeting();
+            Shroomer.Restore(); Smoker.OnMeeting(); Roles30.OnMeeting(); Roles75.OnMeeting(); Ghosts.OnMeeting(); Extra33.OnMeeting(); Freeman.OnMeeting();
             anchors.Clear(); bodies.Clear();
             var alive = PlayerControl.AllPlayerControls.ToArray().Where(Alive).ToList();
             foreach (var kv in RoleState.Assigned.ToList())
@@ -318,7 +336,7 @@ public static class NR
     public static void Tick()
     {
         if (!Utils.AmHost) return;
-        Shroomer.Tick(); Smoker.Tick(); Pinkman.Tick(); Roles30.Tick(); Roles75.Tick(); Crates.Tick(); LobbyGames.Tick(); Ghosts.Tick(); Extras.Tick();
+        Shroomer.Tick(); Smoker.Tick(); Pinkman.Tick(); Roles30.Tick(); Roles75.Tick(); Fat.Tick(); LobbyGames.Tick(); NeutralWin.Tick(); Witch.Tick(); Freeman.Tick(); Extra33.Tick(); Markers.Tick(); Ghosts.Tick(); Extras.Tick();
         try { LogTick(); } catch (Exception e) { Plugin.Logger.LogWarning("NR.LogTick: " + e.Message); }
         if (RoleState.Assigned.Count == 0 || Time.time < nextTask) return;
         nextTask = Time.time + 1f;

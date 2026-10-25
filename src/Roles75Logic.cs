@@ -31,6 +31,17 @@ public static partial class Roles75
     static int killCount;
     static float nextTick;
 
+    public static List<(string key, byte owner, Vector2 pos, string ru, string en, string color)> Items()
+    {
+        var l = new List<(string key, byte owner, Vector2 pos, string ru, string en, string color)>();
+        foreach (var kv in cams) foreach (var c in kv.Value) l.Add(("cm" + kv.Key + "_" + c.Pos.x.ToString("0.0") + "_" + c.Pos.y.ToString("0.0"), kv.Key, c.Pos, "Камера", "Camera", "#4DD0E1"));
+        foreach (var kv in beacon) l.Add(("bc" + kv.Key + "_" + kv.Value.x.ToString("0.0") + "_" + kv.Value.y.ToString("0.0"), kv.Key, kv.Value, "Маяк", "Beacon", "#FFF176"));
+        foreach (var kv in portalA) l.Add(("pa" + kv.Key + "_" + kv.Value.x.ToString("0.0") + "_" + kv.Value.y.ToString("0.0"), kv.Key, kv.Value, "Портал 1", "Portal 1", "#4FC3F7"));
+        foreach (var kv in portalB) l.Add(("pb" + kv.Key + "_" + kv.Value.x.ToString("0.0") + "_" + kv.Value.y.ToString("0.0"), kv.Key, kv.Value, "Портал 2", "Portal 2", "#CE93D8"));
+        foreach (var x in meteors) l.Add(("mt" + x.owner + "_" + x.pos.x.ToString("0.0") + "_" + x.pos.y.ToString("0.0"), x.owner, x.pos, "Метеор", "Meteor", "#FF7043"));
+        return l;
+    }
+
     public static void Reset()
     {
         lastUse.Clear(); lastCd.Clear(); useMax.Clear(); uses.Clear(); cams.Clear(); tagged.Clear(); beacon.Clear(); link.Clear(); trophies.Clear();

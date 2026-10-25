@@ -94,11 +94,20 @@ public static class NameInfo
         if (plain) return n;
         string tg = GetTag(p);
         bool host = p.AmOwner && Opts.HostBadge.Value;
-        if (!host && string.IsNullOrEmpty(tg)) return null;
+        int fs = Fat.NameSize(p);
+        bool big = fs > 105;
+        if (!host && string.IsNullOrEmpty(tg) && !big) return null;
         string res = host ? "<#00FFFF>" + n + "</color>" : n;
+        if (big) res = "<size=" + fs + "%>" + res + "</size>";
         if (host) res += " <size=70%><#00FFFF>[" + (ru ? "Хост" : "Host") + "]</color></size>";
         if (!string.IsNullOrEmpty(tg)) res = "<#FFD700>[" + tg + "]</color> " + res;
         return res;
+    }
+
+    public static void RefreshDecor(byte id, bool remove = false)
+    {
+        if (remove) undecorate[id] = Time.time; else undecorate.Remove(id);
+        hostBadgeAt.Clear();
     }
 
     static void HostBadgeTick()
@@ -129,7 +138,7 @@ public static class NameInfo
                 w.WritePacked(t.OwnerId);
                 foreach (var subj in all)
                 {
-                    string txt = Decor(subj, ru, plain: undecorate.ContainsKey(subj.PlayerId) && GetTag(subj) == null && !(subj.AmOwner && Opts.HostBadge.Value));
+                    string txt = Decor(subj, ru, plain: undecorate.ContainsKey(subj.PlayerId) && GetTag(subj) == null && !(subj.AmOwner && Opts.HostBadge.Value) && Fat.NameSize(subj) <= 105);
                     if (txt == null) continue;
                     w.StartMessage(2);
                     w.WritePacked(subj.NetId);
@@ -199,6 +208,29 @@ public static class NameInfo
         catch (Exception e) { Plugin.Logger.LogWarning("NameInfo.Notify: " + e.Message); }
     }
 
+    public static void Refresh() { nextTick = 0f; burstUntil = Time.time + 8f; lastSent.Clear(); }
+    static float burstUntil;
+
+    static string ShortDesc(RoleDef role, bool ru)
+    {
+        string d = ru ? role.DescRu : role.DescEn;
+        if (string.IsNullOrEmpty(d)) return null;
+        int br = d.IndexOf('[');
+        if (br > 0) d = d.Substring(0, br);
+        var parts = d.Split(new[] { ". " }, StringSplitOptions.RemoveEmptyEntries);
+        string res = "";
+        for (int i = parts.Length > 1 ? 1 : 0; i < parts.Length; i++)
+        {
+            string sentence = parts[i].Trim().TrimEnd('.');
+            if (sentence.Length == 0) continue;
+            if (res.Length > 0 && res.Length + sentence.Length > 85) break;
+            res += (res.Length > 0 ? ". " : "") + sentence;
+            if (res.Length >= 50) break;
+        }
+        if (res.Length > 95) res = res.Substring(0, 92) + "...";
+        return res;
+    }
+
     static string Build(PlayerControl p)
     {
         if (p == null || p.Data == null || p.Data.Disconnected) return null;
@@ -208,9 +240,12 @@ public static class NameInfo
         if (!string.IsNullOrEmpty(tg)) lines.Add("<color=#FFD700>[" + tg + "]</color>");
         if (!p.Data.IsDead && RoleState.Assigned.TryGetValue(p.PlayerId, out var role))
         {
-            lines.Add(role.Colored(ru));
+            lines.Add(RoleGuide.Line(role, ru));
+            lines.Add("<color=#DDDDDD>" + (ru ? "Цель: " : "Goal: ") + RoleGuide.Goal(role, ru) + "</color>");
             string st = RoleLogic.NameStatus(p, role, ru);
-            if (!string.IsNullOrEmpty(st)) lines.Add(st);
+            string hint = RoleHints.Get(role.Id, ru);
+            string now = !string.IsNullOrEmpty(st) ? st : hint;
+            if (!string.IsNullOrEmpty(now)) lines.Add("<color=#9FD8FF>" + (ru ? "Сейчас: " : "Now: ") + "</color>" + now);
         }
         if (!p.Data.IsDead && RoleLogic.Webs.Any(w => w.Trapped == p.PlayerId))
             lines.Add(ru ? "<color=#FF5555>Ты в паутине! Нужна помощь</color>" : "<color=#FF5555>You are in a web! Need help</color>");
@@ -267,9 +302,10 @@ public static class NameInfo
         if (MeetingHud.Instance != null) return;
         if (Time.time - RoleLogic.VigStart < 15f) return;
         if (Time.time < nextTick) return;
-        nextTick = Time.time + 1f;
+        bool burst = Time.time < burstUntil;
+        nextTick = Time.time + (burst ? 0.3f : 1f);
 
-        int budget = 2;
+        int budget = burst ? 6 : 2;
         foreach (var p in PlayerControl.AllPlayerControls)
         {
             if (p == null || p.Data == null) continue;
@@ -280,7 +316,7 @@ public static class NameInfo
             if (!p.AmOwner)
             {
                 if (budget <= 0) continue;
-                if (lastSent.TryGetValue(p.PlayerId, out var t) && Time.time - t < 1.5f) continue;
+                if (lastSent.TryGetValue(p.PlayerId, out var t) && Time.time - t < (burst ? 0.3f : 1.5f)) continue;
                 budget--;
             }
             Apply(p, info);

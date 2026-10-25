@@ -59,13 +59,13 @@ public static class Roles30
         R("Avenger", "Мститель", "Avenger", "#D32F2F", N,
             "Нейтрал. Если тебя убьют, убийца погибнет через несколько секунд (время в настройках). [Сама]",
             "Neutral. If you are killed, your killer dies a few seconds later (time in the settings). [Passive]");
-        R("Hypnotist", "Гипнотизёр", "Hypnotist", "#AB47BC", N,
-            "Нейтрал. Питомец рядом с игроком (до 3 м) обездвиживает его на несколько секунд. Перезарядка 45 с. [Питомец]",
-            "Neutral. The pet next to a player (within 3 m) freezes him in place for a few seconds. Cooldown: 45 s. [Pet]");
+        R("Hypnotist", "Гипнотизёр", "Hypnotist", "#AB47BC", C,
+            "Мирный. Питомец рядом с игроком (до 3 м) обездвиживает его на несколько секунд. Перезарядка 45 с. [Питомец]",
+            "Crewmate. The pet next to a player (within 3 m) freezes him in place for a few seconds. Cooldown: 45 s. [Pet]");
 
-        R("Clockmaker", "Часовщик", "Clockmaker", "#4E342E", N,
-            "Нейтрал. Питомец отматывает время для тебя: ты возвращаешься туда, где был около 10 секунд назад. Перезарядка 60 с. [Питомец]",
-            "Neutral. The pet rewinds time for you: you return to where you were about 10 seconds ago. Cooldown: 60 s. [Pet]");
+        R("Clockmaker", "Часовщик", "Clockmaker", "#4E342E", C,
+            "Мирный. Питомец отматывает время для тебя: ты возвращаешься туда, где был около 10 секунд назад. Перезарядка 60 с. [Питомец]",
+            "Crewmate. The pet rewinds time for you: you return to where you were about 10 seconds ago. Cooldown: 60 s. [Pet]");
 
         E("Sentry", "SentryCd", C, 15, 5, 90, 5, "Перезарядка поста (сек)", "Post cooldown (sec)");
         E("Sentry", "SentryMax", C, 3, 1, 8, 1, "Постов одновременно", "Posts at a time");
@@ -132,6 +132,16 @@ public static class Roles30
     {
         string suffix = ":" + id;
         foreach (var k in lastUse.Keys.Where(x => x.EndsWith(suffix)).ToList()) lastUse.Remove(k);
+    }
+
+    public static List<(string key, byte owner, Vector2 pos, string ru, string en, string color)> Items()
+    {
+        var l = new List<(string key, byte owner, Vector2 pos, string ru, string en, string color)>();
+        foreach (var x in posts) l.Add(("sp" + x.owner + "_" + x.pos.x.ToString("0.0") + "_" + x.pos.y.ToString("0.0"), x.owner, x.pos, "Пост", "Post", "#4FC3F7"));
+        foreach (var x in mines) l.Add(("mi" + x.owner + "_" + x.pos.x.ToString("0.0") + "_" + x.pos.y.ToString("0.0"), x.owner, x.pos, "Мина", "Mine", "#FF5252"));
+        foreach (var x in traps) l.Add(("tr" + x.owner + "_" + x.pos.x.ToString("0.0") + "_" + x.pos.y.ToString("0.0"), x.owner, x.pos, "Капкан", "Trap", "#FFB74D"));
+        foreach (var kv in home) l.Add(("hm" + kv.Key + "_" + kv.Value.x.ToString("0.0") + "_" + kv.Value.y.ToString("0.0"), kv.Key, kv.Value, "Метка", "Mark", "#81C784"));
+        return l;
     }
 
     public static void Reset()

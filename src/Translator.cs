@@ -42,6 +42,7 @@ public static class Translator
         ["opt.AutoStartDelay"] = ("Задержка автозапуска (сек)", "Auto-start delay (sec)"),
         ["opt.Welcome"] = ("Приветствие при входе", "Welcome message"),
         ["opt.PlayerCommands"] = ("Команды для игроков", "Commands for players"),
+        ["opt.ChatNoLimit"] = ("Без лимитов в чате: длина и число сообщений (выключи, если сообщения пропадают)", "No chat limits: message length and count (turn off if messages vanish)"),
         ["opt.ChatColors"] = ("Цветные роли в чате (выключи, если сервер ругается)", "Colored roles in chat (turn off if the server complains)"),
         ["opt.UseBanList"] = ("Бан-лист (BanList.txt)", "Ban list (BanList.txt)"),
         ["opt.UseDenyNames"] = ("Запрещённые ники (DenyName.txt)", "Denied names (DenyName.txt)"),
@@ -50,7 +51,7 @@ public static class Translator
         ["opt.KickNoFriendCode"] = ("Кик без friend code", "Kick without friend code"),
         ["opt.ShowCredits"] = ("Создатели в меню", "Credits in menu"),
 
-        ["welcome"] = ("Привет, {0}! Это комната с модом «{1}» (сделали {2}). Тут больше 70 ролей и у каждой своя способность - погладь питомца и она сработает. Команды: /m - твоя роль, /r - список ролей, /h - все команды. Наш Discord: {3}", "Hi {0}! This is a room with the \"{1}\" mod (made by {2}). There are over 70 roles and each one has its own ability - pet your pet to use it. Commands: /m - your role, /r - role list, /h - all commands. Our Discord: {3}"),
+        ["welcome"] = ("Привет, {0}! Это комната с модом «{1}» (сделали {2}). Тут больше 90 ролей и у каждой своя способность - погладь питомца и она сработает. Команды: /m - твоя роль, /r - список ролей, /h - все команды.", "Hi {0}! This is a room with the \"{1}\" mod (made by {2}). There are over 90 roles and each one has its own ability - pet your pet to use it. Commands: /m - your role, /r - role list, /h - all commands."),
         ["kick.level"] = ("{0} кикнут: низкий уровень", "{0} kicked: level too low"),
         ["kick.fc"] = ("{0} кикнут: нет friend code", "{0} kicked: no friend code"),
         ["kick.ban"] = ("{0} кикнут: бан-лист", "{0} kicked: banned"),
