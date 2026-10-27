@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>AshesOfDisaster</AssemblyName>
+    <RootNamespace>AshesOfDisaster</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DebugType>none</DebugType>
+    <NoWarn>CS0108;CS0114;CS8632;CS0649;CS0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="$(GameDir)/BepInEx/core/*.dll" Private="false" />
+    <Reference Include="$(GameDir)/BepInEx/interop/*.dll" Private="false" />
+  </ItemGroup>
+  <ItemGroup Condition="Exists('$(GameDir)/BepInEx/core/BepInEx.Core.dll')">
+    <Reference Remove="$(GameDir)/BepInEx/core/BepInEx.dll" />
+    <Reference Remove="$(GameDir)/BepInEx/core/BepInEx.Harmony.dll" />
+    <Reference Remove="$(GameDir)/BepInEx/core/BepInEx.Preloader.dll" />
+    <Reference Remove="$(GameDir)/BepInEx/core/0Harmony20.dll" />
+  </ItemGroup>
+</Project>

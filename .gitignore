@@ -1,0 +1,10 @@
+bin/
+obj/
+build/
+run_all.config.json
+build_log.txt
+build_errors.txt
+.vs/
+*.user
+*.log
+*.secrets.txt
