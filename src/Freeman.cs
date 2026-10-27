@@ -273,6 +273,7 @@ public static class FreemanVentPatch
     {
         try { Freeman.OnVent(__instance.myPlayer, id); } catch { }
         try { Extra33.OnVent(__instance.myPlayer, id); } catch { }
+        try { God.OnVent(__instance.myPlayer, id); } catch { }
         return true;
     }
 }

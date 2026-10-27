@@ -62,7 +62,10 @@ public class RoleDef
 public static class Opts
 {
     public static ConfigEntry<string> ChatPrivate;
-    public static ConfigEntry<bool> MapMarkers, MarkersAll;
+    public static ConfigEntry<bool> MapMarkers, MarkersAll, NeutralSuicide, AutoTest, HorseCostume;
+    public static ConfigEntry<int> HorseSize, HorseShift;
+    public static ConfigEntry<string> RoomShareUrl;
+    public static BoolOpt ShareRoom;
     public static ConfigEntry<bool> NativeMenu, ReplacePresets, UseMask, NativeScroll, HostBadge, HostOnlyForce, NameRefresh, NameViaRpc, OptEnable, OptNoVsync, OptBackground, OptCleanup;
     public static ConfigEntry<int> OptFps;
     public static ConfigEntry<float> ViewHeight, ClipMargin, ScrollStep;
@@ -136,6 +139,12 @@ public static class Opts
         RowX          = c.Bind("Layout", "RowXOffset", 0f, "Сдвиг строк по X");
         RowShift      = c.Bind("Layout", "RowButtonsShift", -0.25f, "Сдвиг только строк с кнопками по X (минус - влево), чтобы кнопки не уходили за рамку");
         MapMarkers    = c.Bind("Experimental", "MapMarkersEnabled", true, "Значки на карте у того, кто что-то поставил (силки, мины, руны...). Если кикает или ломает игру - поставь false.");
+        NeutralSuicide = c.Bind("Experimental", "NeutralKillsLookLikeSuicide", true, "Убийства нейтралов выглядят как самоубийство жертвы, и убийцу не видно. Если хоста кикает с официального сервера - поставь false.");
+        AutoTest = c.Bind("Experimental", "AutoTestInPractice", true, "В режиме практики мод сам проверяет все роли, способности и команды и пишет результат в BepInEx/AshesOfDisaster_selftest.log.");
+        RoomShareUrl = c.Bind("Experimental", "RoomShareUrl", "", "Адрес вебхука Discord для кода комнаты, если нет файла AshesOfDisaster.secrets.txt.");
+        HorseCostume = c.Bind("Experimental", "HorseCostume", true, "Хобихорсер выглядит как лошадь: картинка из цветных блоков под ником. Если выглядит плохо - поставь false.");
+        HorseSize = c.Bind("Experimental", "HorseCostumeSize", 140, "Размер лошади в процентах (меняй, чтобы закрывала персонажа).");
+        HorseShift = c.Bind("Experimental", "HorseCostumeShift", 10, "Сдвиг лошади вниз в десятых долях высоты строки (чтобы она оказалась на персонаже).");
         MarkersAll    = c.Bind("Experimental", "MarkersVisibleToAll", true, "Значки на карте видят все игроки (false - только тот, кто поставил).");
         RowY          = c.Bind("Layout", "RowYOffset", 0f, "Сдвиг строк по Y");
         RowSpacing    = c.Bind("Layout", "RowSpacingMult", 1f, "Множитель шага строк");
@@ -168,6 +177,10 @@ public static class Opts
         PetForAll           = new("PetForAll",           OptTab.Hidden, true, c);
         RevealOnExile       = new("RevealOnExile",       OptTab.Hidden, true, c);
 
+        ShareRoom = new("ShareRoom", OptTab.System, false, c);
+        ShareRoom.NameRu = "Отправить код комнаты в Discord мода (выкл по умолчанию)"; ShareRoom.NameEn = "Send the room code to the mod Discord (off by default)";
+        ShareRoom.ShortRu = "Код комнаты в Discord"; ShareRoom.ShortEn = "Room code to Discord";
+        Grp("Комната", "Room", ShareRoom);
         Grp("Лобби", "Lobby", AnyPlayers, AutoStart, AutoStartPlayers, AutoStartDelay, Welcome, PlayerCommands, ChatColors, ChatNoLimit);
         Grp("Защита", "Protection", UseBanList, UseDenyNames, KickLowLevel, MinLevel, KickNoFriendCode);
         Grp("Настройки игры", "Game settings", NoGameEnd, NoEndFewPlayers, SyncButtonMode, SyncedButtonCount, KillCooldownPercent, DisableCloseDoors, GhostSeeRoles, NameStatus, RevealOnExile, PetForAll, TeamSwap);
@@ -292,7 +305,7 @@ public static class Opts
         Joker.Define(c);
         Alchemist.Define(c);
         MysticRoles.Define(c);
-        Witch.Define(c); Extra33.Define(c); Freeman.Define(c);
+        Witch.Define(c); Extra33.Define(c); Freeman.Define(c); God.Define(c);
         Fat.Define(c);
         Anticheat.Define(c);
         Extras.Define(c);

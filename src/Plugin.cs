@@ -11,7 +11,7 @@ public class Plugin : BasePlugin
 {
     public const string Id = "com.niko.ashesofdisaster";
     public const string Name = "Ashes of Disaster";
-    public const string Version = "3.20";
+    public const string Version = "3.44";
     public const string Creators = "niko & Акакиш";
     public const string Discord = "discord.gg/CCB2rg3CHz";
 
@@ -22,6 +22,7 @@ public class Plugin : BasePlugin
     {
         Instance = this;
         Logger = Log;
+        SelfTest.Install();
         Opts.Init(Config);
         Lists.Init();
 
@@ -32,6 +33,7 @@ public class Plugin : BasePlugin
         ModHooks.PatchAllSafe(harmony);
         PetHooks.Install(harmony);
         NameInfo.Install(harmony);
+        SelfTest.RunStatic();
         Log.LogInfo($"{Name} {Version} loaded");
     }
 }

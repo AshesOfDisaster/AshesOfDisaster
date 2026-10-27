@@ -159,7 +159,11 @@ public static class Utils
         }
     }
 
-    public static void SendSecret(PlayerControl to, string text, int maxMessages = -1, bool defer = true) => Send(to, text, true, maxMessages, defer);
+    public static void SendSecret(PlayerControl to, string text, int maxMessages = -1, bool defer = true)
+    {
+        SelfTest.OnHint(to, text);
+        Send(to, text, true, maxMessages, defer);
+    }
 
     public static void Announce(string text)
     {

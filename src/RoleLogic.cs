@@ -316,10 +316,13 @@ public static class RoleLogic
         {
             if (!RealImpNeutrals.Contains(kv.Value.Id)) continue;
             var vp = Utils.GetPlayer(kv.Key);
-            if (vp == null || vp.Data == null || IsImpRole(vp.Data.RoleType)) continue;
-            try { SetVanillaRole(vp, RoleTypes.Impostor); ForcedImp.Add(vp.PlayerId); Plugin.Logger.LogInfo($"{kv.Value.Id} {vp.Data.PlayerName}: vanilla role set to Impostor (now {vp.Data.RoleType})"); }
+            bool isGod = kv.Value.Id == "God";
+            if (vp == null || vp.Data == null || (isGod ? vp.Data.RoleType == RoleTypes.Shapeshifter : IsImpRole(vp.Data.RoleType))) continue;
+            try { SetVanillaRole(vp, isGod ? RoleTypes.Shapeshifter : RoleTypes.Impostor); ForcedImp.Add(vp.PlayerId); Plugin.Logger.LogInfo($"{kv.Value.Id} {vp.Data.PlayerName}: vanilla role set to Impostor (now {vp.Data.RoleType})"); }
             catch (Exception e) { Plugin.Logger.LogError("Vigilante RpcSetRole: " + e.GetBaseException().Message); }
         }
+        NeutralMask.Apply();
+        SelfTest.OnGameStart();
         StartRevealAt = Time.time + 6f;
         Plugin.Logger.LogInfo("Vanilla roles: " + string.Join(", ", all.Select(p => $"{p.PlayerId}:{p.Data.RoleType}")));
         Plugin.Logger.LogInfo("Roles assigned: " + string.Join(", ", RoleState.Assigned.Select(kv => $"{kv.Key}={kv.Value.Id}")));
@@ -383,7 +386,8 @@ public static class RoleLogic
             return false;
         }
         Plugin.Logger.LogInfo($"RPC MurderPlayer: sender={killer.Data.PlayerName}({killer.Data.RoleType}) target={target.Data.PlayerName} ok={succeeded}");
-        try { killer.RpcMurderPlayer(target, succeeded); }
+        bool hidden = Opts.NeutralSuicide != null && Opts.NeutralSuicide.Value && RoleState.Assigned.TryGetValue(killer.PlayerId, out var kr) && RealImpNeutrals.Contains(kr.Id);
+        try { if (hidden) target.RpcMurderPlayer(target, succeeded); else killer.RpcMurderPlayer(target, succeeded); }
         catch (Exception e) { Plugin.Logger.LogError("Kill: " + e.GetBaseException().Message); return false; }
         Plugin.Logger.LogInfo("RPC MurderPlayer sent");
         return true;
@@ -448,6 +452,8 @@ public static class RoleLogic
                 return Witch.Short(p, ru);
             case "Freeman":
                 return Freeman.Short(p, ru);
+            case "God":
+                return God.Short(p, ru);
             case "Herbalist": case "FortuneTeller":
                 return MysticRoles.Short(p, r.Id, ru);
             case "Fat":

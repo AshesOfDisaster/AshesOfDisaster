@@ -96,10 +96,12 @@ public static class NameInfo
         bool host = p.AmOwner && Opts.HostBadge.Value;
         int fs = Fat.NameSize(p);
         bool big = fs > 105;
-        if (!host && string.IsNullOrEmpty(tg) && !big) return null;
+        string horse = Extra33.HorseArt(p);
+        if (!host && string.IsNullOrEmpty(tg) && !big && horse == null) return null;
         string res = host ? "<#00FFFF>" + n + "</color>" : n;
         if (big) res = "<size=" + fs + "%>" + res + "</size>";
         if (host) res += " <size=70%><#00FFFF>[" + (ru ? "Хост" : "Host") + "]</color></size>";
+        if (horse != null) res += "\n" + horse;
         if (!string.IsNullOrEmpty(tg)) res = "<#FFD700>[" + tg + "]</color> " + res;
         return res;
     }
@@ -192,7 +194,7 @@ public static class NameInfo
     public static void CheckRoom()
     {
         int id = AmongUsClient.Instance != null ? AmongUsClient.Instance.GameId : 0;
-        if (id != tagGame) { tagGame = id; tags.Clear(); }
+        if (id != tagGame) { tagGame = id; tags.Clear(); real.Clear(); shown.Clear(); lastSent.Clear(); restoreQ.Clear(); notes.Clear(); }
     }
 
     public static void Notify(PlayerControl p, string text, float seconds = 8f)
@@ -260,7 +262,8 @@ public static class NameInfo
     static void Apply(PlayerControl p, string info)
     {
         byte id = p.PlayerId;
-        if (!real.TryGetValue(id, out var name)) { name = p.Data.PlayerName; real[id] = name; }
+        string name = p.Data.PlayerName;
+        real[id] = name;
         string text = $"<size=55%>{info}</size>\r\n{name}";
         if (p.AmOwner) { SetLocal(p, text); shown[id] = info; return; }
         text = text.Replace("color=", "");
@@ -279,7 +282,8 @@ public static class NameInfo
         byte id = restoreQ.Dequeue();
         shown.Remove(id);
         var p = Utils.GetPlayer(id);
-        if (p == null || p.Data == null || !real.TryGetValue(id, out var name)) return;
+        if (p == null || p.Data == null) return;
+        string name = p.Data.PlayerName;
         if (p.AmOwner) SetLocal(p, name);
         else if (works && !p.Data.Disconnected) SendPrivate(p, name);
     }

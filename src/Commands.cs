@@ -61,6 +61,7 @@ public static class Commands
         new() { Name = "scare", UsageRu = "ID", UsageEn = "ID", DescRu = "фантом: напугать живого не-предателя", DescEn = "phantom: scare a living non-impostor" },
         new() { Name = "swap", UsageRu = "ID ID", UsageEn = "ID ID", DescRu = "шутник-призрак: поменять местами двух живых", DescEn = "ghost trickster: swap two living players" },
         new() { Name = "wisp", UsageRu = "ID", UsageEn = "ID", DescRu = "огонёк: увести живого игрока к двери", DescEn = "wisp: lead a living player to a door" },
+        new() { Name = "share", HostOnly = true, DescRu = "отправка кода комнаты в Discord: включена или нет, что отправлено, защита от спама", DescEn = "room code sharing to Discord: on or off, what was sent, spam protection" },
         new() { Name = "who", HostOnly = true, DescRu = "кто какую роль получил (только хост)", DescEn = "who got which role (host only)" },
         new() { Name = "role", HostOnly = true, UsageRu = "ID|ник роль | none | clear", UsageEn = "ID|name role | none | clear", DescRu = "выдать роль игроку, например /role 3 Сантехник (в лобби заранее или сразу в игре), /role 3 none забирает роль, /role clear сбрасывает всё, /role без аргументов показывает список", DescEn = "give a player a role, for example /role 3 Plumber (in the lobby in advance or right now), /role 3 none takes it away, /role clear resets everything, /role alone shows the list" },
         new() { Name = "perk", DescRu = "твой перк: случайный довесок на игру, а Шустрый применяет его этой же командой", DescEn = "your perk: a random bonus for the game, the Quick perk is used by this same command" },
@@ -378,6 +379,10 @@ public static class Commands
                     if (Psy.Use(sender, a) || Roles30.UseMeeting(sender, a)) return true;
                     if (!host) { Say(ru ? "Эту способность включает питомец: погладь его. Командой /ab работают только способности на собрании." : "This ability is used with the pet: pet it. Only meeting abilities work with /ab."); return true; }
                     RoleLogic.UseAbility(sender, "cmd");
+                    return true;
+
+                case "share":
+                    Say(RoomCode.StatusLine(ru));
                     return true;
 
                 case "who":

@@ -7,3 +7,4 @@ build_errors.txt
 .vs/
 *.user
 *.log
+*.secrets.txt

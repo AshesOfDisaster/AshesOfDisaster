@@ -40,10 +40,11 @@ public class ModGui : MonoBehaviour
         Psy.Tick();
         Welder.Tick();
         PetAll.Tick();
+        SelfTest.Tick();
         NR.Tick();
         ModMenu.Tick();
         Utils.PumpOutbox();
-        if (Utils.AmHost && Utils.InLobby && RoleState.Assigned.Count > 0) RoleLogic.Reset();
+        if (Utils.AmHost && Utils.InLobby && RoleState.Assigned.Count > 0 && !SelfTest.Running) RoleLogic.Reset();
         RoleLogic.Tick();
         NameInfo.Tick();
         if (!Utils.AmHost || !Utils.InLobby) { AutoStartAt = -1f; welcome.Clear(); return; }

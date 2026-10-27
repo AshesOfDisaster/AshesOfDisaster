@@ -122,7 +122,13 @@ public static class AnticheatPatch
 
 public static class Reports
 {
-    static readonly HttpClient http = new();
+    static readonly HttpClient http = MakeHttp();
+    static HttpClient MakeHttp()
+    {
+        var h = new HttpClient();
+        try { h.Timeout = TimeSpan.FromSeconds(15); h.DefaultRequestHeaders.UserAgent.ParseAdd("AshesOfDisaster/1.0 (Among Us mod)"); } catch { }
+        return h;
+    }
 
     static string Esc(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", "\\n");
 
@@ -148,6 +154,7 @@ public static class Reports
     {
         Blocked = "";
         string url = Anticheat.Webhook == null ? "" : Anticheat.Webhook.Value.Trim();
+        if (url.Length == 0) url = Secrets.Reports;
         if (url.Length == 0) return false;
         name = Cut(name, 40); fc = Cut(fc, 40); why = Cut(why, 200);
         if (!Allowed((fc.Length > 0 ? fc : name) + "|" + why)) return false;
@@ -161,9 +168,15 @@ public static class Reports
             {
                 using var content = new StringContent(body, Encoding.UTF8, "application/json");
                 var res = await http.PostAsync(url, content);
-                Plugin.Logger.LogInfo("Report sent, answer " + (int)res.StatusCode);
+                if (res.IsSuccessStatusCode) Plugin.Logger.LogInfo("Report sent, answer " + (int)res.StatusCode);
+                else
+                {
+                    string answer = "";
+                    try { answer = await res.Content.ReadAsStringAsync(); } catch { }
+                    Plugin.Logger.LogWarning("Report NOT delivered, Discord answered " + (int)res.StatusCode + ": " + Cut(answer, 200));
+                }
             }
-            catch (Exception e) { Plugin.Logger.LogWarning("Report failed: " + e.Message); }
+            catch (Exception e) { Plugin.Logger.LogWarning("Report failed: " + e.GetBaseException().Message); }
         });
         return true;
     }

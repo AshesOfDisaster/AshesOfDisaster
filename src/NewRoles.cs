@@ -30,7 +30,7 @@ public static class NR
         return l;
     }
 
-    public static void Reset() { lastUse.Clear(); lastCd.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); LobbyGames.Reset(); Extras.Reset(); Ghosts.Reset(); Extra33.Reset(); Freeman.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
+    public static void Reset() { lastUse.Clear(); lastCd.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); LobbyGames.Reset(); Extras.Reset(); Ghosts.Reset(); Extra33.Reset(); Freeman.Reset(); God.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
 
     static bool Alive(PlayerControl p) => p != null && p.Data != null && !p.Data.IsDead && !p.Data.Disconnected;
     static bool IsImp(PlayerControl p) => !RoleLogic.Demoted.Contains(p.PlayerId) && (RoleLogic.IsImpRole(p.Data.RoleType) || RoleLogic.ForcedImp.Contains(p.PlayerId));
@@ -83,6 +83,7 @@ public static class NR
             case "Alchemist": return Alchemist.Status(p, r);
             case "Witch": return Witch.Status(p, r);
             case "Freeman": return Freeman.Status(p, r);
+            case "God": return God.Status(p, r);
             case "Herbalist": case "FortuneTeller": return MysticRoles.Status(p, r);
             case "Fat": return Fat.Status(p, r);
             case "Pinkman": return Pinkman.Status(p, r);
@@ -110,6 +111,7 @@ public static class NR
             case "Alchemist": return Alchemist.Use(p);
             case "Witch": return Witch.Use(p);
             case "Freeman": return Freeman.Use(p);
+            case "God": return God.Use(p);
             case "Herbalist": case "FortuneTeller": return MysticRoles.Use(p, role.Id);
             case "Fat": return Fat.Use(p);
             case "Shroomer": return Shroomer.Use(p);
@@ -308,7 +310,7 @@ public static class NR
     {
         try
         {
-            Shroomer.Restore(); Smoker.OnMeeting(); Roles30.OnMeeting(); Roles75.OnMeeting(); Ghosts.OnMeeting(); Extra33.OnMeeting(); Freeman.OnMeeting();
+            Shroomer.Restore(); Smoker.OnMeeting(); Roles30.OnMeeting(); Roles75.OnMeeting(); Ghosts.OnMeeting(); Extra33.OnMeeting(); Freeman.OnMeeting(); God.OnMeeting();
             anchors.Clear(); bodies.Clear();
             var alive = PlayerControl.AllPlayerControls.ToArray().Where(Alive).ToList();
             foreach (var kv in RoleState.Assigned.ToList())
@@ -336,7 +338,7 @@ public static class NR
     public static void Tick()
     {
         if (!Utils.AmHost) return;
-        Shroomer.Tick(); Smoker.Tick(); Pinkman.Tick(); Roles30.Tick(); Roles75.Tick(); Fat.Tick(); LobbyGames.Tick(); NeutralWin.Tick(); Witch.Tick(); Freeman.Tick(); Extra33.Tick(); Markers.Tick(); Ghosts.Tick(); Extras.Tick();
+        Shroomer.Tick(); Smoker.Tick(); Pinkman.Tick(); Roles30.Tick(); Roles75.Tick(); Fat.Tick(); LobbyGames.Tick(); NeutralWin.Tick(); Witch.Tick(); Freeman.Tick(); God.Tick(); RoomCode.Tick(); Extra33.FastTick(); Extra33.Tick(); Markers.Tick(); Ghosts.Tick(); Extras.Tick();
         try { LogTick(); } catch (Exception e) { Plugin.Logger.LogWarning("NR.LogTick: " + e.Message); }
         if (RoleState.Assigned.Count == 0 || Time.time < nextTask) return;
         nextTask = Time.time + 1f;

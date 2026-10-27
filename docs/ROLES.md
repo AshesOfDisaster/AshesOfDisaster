@@ -1,6 +1,6 @@
 # Roles / Роли
 
-Total / Всего: **120**. Descriptions are shown in game with `/r <role>`.
+Total / Всего: **139**. Descriptions are shown in game with `/r <role>`.
 
 
 ## Crew / Мирные
@@ -181,6 +181,38 @@ Total / Всего: **120**. Descriptions are shown in game with `/r <role>`.
 - RU: Мирный. На каждом собрании ты узнаёшь, в какие комнаты за раунд не заходил никто. Значит, там убийцу можно не искать. Работает сам. [Сама]
 - EN: Crewmate. At every meeting you learn which rooms nobody entered during the round, so you need not look for the killer there. Works by itself. [Passive]
 
+### Switcher / Подменщик
+- RU: Мирный. Питомец меняет тебя местами с ближайшим игроком (до 3 м). Можно выдернуть друга из-под удара или самому уйти от опасности. Использований: 3, перезарядка 45 с. [Питомец]
+- EN: Crewmate. The pet swaps you with the nearest player (within 3 m). Pull a friend out of danger or get away yourself. Uses: 3, cooldown 45 s. [Pet]
+
+### Taskmaster / Табельщик
+- RU: Мирный. Питомец рядом с игроком (до 3 м) показывает, сколько заданий он выполнил из скольких. Если списка заданий нет, ты узнаешь и это. Иногда почерк не разобрать (шанс в настройках). Использований: 4, перезарядка 40 с. [Питомец]
+- EN: Crewmate. The pet next to a player (within 3 m) shows how many of his tasks are done. If he has no task list you learn that too. Sometimes the handwriting is unreadable (chance in the settings). Uses: 4, cooldown 40 s. [Pet]
+
+### Mourner / Плакальщик
+- RU: Мирный. Если кого-то убили рядом с тобой (по умолчанию в радиусе 12 м), ты слышишь крик и узнаёшь комнату, где это случилось. Имя убийцы не открывается. [Сама]
+- EN: Crewmate. If someone is killed near you (within 12 m by default) you hear a scream and learn the room where it happened. The killer's name is not revealed. [Passive]
+
+### Coroner / Коронер
+- RU: Мирный. Питомец рядом с телом (до 2,5 м) называет всех, кто был в радиусе 8 м от жертвы в момент смерти, включая убийцу. Список перемешан. Использований: 4, перезарядка 35 с. [Питомец]
+- EN: Crewmate. The pet next to a body (within 2.5 m) names everyone who was within 8 m of the victim at the moment of death, the killer included. The list is shuffled. Uses: 4, cooldown 35 s. [Pet]
+
+### Dispatcher / Диспетчер
+- RU: Мирный. Питомец сообщает, в какой комнате последний раз кто-то залез в люк и сколько секунд назад. Имени нет. Использований: 4, перезарядка 40 с. [Питомец]
+- EN: Crewmate. The pet tells in which room someone entered a vent last and how many seconds ago. No name. Uses: 4, cooldown 40 s. [Pet]
+
+### Bot / Бот
+- RU: Мирный. У тебя есть бот: он сам ходит по карте и выполняет твои задания, примерно одно за 50 секунд (можно менять в настройках). Тебе остаётся следить за игрой и искать предателей. Во время собрания бот стоит. Когда ты погибаешь, бот останавливается. [Сама]
+- EN: Crewmate. You have a bot: it walks the map by itself and completes your tasks, about one every 50 seconds (adjustable in the settings). You only have to watch the game and look for impostors. The bot stands still during a meeting. When you die the bot stops. [Passive]
+
+### Newton / Ньютон
+- RU: Мирный. Твоя стихия - электрощитовая. Внутри неё у тебя электрический щит: он отменяет одно нападение и возвращается через минуту, а когда выходишь, пропадает. Питомец вне электрощитовой переключает режим: Задания или Контроль. Питомец внутри неё применяет режим. Задания: выполняет до двух твоих заданий и по одному заданию каждому мирному, кто в электрощитовой (использований 4). Контроль: все остальные в электрощитовой замирают на 4 секунды, а если идёт саботаж света, он чинится (использований 3). Перезарядка 30 с. [Питомец]
+- EN: Crewmate. Electrical is your element. Inside it you have an electric shield: it cancels one attack and comes back after a minute, and it disappears when you leave. The pet outside Electrical switches the mode: Tasks or Control. The pet inside it uses the mode. Tasks: completes up to two of your tasks and one task for every crewmate in Electrical (4 uses). Control: everyone else in Electrical freezes for 4 seconds, and an active lights sabotage is fixed (3 uses). Cooldown 30 s. [Pet]
+
+### Hobbyhorse / Хобихорсер
+- RU: Мирный. Ты катаешься на своём хобби-коне. Питомец включает и выключает галоп. Пока идёт галоп, ты бежишь намного быстрее (по умолчанию вдвое), но конь тратит силы, их шкала 100 и падает на 25 в секунду. Пока стоишь или идёшь шагом, силы восстанавливаются. Когда силы кончатся, конь выдохнется и не пойдёт в галоп 4 секунды. В галопе ты сбиваешь всех, кто ближе 0,9 м: они замирают на 1,5 секунды (одного и того же игрока не чаще раза в 5 секунд). Стены не пробиваешь. [Питомец]
+- EN: Crewmate. You ride your hobby horse. The pet starts and stops the gallop. During a gallop you run much faster (twice as fast by default), but the horse spends stamina: the scale is 100 and drops by 25 per second. While you stand or walk the stamina recovers. When it runs out the horse is winded and will not gallop for 4 seconds. In a gallop you knock down everyone closer than 0.9 m: they freeze for 1.5 seconds (the same player not more than once every 5 seconds). You cannot go through walls. [Pet]
+
 ## Impostors / Предатели
 
 ### Welder / Сварщик
@@ -335,13 +367,33 @@ Total / Всего: **120**. Descriptions are shown in game with `/r <role>`.
 - RU: Предатель. Питомец даёт яркую вспышку: все не-предатели в радиусе 6 м на 4 секунды теряют обзор. Использований: 3. [Питомец]
 - EN: Impostor. The pet makes a bright flash: all non-impostors within 6 m lose sight for 4 seconds. Uses: 3. [Pet]
 
-### Lurer / Заманщик
+### Beguiler / Заманщик
 - RU: Предатель. Питомец уводит ближайшего не-предателя (до 5 м) к случайной двери и замораживает его на 2 секунды. Так можно убрать свидетеля. Использований: 3. [Питомец]
 - EN: Impostor. The pet leads the nearest non-impostor (within 5 m) to a random door and freezes him for 2 seconds. A way to get rid of a witness. Uses: 3. [Pet]
 
-### Alarmist / Паникёр
+### Alarmer / Тревожник
 - RU: Предатель. Питомец поднимает тревогу: у всех не-предателей на 1,5 секунды мигает экран. Использований: 2, перезарядка 90 с. [Питомец]
 - EN: Impostor. The pet raises an alarm: the screens of all non-impostors flash for 1.5 seconds. Uses: 2, cooldown 90 s. [Pet]
+
+### Tripper / Подножник
+- RU: Предатель. Питомец рядом с не-предателем (до 1,5 м) ставит ему подножку: он замирает на 6 секунд. Использований: 3, перезарядка 50 с. [Питомец]
+- EN: Impostor. The pet next to a non-impostor (within 1.5 m) trips him: he freezes for 6 seconds. Uses: 3, cooldown 50 s. [Pet]
+
+### Eraser / Стиратель
+- RU: Предатель. Питомец стирает следы: журнал люков, историю перемещений и списки тех, кто был рядом с телами. Это ломает проверки Дознавателя, Коронера, Диспетчера и Следопыта люков. Использований: 2, перезарядка 60 с. [Питомец]
+- EN: Impostor. The pet erases the traces: the vent log, the movement history and the lists of who was near bodies. This breaks the checks of the Interrogator, Coroner, Dispatcher and Ventsleuth. Uses: 2, cooldown 60 s. [Pet]
+
+### Lockpicker / Взломщик
+- RU: Предатель. Питомец называет всех мирных, у кого сейчас есть щит, а щит ближайшего из них (до 3 м) срывает. Использований: 4, перезарядка 40 с. [Питомец]
+- EN: Impostor. The pet names every crewmate who has a shield right now and strips the shield of the nearest one (within 3 m). Uses: 4, cooldown 40 s. [Pet]
+
+### Dazer / Дурман
+- RU: Предатель. Питомец одурманивает ближайшего не-предателя (до 2,5 м): через несколько секунд он замирает на несколько секунд. Собрание отменяет дурман. [Питомец]
+- EN: Impostor. The pet dazes the nearest non-impostor (within 2.5 m): after a few seconds he freezes for a few seconds. A meeting cancels the daze. [Pet]
+
+### Changeling / Подменыш
+- RU: Предатель. Питомец меняет тебя местами со случайным мирным игроком на любом расстоянии. Так можно уйти от тела и оставить рядом с ним другого. Использований: 3, перезарядка 60 с. [Питомец]
+- EN: Impostor. The pet swaps you with a random crewmate at any distance. Walk away from a body and leave someone else standing next to it. Uses: 3, cooldown 60 s. [Pet]
 
 ## Neutrals / Нейтралы
 
@@ -428,6 +480,30 @@ Total / Всего: **120**. Descriptions are shown in game with `/r <role>`.
 ### Pouncer / Прыгун
 - RU: Нейтрал. Для сервера ты настоящий предатель. Питомец бросает тебя к ближайшему игроку (до 8 м) и через 0,7 секунды ты его убиваешь. Щит спасает жертву. Перезарядка 45 с. [Питомец]
 - EN: Neutral. The server sees you as a real impostor. The pet throws you to the nearest player (within 8 m) and 0.7 seconds later you kill him. A shield saves the victim. Cooldown 45 s. [Pet]
+
+### Digger / Копатель
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец роет яму там, где ты стоишь. Первый чужой игрок, подошедший к яме ближе 1,2 м, проваливается и погибает. Ямы пропадают на собрании. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet digs a pit where you stand. The first other player who comes within 1.2 m of it falls in and dies. Pits vanish at a meeting. [Pet]
+
+### Liquidator / Ликвидатор
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только если у него не осталось невыполненных заданий. Тех, у кого заданий нет вообще, тоже можно. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only if he has no unfinished tasks. Players with no tasks at all count too. [Pet]
+
+### Duelist / Дуэлянт
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец вызывает ближайшего игрока (до 3 м) на дуэль: вы оба замираете, а когда время выйдет, он погибает. Щит его спасёт. Собрание отменяет дуэль. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet challenges the nearest player (within 3 m) to a duel: you both freeze and when the time is up he dies. A shield saves him. A meeting cancels the duel. [Pet]
+
+### Arsonist / Поджигатель
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец поджигает комнату, где ты стоишь (в коридоре не работает). У всех в ней мигает экран, а через несколько секунд погибают все, кто остался внутри, кроме тебя. Собрание тушит огонь. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet sets the room you stand in on fire (does not work in a hallway). The screens of everyone inside flash, and after a few seconds everyone still inside dies, except you. A meeting puts the fire out. [Pet]
+
+### Mercenary / Наёмник
+- RU: Нейтрал. Для сервера ты настоящий предатель. Первый питомец назначает случайную цель (контракт). Дальше питомец показывает, в какой комнате цель, а если она ближе 2,5 м, убивает её. После убийства питомец назначит новую цель. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The first pet use assigns a random target (the contract). After that the pet shows which room the target is in, and kills it if it is within 2.5 m. After a kill the next pet use assigns a new target. [Pet]
+
+### God / Бог
+- RU: Нейтрал. Для сервера ты настоящий предатель, у тебя кнопка превращения. Ты копишь веру: она растёт медленно, на собрании +1, а молитва даёт +4, но только если стоять неподвижно. Режим силы переключается люком (смена стоит 1 веру), после каждого собрания порядок режимов перемешивается, а текущий режим тебе неизвестен, пока не переключишь. Девять режимов: Кара, Приговор, Перенос, Откровение, Благословение, Остановка времени, Гнев, Молитва, Знамение. Повтор одной силы подряд дорожает на 1 веру за каждый раз. Кара и Приговор на игроке, чью роль ты не открывал Откровением, стоят на 2 веры больше. Три убийства сжигают всю веру и отнимают щит на 2 минуты. Силы с целью работают так: нажми кнопку превращения и выбери игрока в меню, сам ты не превратишься. Силы без цели включает питомец. Каждая сила стоит веры и перезаряжается. У тебя свой щит, он сам возвращается. Ты не видишь роли, пока не используешь Откровение. [Люк, превращение и питомец]
+- EN: Neutral. The server sees you as a real impostor, you have a shapeshift button. You gather faith: it grows slowly, +1 at a meeting, and Prayer gives +4 but only if you stand still. The power mode is switched with a vent (a switch costs 1 faith), the order of modes is reshuffled after every meeting and the current mode is unknown until you switch. Nine modes: Smite, Doom, Swap, Reveal, Bless, Time stop, Wrath, Prayer, Omen. Repeating a power costs 1 more faith each time. Smite and Doom on a player whose role you have not revealed cost 2 more. Three kills burn all your faith and remove your shield for 2 minutes. Targeted powers work like this: press the shapeshift button and pick a player in the menu, you do not actually morph. Powers without a target are triggered by the pet. Every power costs faith and has a cooldown. You have your own shield that returns by itself. You cannot see roles until you use Reveal. [Vent, morph and pet]
 
 ## Mystics / Мистики
 
