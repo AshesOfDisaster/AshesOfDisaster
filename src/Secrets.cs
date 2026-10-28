@@ -12,7 +12,7 @@ public static class Secrets
     static void Load()
     {
         if (loaded) return;
-        loaded = true; reports = ""; roomCodes = "";
+        loaded = true; reports = Embedded.Reports; roomCodes = Embedded.Rooms;
         try
         {
             string path = Path.Combine(Paths.ConfigPath, "AshesOfDisaster.secrets.txt");
