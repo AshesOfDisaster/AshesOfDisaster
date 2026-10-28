@@ -29,7 +29,7 @@ public static class NR
         return l;
     }
 
-    public static void Reset() { lastUse.Clear(); lastCd.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); LobbyGames.Reset(); Extras.Reset(); Ghosts.Reset(); Extra33.Reset(); Freeman.Reset(); God.Reset(); logBook.Clear(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
+    public static void Reset() { lastUse.Clear(); lastCd.Clear(); uses.Clear(); anchors.Clear(); ShieldGiver.Clear(); foreDone.Clear(); Roles30.Reset(); Roles75.Reset(); LobbyGames.Reset(); Extras.Reset(); Ghosts.Reset(); Extra33.Reset(); Freeman.Reset(); God.Reset(); lastRoom.Clear(); bodies.Clear(); reflectTried.Clear(); defectorDone = false; }
 
     static bool Alive(PlayerControl p) => p != null && p.Data != null && !p.Data.IsDead && !p.Data.Disconnected;
     static bool IsImp(PlayerControl p) => !RoleLogic.Demoted.Contains(p.PlayerId) && (RoleLogic.IsImpRole(p.Data.RoleType) || RoleLogic.ForcedImp.Contains(p.PlayerId));
