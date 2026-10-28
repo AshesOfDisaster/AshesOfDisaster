@@ -78,26 +78,28 @@ public static class PetHooks
 
     public static void LocalPet(PlayerControl __instance)
     {
+        if (Buttons.PetBlocked(__instance)) return;
         try { if (__instance != null && __instance.AmOwner) RoleLogic.OnPet(__instance, "TryPet"); }
         catch (Exception e) { Plugin.Logger.LogError("Pet: " + e); }
     }
 
     public static void RpcControl(PlayerControl __instance, [HarmonyArgument(0)] byte callId)
     {
-        if (callId != petCall) return;
+        if (callId != petCall || Buttons.PetBlocked(__instance)) return;
         try { RoleLogic.OnPet(__instance, "Rpc"); }
         catch (Exception e) { Plugin.Logger.LogError("Pet: " + e); }
     }
 
     public static void RpcPhysics(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId)
     {
-        if (callId != petCall) return;
+        if (callId != petCall || Buttons.PetBlocked(__instance.myPlayer)) return;
         try { RoleLogic.OnPet(__instance.myPlayer, "PhysRpc"); }
         catch (Exception e) { Plugin.Logger.LogError("Pet: " + e); }
     }
 
     public static void PhysicsPet(PlayerPhysics __instance)
     {
+        if (Buttons.PetBlocked(__instance.myPlayer)) return;
         try { RoleLogic.OnPet(__instance.myPlayer, "PhysPet"); }
         catch (Exception e) { Plugin.Logger.LogError("Pet: " + e); }
     }

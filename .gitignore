@@ -8,3 +8,5 @@ build_errors.txt
 *.user
 *.log
 *.secrets.txt
+release/*.dll
+release/*.sha256

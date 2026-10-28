@@ -30,6 +30,7 @@ public static class Translator
         ["opt.KillCooldownPercent"] = ("Кулдаун убийства (%)", "Kill cooldown (%)"),
         ["opt.DisableCloseDoors"] = ("Отключить закрытие дверей", "Disable closing doors"),
         ["opt.GhostSeeRoles"] = ("Призраки видят роли", "Ghosts see roles"),
+        ["opt.ButtonAbilities"] = ("Способности на кнопках игры (смена облика, люк, кнопка защиты у призраков) вместо питомца", "Abilities on game buttons (shapeshift, vent, ghost protect button) instead of the pet"),
         ["opt.HostAuthority"] = ("Режим «host-only мод» (+25 к версии: ослабляет античит сервера; действует со СЛЕДУЮЩЕГО создания комнаты)", "Host-only mod mode (+25 protocol version: relaxes server anticheat; applies from the NEXT lobby you create)"),
         ["opt.NameStatus"] = ("Статус над ником: ЛИЧНЫЙ, каждый видит только свой (нужен режим host-only или свой сервер)", "Status above nickname: PRIVATE, each player sees only their own (needs host-only mode or own server)"),
         ["opt.TeamSwap"] = ("Смена команды: роли предателей можно выдавать мирным (и наоборот), в игре вдвоём один становится предателем", "Team swap: impostor roles can go to crewmates (and vice versa); in a 2-player game one becomes an impostor"),

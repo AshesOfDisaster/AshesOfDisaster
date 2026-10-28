@@ -306,6 +306,7 @@ public static class RoleLogic
             try { SetVanillaRole(vp, isGod ? RoleTypes.Shapeshifter : RoleTypes.Impostor); ForcedImp.Add(vp.PlayerId); Plugin.Logger.LogInfo($"{kv.Value.Id} {vp.Data.PlayerName}: vanilla role set to Impostor (now {vp.Data.RoleType})"); }
             catch (Exception e) { Plugin.Logger.LogError("RpcSetRole: " + e.GetBaseException().Message); }
         }
+        Buttons.AssignVanilla(all);
         NeutralMask.Apply();
         SelfTest.OnGameStart();
         StartRevealAt = Time.time + 6f;
@@ -316,7 +317,8 @@ public static class RoleLogic
     public static string Describe(PlayerControl p, RoleDef r)
     {
         bool ru = Translator.IsRu(p);
-        return $"{r.Colored(ru)}\n{(ru ? r.DescRu : r.DescEn)}";
+        string how = Buttons.HowTo(p);
+        return $"{r.Colored(ru)}\n{(ru ? r.DescRu : r.DescEn)}" + (how.Length > 0 ? "\n" + how : "");
     }
 
     public static string Status(PlayerControl p, RoleDef r)

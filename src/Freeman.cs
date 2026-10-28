@@ -277,6 +277,7 @@ public static class FreemanVentPatch
     public static bool Prefix(PlayerPhysics __instance, int id)
     {
         try { Freeman.OnVent(__instance.myPlayer, id); } catch { }
+        try { Buttons.Vent(__instance.myPlayer, id); } catch { }
         try { Extra33.OnVent(__instance.myPlayer, id); } catch { }
         try { God.OnVent(__instance.myPlayer, id); } catch { }
         return true;

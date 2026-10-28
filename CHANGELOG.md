@@ -1,5 +1,18 @@
 # Changelog / Список изменений
 
+## 3.46
+**EN**
+- Roles that kill, place objects, work with doors or target a player or body keep the pet. All other abilities are on game buttons: impostor-team roles use the shapeshift button (the look does not change), the rest enter any vent (you are thrown out at once), ghosts use the protect button on a player. Option "ButtonAbilities" in the Game tab turns the buttons off and brings the pet back for everyone.
+- Ghost roles are given to every ghost (when the role is on); no more typing commands, the protect button does the job.
+- Neutrals can no longer start sabotages. Neutrals and impostors no longer see each other, while impostors still see impostors.
+- Texts mention the ability button instead of the pet.
+
+**RU**
+- Роли, которые убивают, ставят предметы, работают с дверями или действуют на игрока или тело, остаются на питомце. Остальные способности на кнопках игры: роли предателей используют кнопку смены облика (облик не меняется), прочие входят в любой люк (сразу выкидывает обратно), призраки жмут кнопку защиты на игроке. Настройка «ButtonAbilities» во вкладке «Игра» отключает кнопки и возвращает питомца всем.
+- Роли призраков выдаются каждому призраку (если роль включена); вводить команды не нужно, всё делает кнопка защиты.
+- Нейтралы больше не могут запускать саботажи. Нейтралы и предатели не видят друг друга, а предатели по-прежнему видят предателей.
+- В текстах вместо питомца упоминается кнопка способности.
+
 ## 3.45
 **EN**
 - Removed several roles and everything tied to them.

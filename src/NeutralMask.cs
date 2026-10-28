@@ -8,7 +8,7 @@ namespace AshesOfDisaster;
 
 public static class NeutralMask
 {
-    static bool Neutral(PlayerControl p) => p != null && RoleState.Assigned.TryGetValue(p.PlayerId, out var r) && RoleLogic.RealImpNeutrals.Contains(r.Id);
+    public static bool Neutral(PlayerControl p) => p != null && RoleState.Assigned.TryGetValue(p.PlayerId, out var r) && RoleLogic.RealImpNeutrals.Contains(r.Id);
 
     static void Send(PlayerControl to, PlayerControl who)
     {
@@ -31,6 +31,7 @@ public static class NeutralMask
                 foreach (var b in all)
                 {
                     if (a.PlayerId == b.PlayerId) continue;
+                    if (!Neutral(a) && !Neutral(b)) continue;
                     try { Send(a, b); n++; }
                     catch (Exception e) { Plugin.Logger.LogWarning("NeutralMask: " + e.Message); }
                 }
@@ -53,6 +54,7 @@ public static class NeutralMaskNamePatch
             var me = PlayerControl.LocalPlayer;
             if (!Utils.AmHost || me == null || __instance == null || __instance.AmOwner) return;
             if (!NeutralMask.ImpTeam(me) || !NeutralMask.ImpTeam(__instance)) return;
+            if (!NeutralMask.Neutral(me) && !NeutralMask.Neutral(__instance)) return;
             var t = __instance.cosmetics != null ? __instance.cosmetics.nameText : null;
             if (t != null) t.color = Color.white;
         }

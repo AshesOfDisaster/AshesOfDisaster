@@ -211,6 +211,7 @@ public static class Utils
     static void Send(PlayerControl to, string text, bool secret, int maxMessages, bool defer = true)
     {
         if (to == null || PlayerControl.LocalPlayer == null || string.IsNullOrEmpty(text)) return;
+        text = Buttons.Fix(to, text);
         if (to.AmOwner) { LocalChat(text); Toast(text); return; }
         text = Regex.Replace(text, "<[^>]*>", "").Replace("<", "(").Replace(">", ")");
         text = Unblur(text);

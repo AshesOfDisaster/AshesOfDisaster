@@ -79,7 +79,7 @@ public static class Opts
     public static BoolOpt NoEndFewPlayers, NoGameEnd, SyncButtonMode, DisableCloseDoors, GhostSeeRoles, NameStatus, RevealOnExile, PetForAll, TeamSwap;
     public static IntOpt SyncedButtonCount, KillCooldownPercent;
     public static IntOpt BuilderCooldown, CloudMax, CloudRadius, CloudFlash, CloudStormChance, PsyCooldown, PsyMaxUses, PsyFailChance, WelderMax, WelderCooldown, DowserCooldown, DowserRadius, PinkCook, PinkMax, PinkPurity, PinkSaleCooldown, SmokeMax, SmokeLife, SmokeKill, SmokeRadius, SmokeCooldown, ShroomUses, ShroomCooldown, ShroomSeconds, PlumberUses, PlumberCooldown, TwinRadius, TwinCooldown, ForemanChance, NavCooldown, HoundCooldown, PrankCooldown, CrowCooldown, CrowUses, DefectorWrong, ReflectChance;
-    public static BoolOpt CloudStormMarker, HostAuthority;
+    public static BoolOpt CloudStormMarker, HostAuthority, ButtonAbilities;
     public static BoolOpt ShowCredits;
 
     static readonly HashSet<string> Retired = new()
@@ -174,6 +174,7 @@ public static class Opts
         GhostSeeRoles       = new("GhostSeeRoles",       OptTab.Hidden, true, c);
         NameStatus          = new("NameStatus",          OptTab.Hidden, true, c);
         TeamSwap            = new("TeamSwap",            OptTab.Game, true, c);
+        ButtonAbilities     = new("ButtonAbilities",     OptTab.Game, true, c);
         PetForAll           = new("PetForAll",           OptTab.Hidden, true, c);
         RevealOnExile       = new("RevealOnExile",       OptTab.Hidden, true, c);
 

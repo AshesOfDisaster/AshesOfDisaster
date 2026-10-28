@@ -1850,7 +1850,7 @@ public static class Extra33
         if (!ghostPick.TryGetValue(p.PlayerId, out var pick))
         {
             var pool = GSpecs.Where(g => g.Team == team && g.On.Value).Select(g => g.Id).ToList();
-            pool.Add("default");
+            if (pool.Count == 0) pool.Add("default");
             pick = pool[rng.Next(pool.Count)];
             ghostPick[p.PlayerId] = pick;
             if (pick != "default")
@@ -1859,10 +1859,35 @@ public static class Extra33
                 bool ru = Translator.IsRu(p);
                 Plugin.Logger.LogInfo($"Ghost role: {Nm(p)} -> {g.Id}");
                 Utils.SendSecret(p, T(ru, $"Ты {g.Ru} (роль призраков). ", $"You are the {g.En} (ghost role). ") + (ru ? g.DescRu : g.DescEn) + T(ru, $" Использований: {g.Uses.Value}.", $" Uses: {g.Uses.Value}."));
+                if (Buttons.On) { try { RoleLogic.SetVanillaRole(p, AmongUs.GameOptions.RoleTypes.GuardianAngel); } catch { } Utils.SendSecret(p, Buttons.HowTo(p)); }
             }
             return pick != "default";
         }
         return pick != "default";
+    }
+
+    public static bool GhostButton(PlayerControl me, PlayerControl target)
+    {
+        string k = GhostOf(me);
+        var g = k == null ? null : GetG(k);
+        if (g == null) return false;
+        var args = new List<string>();
+        if (g.Id == "Medium")
+        {
+            var dead = PlayerControl.AllPlayerControls.ToArray().Where(o => o != null && o.Data != null && o.Data.IsDead && !o.Data.Disconnected && o.PlayerId != me.PlayerId).ToList();
+            if (dead.Count > 0) args.Add(dead[rng.Next(dead.Count)].PlayerId.ToString());
+        }
+        else if (target != null)
+        {
+            args.Add(target.PlayerId.ToString());
+            if (g.Id == "Trickster")
+            {
+                var other = PlayerControl.AllPlayerControls.ToArray().Where(o => o != null && o.Data != null && !o.Data.IsDead && o.PlayerId != target.PlayerId && !IsImp(o)).ToList();
+                if (other.Count > 0) args.Add(other[rng.Next(other.Count)].PlayerId.ToString());
+            }
+        }
+        HandleGhost(me, g.Cmd, args.ToArray());
+        return true;
     }
 
     public static string GhostDesc(string id, bool ru)
