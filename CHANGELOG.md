@@ -1,5 +1,12 @@
 # Changelog / Список изменений
 
+## 3.47
+**EN**
+- New ghost role for crewmates: **Ghost Artist** (Художник). It puts marks on the map where the ghost stands (/mark or the protect button). All living players see the marks until the next meeting.
+
+**RU**
+- Новая роль призраков для мирных: **Художник**. Ставит метки на карте там, где стоит призрак (/mark или кнопка защиты). Все живые игроки видят метки до следующего собрания.
+
 ## 3.46
 **EN**
 - Roles that kill, place objects, work with doors or target a player or body keep the pet. All other abilities are on game buttons: impostor-team roles use the shapeshift button (the look does not change), the rest enter any vent (you are thrown out at once), ghosts use the protect button on a player. Option "ButtonAbilities" in the Game tab turns the buttons off and brings the pet back for everyone.

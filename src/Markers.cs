@@ -250,7 +250,7 @@ public static class Markers
             {
                 if (all.ContainsKey(kv.Key) || all.Count >= MaxMarkers) continue;
                 var ow = Utils.GetPlayer(kv.Value.owner);
-                if (ow == null || ow.Data == null || ow.Data.IsDead || ow.Data.Disconnected) continue;
+                if (ow == null || ow.Data == null || (ow.Data.IsDead && !kv.Key.StartsWith("ar")) || ow.Data.Disconnected) continue;
                 bool ru = Translator.IsRu(ow);
                 all[kv.Key] = new M
                 {

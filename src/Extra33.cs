@@ -123,6 +123,7 @@ public static class Extra33
     public static List<(string key, byte owner, Vector2 pos, string ru, string en, string color)> Items()
     {
         var l = new List<(string, byte, Vector2, string, string, string)>();
+        foreach (var am in artMarks) l.Add(("ar" + am.id, am.owner, am.pos, "Метка", "Mark", "#FF80AB"));
         foreach (var sn in snares) l.Add(("sn" + Hk(sn), sn.owner, sn.pos, "Силок", "Snare", "#A1887F"));
         foreach (var kv in mineVents) l.Add(("mn" + kv.Key, kv.Value, VentPos(kv.Key), "Мина", "Mine", "#FF5252"));
         foreach (var kv in sealedVents) l.Add(("sl" + kv.Key, kv.Value, VentPos(kv.Key), "Печать", "Seal", "#90A4AE"));
@@ -1400,7 +1401,7 @@ public static class Extra33
     {
         Markers.Clear();
         last.Clear(); used.Clear(); timers.Clear(); bodies.Clear(); eaten.Clear(); charge.Clear(); berserk.Clear(); berserkNext.Clear();
-        infect.Clear(); ambush.Clear(); flowers.Clear(); hides.Clear(); hist.Clear(); moves.Clear(); lastRoom.Clear(); visited.Clear(); rounderDone.Clear(); hearth.Clear(); hearthPos.Clear(); hearthIn.Clear(); passenger.Clear(); ventLog.Clear(); sealedVents.Clear(); mineVents.Clear(); snares.Clear(); vacts.Clear(); bq.Clear(); roundStart = Time.time; runes.Clear(); alibi.Clear(); aloneSince.Clear(); closeSince.Clear(); nextWarn.Clear(); hermitDone.Clear(); ghostPick.Clear(); gUsed.Clear(); gLast.Clear(); deathNear.Clear(); pits.Clear(); contract.Clear(); botNext.Clear(); horseOn.Clear(); horseStamina.Clear(); horseTired.Clear(); horseT.Clear(); horsePrev.Clear(); horseHit.Clear(); newtonMode.Clear(); newtonUsed.Clear(); newtonShield.Clear(); newtonRe.Clear();
+        artMarks.Clear(); infect.Clear(); ambush.Clear(); flowers.Clear(); hides.Clear(); hist.Clear(); moves.Clear(); lastRoom.Clear(); visited.Clear(); rounderDone.Clear(); hearth.Clear(); hearthPos.Clear(); hearthIn.Clear(); passenger.Clear(); ventLog.Clear(); sealedVents.Clear(); mineVents.Clear(); snares.Clear(); vacts.Clear(); bq.Clear(); roundStart = Time.time; runes.Clear(); alibi.Clear(); aloneSince.Clear(); closeSince.Clear(); nextWarn.Clear(); hermitDone.Clear(); ghostPick.Clear(); gUsed.Clear(); gLast.Clear(); deathNear.Clear(); pits.Clear(); contract.Clear(); botNext.Clear(); horseOn.Clear(); horseStamina.Clear(); horseTired.Clear(); horseT.Clear(); horsePrev.Clear(); horseHit.Clear(); newtonMode.Clear(); newtonUsed.Clear(); newtonShield.Clear(); newtonRe.Clear();
     }
 
     static int Left(Spec s, byte id) => s.Uses <= 0 ? -1 : Math.Max(0, G(s.Id + "Uses") - (used.TryGetValue(Key(s.Id, id), out var u) ? u : 0));
@@ -1560,7 +1561,7 @@ public static class Extra33
                 Utils.SendSecret(o, T(ru, "Увяли цветы: ", "Wilted flowers: ") + string.Join(", ", rooms) + T(ru, ". Там кого-то убили.", ". Someone was killed there."));
             }
             flowers.Clear();
-            gLast.Clear();
+            gLast.Clear(); artMarks.Clear();
         }
         catch (Exception e) { Plugin.Logger.LogWarning("Extra33.OnMeeting: " + e.Message); }
     }
@@ -1794,6 +1795,8 @@ public static class Extra33
     }
     static readonly List<GSpec> GSpecs = new();
     static readonly Dictionary<byte, string> ghostPick = new();
+    static readonly List<(int id, byte owner, Vector2 pos)> artMarks = new();
+    static int artId;
     static readonly Dictionary<byte, int> gUsed = new();
     static readonly Dictionary<byte, float> gLast = new();
 
@@ -1832,6 +1835,9 @@ public static class Extra33
         GS(c, "Trickster", "Шутник-призрак", "Ghost Trickster", "#FFCC80", "imp", "swap", 2, 0,
             "Призрак-предатель. /swap ID1 ID2 - поменять местами двух живых не-предателей. Без ID покажет список.",
             "Impostor ghost. /swap ID1 ID2 - swap the places of two living non-impostors. Without IDs it shows the list.");
+        GS(c, "Artist", "Художник", "Ghost Artist", "#FF80AB", "crew", "mark", 5, 15,
+            "Призрак-мирный. /mark - поставить метку там, где ты сейчас находишься. Все живые видят её на карте до собрания. Можно просто нажать кнопку защиты.",
+            "Crewmate ghost. /mark - put a mark where you are now. All living players see it on the map until the meeting. You can simply press the protect button.");
         GS(c, "Wisp", "Огонёк", "Wisp", "#FFF176", "other", "wisp", 3, 20,
             "Нейтральный призрак. /wisp ID - увести живого игрока огоньком к случайной двери. Без ID покажет список.",
             "Neutral ghost. /wisp ID - lead a living player with a light to a random door. Without an ID it shows the list.");
@@ -1943,6 +1949,15 @@ public static class Extra33
         if (g.Cd != null && gLast.TryGetValue(me.PlayerId, out var lt) && Time.time - lt < g.Cd.Value)
         { Tell($"Перезарядка: ещё {Mathf.CeilToInt(g.Cd.Value - (Time.time - lt))} с.", $"Cooldown: {Mathf.CeilToInt(g.Cd.Value - (Time.time - lt))} s."); return true; }
 
+        if (g.Id == "Artist")
+        {
+            var mp = me.GetTruePosition();
+            artMarks.Add((++artId, me.PlayerId, mp));
+            if (artMarks.Count > 8) artMarks.RemoveAt(0);
+            gUsed[me.PlayerId] = n + 1; gLast[me.PlayerId] = Time.time;
+            Tell($"Метка поставлена. Осталось: {g.Uses.Value - n - 1}.", $"Mark placed. Left: {g.Uses.Value - n - 1}.");
+            return true;
+        }
         Func<PlayerControl, bool> okT = g.Id == "Guardian" ? o => Alive(o) && !IsImp(o) && !RoleLogic.ShieldArmed.Contains(o.PlayerId)
                                       : g.Id == "Wisp" ? o => Alive(o)
                                       : o => Alive(o) && !IsImp(o);
