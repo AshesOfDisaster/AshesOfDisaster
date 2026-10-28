@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.48
+- RU: /report теперь доступна всем игрокам: жалоба уходит в Discord с именем жалобщика; одна жалоба в минуту от игрока.
+- EN: /report is now available to every player: the report goes to Discord with the reporter's name; one report per minute per player.
+
 ## 3.47
 **EN**
 - New ghost role for crewmates: **Ghost Artist** (Художник). It puts marks on the map where the ghost stands (/mark or the protect button). All living players see the marks until the next meeting.

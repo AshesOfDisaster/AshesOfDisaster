@@ -160,7 +160,7 @@ public static class Reports
         if (!Allowed((fc.Length > 0 ? fc : name) + "|" + why)) return false;
         var me = PlayerControl.LocalPlayer;
         string hostName = me == null || me.Data == null ? "?" : Cut(me.Data.PlayerName, 40);
-        string text = $"Жалоба от хоста {hostName}\nИгрок: {name}\nFriend code: {(fc.Length > 0 ? fc : "нет")}\nПричина: {why}";
+        string text = $"Жалоба, хост комнаты: {hostName}\nИгрок: {name}\nFriend code: {(fc.Length > 0 ? fc : "нет")}\nПричина: {why}";
         string body = "{\"content\":\"" + Esc(Cut(text, 1500)) + "\",\"allowed_mentions\":{\"parse\":[]}}";
         Task.Run(async () =>
         {
@@ -212,10 +212,21 @@ public static class ModPanel
         return true;
     }
 
-    public static string Complain(PlayerControl p, string why)
+    static readonly System.Collections.Generic.Dictionary<byte, float> lastBy = new();
+
+    public static string Complain(PlayerControl p, string why, PlayerControl by = null)
     {
         if (p == null || p.Data == null) return "Игрок не найден";
         string reason = why ?? Anticheat.Flagged(p) ?? "жалоба хоста";
+        if (by != null)
+        {
+            float now = Time.realtimeSinceStartup;
+            if (lastBy.TryGetValue(by.PlayerId, out var t) && now - t < 60f) return "Подожди минуту перед следующей жалобой";
+            lastBy[by.PlayerId] = now;
+            string who = by.Data == null ? "?" : by.Data.PlayerName;
+            string fcb = Utils.FriendCodeOf(by);
+            reason = "(от игрока " + who + (fcb.Length > 0 ? ", " + fcb : "") + ") " + reason;
+        }
         return Reports.Send(p.Data.PlayerName, Utils.FriendCodeOf(p), reason)
             ? "Жалоба отправлена в Discord"
             : Reports.Blocked.Length > 0 ? Reports.Blocked

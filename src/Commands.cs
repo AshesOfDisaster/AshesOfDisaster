@@ -69,7 +69,7 @@ public static class Commands
         new() { Name = "games", DescRu = "мини-игры в лобби: угадай число, кубик, викторина, монетка, слоты и другие", DescEn = "lobby mini-games: guess, dice, quiz, coin, slots and more" },
         new() { Name = "dump", HostOnly = true, DescRu = "сохранить список игроков в файл", DescEn = "save the player list to a file" },
         new() { Name = "block", HostOnly = true, UsageRu = "ID [причина]", UsageEn = "ID [reason]", DescRu = "заблокировать игрока: кик и бан-лист, например /block 3 читер", DescEn = "block a player: kick and ban list, for example /block 3 cheater" },
-        new() { Name = "report", HostOnly = true, UsageRu = "ID [причина]", UsageEn = "ID [reason]", DescRu = "отправить жалобу на игрока в Discord, например /report 3 читер", DescEn = "send a report about a player to Discord, for example /report 3 cheater" },
+        new() { Name = "report", HostOnly = false, UsageRu = "ID [причина]", UsageEn = "ID [reason]", DescRu = "отправить жалобу на игрока в Discord, например /report 3 читер", DescEn = "send a report about a player to Discord, for example /report 3 cheater" },
         new() { Name = "ac", HostOnly = true, DescRu = "что нашёл античит и включён ли он", DescEn = "what the anticheat found and whether it is on" },
     };
 
@@ -196,8 +196,8 @@ public static class Commands
                         string Grp(params string[] ns) => string.Join(" ", ns.Select(n => Find(n)).Where(c => c != null && (!c.HostOnly || host)).Select(c => "/" + c.Name));
                         var help = (ru ? "<b>Главное:</b> " : "<b>Main:</b> ") + Grp("m", "r", "tip", "ab", "id", "lang") + "\n"
                                  + (ru ? "<b>Призраки:</b> " : "<b>Ghosts:</b> ") + Grp("boo", "haunt", "hk", "task", "solve", "ward", "sense", "scare", "swap", "wisp") + "\n"
-                                 + (ru ? "<b>Прочее:</b> " : "<b>Other:</b> ") + Grp("perk", "bounty", "games", "now", "t", "color", "v", "tpout", "tpin");
-                        if (host) help += "\n" + (ru ? "<b>Хост:</b> " : "<b>Host:</b> ") + Grp("o", "start", "cancel", "end", "kill", "kick", "ban", "unban", "block", "role", "who", "tag", "say", "report", "ac", "dump");
+                                 + (ru ? "<b>Прочее:</b> " : "<b>Other:</b> ") + Grp("perk", "bounty", "games", "now", "t", "color", "v", "tpout", "tpin", "report");
+                        if (host) help += "\n" + (ru ? "<b>Хост:</b> " : "<b>Host:</b> ") + Grp("o", "start", "cancel", "end", "kill", "kick", "ban", "unban", "block", "role", "who", "tag", "say", "ac", "dump");
                         help += "\n" + (ru ? "Про одну команду: /h команда. Не знаешь, с чего начать - пиши /m." : "About one command: /h command. Not sure where to start - type /m.");
                         Utils.SendPrivate(sender, help, 6);
                         return true;
@@ -320,12 +320,13 @@ public static class Commands
                 case "block":
                 case "report":
                     {
+                        if (info.Name == "block" && !host) { Say(R("cmd.noperm")); return true; }
                         if (a.Length == 0 || !byte.TryParse(a[0], out var tid)) { Say(R("cmd.noplayer")); return true; }
                         var tp = Utils.GetPlayer(tid);
-                        if (tp == null || tp.AmOwner || tp.Data == null) { Say(R("cmd.noplayer")); return true; }
+                        if (tp == null || tp.AmOwner || tp.Data == null || tp == sender) { Say(R("cmd.noplayer")); return true; }
                         string reason = a.Length > 1 ? string.Join(" ", a.Skip(1)) : null;
                         if (info.Name == "block") Say(ModPanel.Block(tp, reason ?? "блок хостом") ? R("cmd.done") : R("cmd.noplayer"));
-                        else Say(ModPanel.Complain(tp, reason));
+                        else Say(ModPanel.Complain(tp, reason, host ? null : sender));
                         return true;
                     }
 
