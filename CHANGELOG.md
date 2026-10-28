@@ -3,6 +3,8 @@
 ## 3.48
 - RU: /report теперь доступна всем игрокам: жалоба уходит в Discord с именем жалобщика; одна жалоба в минуту от игрока.
 - EN: /report is now available to every player: the report goes to Discord with the reporter's name; one report per minute per player.
+- RU: отправка кода комнаты в Discord теперь включена по умолчанию (нужен адрес вебхука в AshesOfDisaster.secrets.txt: строка roomcodes=...).
+- EN: sending the room code to Discord is now on by default (needs the webhook address in AshesOfDisaster.secrets.txt: line roomcodes=...).
 
 ## 3.47
 **EN**

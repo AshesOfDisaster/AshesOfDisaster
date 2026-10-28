@@ -178,8 +178,8 @@ public static class Opts
         PetForAll           = new("PetForAll",           OptTab.Hidden, true, c);
         RevealOnExile       = new("RevealOnExile",       OptTab.Hidden, true, c);
 
-        ShareRoom = new("ShareRoom", OptTab.System, false, c);
-        ShareRoom.NameRu = "Отправить код комнаты в Discord мода (выкл по умолчанию)"; ShareRoom.NameEn = "Send the room code to the mod Discord (off by default)";
+        ShareRoom = new("ShareRoom", OptTab.System, true, c);
+        ShareRoom.NameRu = "Отправлять код комнаты в Discord мода"; ShareRoom.NameEn = "Send the room code to the mod Discord";
         ShareRoom.ShortRu = "Код комнаты в Discord"; ShareRoom.ShortEn = "Room code to Discord";
         Grp("Комната", "Room", ShareRoom);
         Grp("Лобби", "Lobby", AnyPlayers, AutoStart, AutoStartPlayers, AutoStartDelay, Welcome, PlayerCommands, ChatColors, ChatNoLimit);
