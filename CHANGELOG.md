@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.50
+- RU: 40 новых ролей, по 10 на каждый класс (мирные, предатели, нейтралы, мистики). Нейтралы все убийцы со своими условиями. Роли с целью работают от питомца, остальные от кнопок игры.
+- EN: 40 new roles, 10 per class (crewmates, impostors, neutrals, mystics). All neutrals are killers with their own conditions. Roles with a target use the pet, the rest use the game buttons.
+
 ## 3.49
 - RU: вкладка «Музыка» зелёная; пока играет своя музыка, музыка игры выключена.
 - EN: the "Music" tab is green; the game music is muted while your own track plays.

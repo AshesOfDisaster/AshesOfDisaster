@@ -7,7 +7,7 @@ using UnityEngine;
 namespace AshesOfDisaster;
 
 // 28 новых ролей (10 нейтралов, 5 мистиков, 10 предателей, 3 мирных) и 5 ролей призраков.
-public static class Extra33
+public static partial class Extra33
 {
     class Spec
     {
@@ -244,6 +244,7 @@ public static class Extra33
     {
         ConfigRef = c;
         const OptTab N = OptTab.Neutral, M = OptTab.Mystic, C = OptTab.Crewmate, I = OptTab.Impostor;
+        Define40();
 
         // ---------------- Нейтралы (настоящие убийцы, убивают питомцем) ----------------
         S("Reaper", "Жнец", "Reaper", "#8E24AA", N, 40, 0, "питомец: убить рядом с трупом", "pet: kill next to a body",
