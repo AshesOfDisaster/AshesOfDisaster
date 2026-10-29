@@ -101,7 +101,7 @@ public static class ModMenu
             btn.ChangeButtonText(label);
             try
             {
-                var col = cols[i % cols.Length];
+                var col = Pages[i].En == "Music" ? (Color32)new Color32(30, 220, 70, 255) : cols[i % cols.Length];
                 foreach (var go in new[] { btn.inactiveSprites, btn.activeSprites, btn.selectedSprites })
                     if (go != null) { var sr = go.GetComponent<SpriteRenderer>(); if (sr != null) sr.color = col; }
                 btn.activeTextColor = btn.inactiveTextColor = Color.white;

@@ -1,6 +1,8 @@
 # Changelog / Список изменений
 
 ## 3.49
+- RU: вкладка «Музыка» зелёная; пока играет своя музыка, музыка игры выключена.
+- EN: the "Music" tab is green; the game music is muted while your own track plays.
 - RU: своя музыка. Положи mp4, m4a, mp3, wav или wma в папку BepInEx/AshesMusic, в ноутбуке настроек (хост) открой вкладку «Музыка»: стрелками выбери трек, есть громкость и повтор. Музыку слышит только хост, у остальных игроков мода нет.
 - EN: your own music. Put mp4, m4a, mp3, wav or wma files into BepInEx/AshesMusic, open the "Music" tab in the settings laptop (host): pick a track with the arrows, there are volume and repeat options. Only the host hears it, other players have no mod.
 

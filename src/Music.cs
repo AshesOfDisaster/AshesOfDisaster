@@ -66,8 +66,34 @@ public static class Music
         catch (Exception e) { broken = true; Plugin.Logger.LogWarning("Music: winmm is not available: " + e.Message); return false; }
     }
 
+    static readonly System.Collections.Generic.List<AudioSource> muted = new();
+
+    // while our own track plays, the game's music is muted; after stopping it is restored
+    static void MuteGameMusic()
+    {
+        var sm = SoundManager.Instance;
+        if (sm == null) return;
+        var ch = sm.MusicChannel;
+        foreach (var src in UnityEngine.Object.FindObjectsOfType<AudioSource>())
+        {
+            try
+            {
+                if (src == null || src.mute || src.outputAudioMixerGroup == null || src.outputAudioMixerGroup != ch) continue;
+                src.mute = true; muted.Add(src);
+            }
+            catch { }
+        }
+    }
+
+    static void RestoreGameMusic()
+    {
+        foreach (var src in muted) { try { if (src != null) src.mute = false; } catch { } }
+        muted.Clear();
+    }
+
     public static void Stop()
     {
+        RestoreGameMusic();
         if (playing >= 0) { Cmd("stop aodmusic"); Cmd("close aodmusic"); }
         playing = -1;
     }
@@ -88,6 +114,7 @@ public static class Music
         playing = i; lastVol = -1;
         SetVolume();
         Cmd("play aodmusic from 0");
+        try { MuteGameMusic(); } catch { }
     }
 
     static void SetVolume()
@@ -105,6 +132,7 @@ public static class Music
             if (now >= nextScan) Scan();
             if (playing < 0 || now < nextPoll) return;
             nextPoll = now + 0.5f;
+            MuteGameMusic();
             if (lastVol != Volume.Value) SetVolume();
             var sb = new StringBuilder(64);
             if (Cmd("status aodmusic mode", sb) && sb.ToString().Trim() == "stopped")
