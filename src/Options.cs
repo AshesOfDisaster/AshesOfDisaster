@@ -4,7 +4,7 @@ using BepInEx.Configuration;
 
 namespace AshesOfDisaster;
 
-public enum OptTab { System, Game, Crewmate, Impostor, Neutral, Other, Ghost, Mini, Hidden, Mystic }
+public enum OptTab { System, Game, Crewmate, Impostor, Neutral, Other, Ghost, Mini, Hidden, Mystic, Music }
 
 public abstract class Opt
 {

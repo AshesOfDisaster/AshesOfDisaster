@@ -11,7 +11,7 @@ public class Plugin : BasePlugin
 {
     public const string Id = "com.niko.ashesofdisaster";
     public const string Name = "Ashes of Disaster";
-    public const string Version = "3.48";
+    public const string Version = "3.49";
     public const string Creators = "niko";
     public const string Discord = "discord.gg/CCB2rg3CHz";
 
@@ -24,6 +24,7 @@ public class Plugin : BasePlugin
         Logger = Log;
         SelfTest.Install();
         Opts.Init(Config);
+        Music.Init(Config);
         Lists.Init();
 
         ClassInjector.RegisterTypeInIl2Cpp<ModGui>();

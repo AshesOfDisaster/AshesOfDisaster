@@ -38,6 +38,7 @@ public static class ModMenu
         new() { Ru = "Призраки",    En = "Ghosts",      Filter = o => o.Tab == OptTab.Ghost },
         new() { Ru = "Мини-игры",   En = "Mini-games",  Filter = o => o.Tab == OptTab.Mini },
         new() { Ru = "Мистики",     En = "Mystics",     Filter = o => o.Tab == OptTab.Mystic },
+        new() { Ru = "Музыка",      En = "Music",       Filter = o => o.Tab == OptTab.Music },
     };
 
     static GameSettingMenu menu;
