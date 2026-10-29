@@ -1,8 +1,10 @@
 # Changelog / Список изменений
 
 ## 3.50
-- RU: 40 новых ролей, по 10 на каждый класс (мирные, предатели, нейтралы, мистики). Нейтралы все убийцы со своими условиями. Роли с целью работают от питомца, остальные от кнопок игры.
-- EN: 40 new roles, 10 per class (crewmates, impostors, neutrals, mystics). All neutrals are killers with their own conditions. Roles with a target use the pet, the rest use the game buttons.
+- RU: 40 новых ролей, по 10 на каждый класс (мирные, предатели, нейтралы, мистики), у каждой своя способность. Все новые нейтралы убийцы со своими условиями. Роли с целью или с поставленной меткой работают от питомца, остальные от кнопок игры.
+- RU: Жнец переделан: питомец ставит метку на любого игрока (до 4 м), через 25 секунд метка убивает. Перезарядка 30 с, после 2 убитых 20 с, после 4 убитых 15 с.
+- EN: 40 new roles, 10 per class (crewmates, impostors, neutrals, mystics), each with its own ability. All new neutrals are killers with their own conditions. Roles with a target or a placed mark use the pet, the rest use the game buttons.
+- EN: Reaper reworked: the pet puts a mark on any player (within 4 m), and the mark kills him after 25 seconds. Cooldown 30 s, 20 s after 2 kills, 15 s after 4 kills.
 
 ## 3.49
 - RU: вкладка «Музыка» зелёная; пока играет своя музыка, музыка игры выключена.

@@ -398,8 +398,8 @@ Total / Всего: **139**. Descriptions are shown in game with `/r <role>`.
 - EN: Neutral. The pet next to a player: you play cards for life. Each draws one card and the higher card wins. If the player loses he dies and you get a boost (in your next game you draw two cards and the better one counts). If you lose, you die. The server sees you as a real impostor. Cooldown 30 s, radius 2.5 m. [Pet]
 
 ### Reaper / Жнец
-- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только если рядом лежит труп (до 4 м). [Питомец]
-- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only when a body lies nearby (within 4 m). [Pet]
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец ставит метку на ближайшего игрока (до 4 м), мирного, предателя или нейтрала. Через 25 секунд метка убивает его (щит спасает). Чем больше жертв, тем короче перезарядка: сначала 30 с, после 2 убитых 20 с, после 4 убитых 15 с. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet puts a mark on the nearest player (within 4 m), a crewmate, an impostor or a neutral. The mark kills him after 25 seconds (a shield saves him). The more victims, the shorter the cooldown: 30 s at first, 20 s after 2 kills, 15 s after 4 kills. [Pet]
 
 ### Poisoner / Отравитель
 - RU: Нейтрал. Для сервера ты настоящий предатель. Питомец отравляет ближайшего игрока (до 2 м), и через несколько секунд он умирает. Собрание отменяет отравление. [Питомец]

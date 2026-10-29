@@ -247,16 +247,20 @@ public static partial class Extra33
         Define40();
 
         // ---------------- Нейтралы (настоящие убийцы, убивают питомцем) ----------------
-        S("Reaper", "Жнец", "Reaper", "#8E24AA", N, 40, 0, "питомец: убить рядом с трупом", "pet: kill next to a body",
-            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только если рядом лежит труп (до 4 м). [Питомец]",
-            "Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only when a body lies nearby (within 4 m). [Pet]",
+        S("Reaper", "Жнец", "Reaper", "#8E24AA", N, 0, 0, "питомец: метка смерти", "pet: a death mark",
+            "Нейтрал. Для сервера ты настоящий предатель. Питомец ставит метку на ближайшего игрока (до 4 м), мирного, предателя или нейтрала. Через 25 секунд метка убивает его (щит спасает). Чем больше жертв, тем короче перезарядка: сначала 30 с, после 2 убитых 20 с, после 4 убитых 15 с. [Питомец]",
+            "Neutral. The server sees you as a real impostor. The pet puts a mark on the nearest player (within 4 m), a crewmate, an impostor or a neutral. The mark kills him after 25 seconds (a shield saves him). The more victims, the shorter the cooldown: 30 s at first, 20 s after 2 kills, 15 s after 4 kills. [Pet]",
             (p, ru) =>
             {
-                var me = p.GetTruePosition();
-                if (!bodies.Any(b => !eaten.Contains(b.id) && Vector2.Distance(b.pos, me) <= 4f)) { H(p, T(ru, "Рядом нет трупа (нужно ближе 4 м).", "No body nearby (within 4 m).")); return false; }
-                var t = Nearest(p, 2f, o => true);
-                if (t == null) { H(p, T(ru, "Никого нет ближе 2 м.", "Nobody within 2 m.")); return false; }
-                return Strike(p, t);
+                int kills = reapKills.TryGetValue(p.PlayerId, out var rk) ? rk : 0;
+                int cd = kills >= 4 ? 15 : kills >= 2 ? 20 : 30;
+                if (reapLast.TryGetValue(p.PlayerId, out var rl) && Time.time - rl < cd) { H(p, T(ru, $"Рано, ещё {Mathf.CeilToInt(cd - (Time.time - rl))} с.", $"Too early, {Mathf.CeilToInt(cd - (Time.time - rl))} s left.")); return false; }
+                var t = Nearest(p, 4f, o => !timers.Any(x => x.Kind == "reap" && x.Target == o.PlayerId));
+                if (t == null) { H(p, T(ru, "Рядом нет, кого пометить (до 4 м).", "Nobody to mark within 4 m.")); return false; }
+                reapLast[p.PlayerId] = Time.time;
+                timers.Add(new Timed { Kind = "reap", Owner = p.PlayerId, Target = t.PlayerId, At = Time.time + 25f });
+                H(p, T(ru, $"{Nm(t)} помечен, умрёт через 25 с. Убито: {kills}, перезарядка {cd} с.", $"{Nm(t)} is marked, dies in 25 s. Kills: {kills}, cooldown {cd} s."));
+                return true;
             });
         S("Poisoner", "Отравитель", "Poisoner", "#43A047", N, 30, 0, "питомец: отравить игрока", "pet: poison a player",
             "Нейтрал. Для сервера ты настоящий предатель. Питомец отравляет ближайшего игрока (до 2 м), и через несколько секунд он умирает. Собрание отменяет отравление. [Питомец]",
@@ -1401,7 +1405,7 @@ public static partial class Extra33
     public static void Reset()
     {
         Markers.Clear();
-        last.Clear(); used.Clear(); timers.Clear(); bodies.Clear(); eaten.Clear(); charge.Clear(); berserk.Clear(); berserkNext.Clear();
+        Clear40(); last.Clear(); used.Clear(); timers.Clear(); bodies.Clear(); eaten.Clear(); charge.Clear(); berserk.Clear(); berserkNext.Clear();
         artMarks.Clear(); infect.Clear(); ambush.Clear(); flowers.Clear(); hides.Clear(); hist.Clear(); moves.Clear(); lastRoom.Clear(); visited.Clear(); rounderDone.Clear(); hearth.Clear(); hearthPos.Clear(); hearthIn.Clear(); passenger.Clear(); ventLog.Clear(); sealedVents.Clear(); mineVents.Clear(); snares.Clear(); vacts.Clear(); bq.Clear(); roundStart = Time.time; runes.Clear(); alibi.Clear(); aloneSince.Clear(); closeSince.Clear(); nextWarn.Clear(); hermitDone.Clear(); ghostPick.Clear(); gUsed.Clear(); gLast.Clear(); deathNear.Clear(); pits.Clear(); contract.Clear(); botNext.Clear(); horseOn.Clear(); horseStamina.Clear(); horseTired.Clear(); horseT.Clear(); horsePrev.Clear(); horseHit.Clear(); newtonMode.Clear(); newtonUsed.Clear(); newtonShield.Clear(); newtonRe.Clear();
     }
 
@@ -1462,6 +1466,7 @@ public static partial class Extra33
         try
         {
             if (target == null || target.Data == null) return;
+            Death40(killer, target);
             var pos = target.GetTruePosition();
             bodies.Add((target.PlayerId, pos));
             var near = new List<byte>();
@@ -1602,6 +1607,15 @@ public static partial class Extra33
                     foreach (var burnt in Others(owner).Where(fx => Utils.RoomName(fx.GetTruePosition(), false) == fireRoom).ToList()) Strike(owner, burnt);
                     H(owner, T(Translator.IsRu(owner), "Огонь догорел.", "The fire burned out."));
                 }
+                else if (t.Kind == "reap")
+                {
+                    var tg = Utils.GetPlayer(t.Target);
+                    if (Alive(tg))
+                    {
+                        Strike(owner, tg);
+                        if (!Alive(tg)) reapKills[t.Owner] = (reapKills.TryGetValue(t.Owner, out var rk2) ? rk2 : 0) + 1;
+                    }
+                }
                 else
                 {
                     var tg = Utils.GetPlayer(t.Target);
@@ -1610,6 +1624,7 @@ public static partial class Extra33
             }
 
             NewtonTick(now);
+            Tick40(now);
             foreach (var botKv in RoleState.Assigned.ToList())
             {
                 if (botKv.Value.Id != "Bot") continue;

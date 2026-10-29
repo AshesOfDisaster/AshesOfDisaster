@@ -8,7 +8,64 @@ namespace AshesOfDisaster;
 // 40 новых ролей: по 10 мирных, предателей, нейтралов и мистиков.
 public static partial class Extra33
 {
-    static readonly Dictionary<byte, (Vector2 pos, float at)> anchors = new();
+    class Spot { public string Kind; public byte Owner, Target; public Vector2 Pos; public float Until, Next; }
+    static readonly List<Spot> spots = new();
+    static readonly Dictionary<byte, float> scapegoats = new();
+    static readonly Dictionary<byte, int> reapKills = new();
+    static readonly Dictionary<byte, float> reapLast = new();
+    static float lastDeathAt = -999f;
+    static int deathCount;
+
+    static void Clear40() { spots.Clear(); scapegoats.Clear(); reapKills.Clear(); reapLast.Clear(); lastDeathAt = -999f; deathCount = 0; }
+
+    static void Death40(PlayerControl killer, PlayerControl target)
+    {
+        lastDeathAt = Time.time; deathCount++;
+        if (target == null) return;
+        foreach (var kv in scapegoats.ToList())
+        {
+            if (Time.time > kv.Value) { scapegoats.Remove(kv.Key); continue; }
+            var sg = Utils.GetPlayer(kv.Key);
+            if (!Alive(sg) || sg.PlayerId == target.PlayerId) continue;
+            scapegoats.Remove(kv.Key);
+            foreach (var o in Others(sg)) Utils.SendSecret(o, T(Translator.IsRu(o), $"Рядом с телом заметили: {Nm(sg)}.", $"{Nm(sg)} was seen near the body."));
+        }
+    }
+
+    static void Tick40(float now)
+    {
+        foreach (var sp in spots.ToList())
+        {
+            var owner = Utils.GetPlayer(sp.Owner);
+            if (!Alive(owner) || now > sp.Until) { spots.Remove(sp); continue; }
+            bool ru = Translator.IsRu(owner);
+            if (sp.Kind == "alarm")
+            {
+                var o = Others(owner).FirstOrDefault(x => Vector2.Distance(x.GetTruePosition(), sp.Pos) <= 2f);
+                if (o == null) continue;
+                spots.Remove(sp);
+                H(owner, T(ru, $"Сигналка сработала: рядом с меткой {Nm(o)}.", $"The tripwire went off: {Nm(o)} is by the mark."));
+            }
+            else if (sp.Kind == "stash")
+            {
+                var o = Others(owner).FirstOrDefault(x => Vector2.Distance(x.GetTruePosition(), sp.Pos) <= 1.5f);
+                if (o == null) continue;
+                spots.Remove(sp);
+                RoleLogic.ShieldArmed.Add(o.PlayerId); RoleLogic.ShieldUsed.Remove(o.PlayerId);
+                Utils.SendSecret(o, T(Translator.IsRu(o), "Ты нашёл тайник: у тебя щит!", "You found a stash: you have a shield!"));
+                H(owner, T(ru, $"Твой тайник нашёл {Nm(o)}.", $"{Nm(o)} found your stash."));
+            }
+            else if (sp.Kind == "tag")
+            {
+                var tg = Utils.GetPlayer(sp.Target);
+                if (!Alive(tg)) { spots.Remove(sp); continue; }
+                if (now < sp.Next) continue;
+                sp.Next = now + 5f;
+                var me = owner.GetTruePosition(); var tp = tg.GetTruePosition();
+                H(owner, T(ru, $"{Nm(tg)}: {Where(true, me, tp)}, {Mathf.RoundToInt(Vector2.Distance(me, tp))} м.", $"{Nm(tg)}: {Where(false, me, tp)}, {Mathf.RoundToInt(Vector2.Distance(me, tp))} m."));
+            }
+        }
+    }
 
     static string Dir8(Vector2 from, Vector2 to)
     {
@@ -51,18 +108,6 @@ public static partial class Extra33
             "Мирный. Показывает, сколько живых игроков сейчас в радиусе 7 метров от тебя. Перезарядка 20 с. [Питомец]",
             "Crewmate. Shows how many living players are within 7 meters of you right now. Cooldown 20 s. [Pet]",
             (p, ru) => { int n = Around(p, 7f); H(p, T(ru, $"Рядом с тобой игроков: {n}.", $"Players near you: {n}.")); return true; });
-        S("Shieldbearer", "Щитоносец", "Shieldbearer", "#4FC3F7", C, 60, 2, "питомец: щит ближайшему", "pet: a shield for the nearest",
-            "Мирный. Даёт щит ближайшему игроку (до 2,5 м), если у него его ещё нет. Щит гасит одно нападение. Использований: 2, перезарядка 60 с. [Питомец]",
-            "Crewmate. Gives a shield to the nearest player (within 2.5 m) who has none. A shield absorbs one attack. Uses: 2, cooldown 60 s. [Pet]",
-            (p, ru) =>
-            {
-                var t = Nearest(p, 2.5f, o => !RoleLogic.ShieldArmed.Contains(o.PlayerId));
-                if (t == null) { H(p, T(ru, "Рядом нет игрока без щита.", "Nobody without a shield nearby.")); return false; }
-                RoleLogic.ShieldArmed.Add(t.PlayerId); RoleLogic.ShieldUsed.Remove(t.PlayerId);
-                Utils.SendSecret(t, T(Translator.IsRu(t), "Щитоносец дал тебе щит.", "A Shieldbearer gave you a shield."));
-                H(p, T(ru, $"Щит получил {Nm(t)}.", $"{Nm(t)} got a shield."));
-                return true;
-            });
         S("Accountant", "Счетовод", "Accountant", "#A1887F", C, 30, 0, "питомец: сколько живых и тел", "pet: how many alive and bodies",
             "Мирный. Показывает, сколько игроков живо и сколько тел лежит на карте непоказанными. Перезарядка 30 с. [Питомец]",
             "Crewmate. Shows how many players are alive and how many bodies lie on the map. Cooldown 30 s. [Pet]",
@@ -92,23 +137,8 @@ public static partial class Extra33
             {
                 var me = p.GetTruePosition();
                 foreach (var o in Others(p))
-                {
-                    bool r2 = Translator.IsRu(o);
-                    Utils.SendSecret(o, T(r2, $"Вестник зовёт всех: он на {Where(true, o.GetTruePosition(), me)}.", $"The Herald calls everyone: he is to the {Where(false, o.GetTruePosition(), me)}."));
-                }
+                    Utils.SendSecret(o, T(Translator.IsRu(o), $"Вестник зовёт всех: он на {Where(true, o.GetTruePosition(), me)}.", $"The Herald calls everyone: he is to the {Where(false, o.GetTruePosition(), me)}."));
                 H(p, T(ru, "Все получили твой зов.", "Everyone got your call."));
-                return true;
-            });
-        S("Exchanger", "Обменщик", "Exchanger", "#BA68C8", C, 45, 3, "питомец: поменяться местами", "pet: swap places",
-            "Мирный. Меняет тебя местами с ближайшим игроком (до 3 м). Хорошо, чтобы вырваться из угла. Использований: 3, перезарядка 45 с. [Питомец]",
-            "Crewmate. Swaps you with the nearest player (within 3 m). Good to get out of a corner. Uses: 3, cooldown 45 s. [Pet]",
-            (p, ru) =>
-            {
-                var t = Nearest(p, 3f, o => true);
-                if (t == null) { H(p, T(ru, "Рядом никого нет.", "Nobody nearby.")); return false; }
-                var a = p.GetTruePosition(); var b = t.GetTruePosition();
-                Commands.Tp(p, b); Commands.Tp(t, a);
-                H(p, T(ru, $"Ты поменялся местами с {Nm(t)}.", $"You swapped places with {Nm(t)}."));
                 return true;
             });
         S("Pacifier", "Миротворец", "Pacifier", "#81C784", C, 50, 3, "питомец: заморозить ближайшего на 4 с", "pet: freeze the nearest for 4 s",
@@ -123,24 +153,14 @@ public static partial class Extra33
                 return true;
             });
         S("Investigator", "Следователь", "Investigator", "#7986CB", C, 35, 3, "питомец: был ли рядом с телом", "pet: was he near a body",
-            "Мирный. Проверяет ближайшего игрока (до 2,5 м): был ли он рядом с телом (до 5 м). Это только улика, не приговор. Использований: 3, перезарядка 35 с. [Питомец]",
-            "Crewmate. Checks the nearest player (within 2.5 m): is he near a body (within 5 m). Only a clue, not a verdict. Uses: 3, cooldown 35 s. [Pet]",
+            "Мирный. Проверяет ближайшего игрока (до 2,5 м): стоит ли он рядом с телом (до 5 м). Это только улика, не приговор. Использований: 3, перезарядка 35 с. [Питомец]",
+            "Crewmate. Checks the nearest player (within 2.5 m): is he next to a body (within 5 m). Only a clue, not a verdict. Uses: 3, cooldown 35 s. [Pet]",
             (p, ru) =>
             {
                 var t = Nearest(p, 2.5f, o => true);
                 if (t == null) { H(p, T(ru, "Рядом никого нет.", "Nobody nearby.")); return false; }
                 bool near = bodies.Any(b => !eaten.Contains(b.id) && Vector2.Distance(b.pos, t.GetTruePosition()) <= 5f);
                 H(p, T(ru, near ? $"{Nm(t)} стоит рядом с телом." : $"{Nm(t)} не рядом с телом.", near ? $"{Nm(t)} is next to a body." : $"{Nm(t)} is not near a body."));
-                return true;
-            });
-        S("Courier", "Курьер", "Courier", "#FF8A65", C, 45, 3, "питомец: рывок к случайной двери", "pet: dash to a random door",
-            "Мирный. Переносит тебя к случайной двери на карте. Побег или быстрый путь. Использований: 3, перезарядка 45 с. [Питомец]",
-            "Crewmate. Moves you to a random door on the map. An escape or a shortcut. Uses: 3, cooldown 45 s. [Pet]",
-            (p, ru) =>
-            {
-                if (!RandomDoor(out var pos)) return false;
-                Commands.Tp(p, pos);
-                H(p, T(ru, "Ты прибежал к двери.", "You dashed to a door."));
                 return true;
             });
         S("Seer", "Вещун", "Seer", "#9575CD", C, 60, 3, "питомец: назвать точно мирного", "pet: name a sure crewmate",
@@ -154,51 +174,117 @@ public static partial class Extra33
                 H(p, T(ru, $"{Nm(t)} точно мирный.", $"{Nm(t)} is surely crew."));
                 return true;
             });
+        S("Tripwire", "Сигналка", "Tripwire", "#EF9A9A", C, 40, 3, "питомец: поставить сигналку", "pet: set a tripwire",
+            "Мирный. Питомец ставит невидимую сигналку на твоём месте (до 90 секунд). Первый, кто подойдёт к ней ближе 2 м, назовётся тебе по имени. Использований: 3, перезарядка 40 с. [Питомец]",
+            "Crewmate. The pet sets an invisible tripwire where you stand (up to 90 seconds). The first one to come within 2 m of it is named to you. Uses: 3, cooldown 40 s. [Pet]",
+            (p, ru) =>
+            {
+                spots.Add(new Spot { Kind = "alarm", Owner = p.PlayerId, Pos = p.GetTruePosition(), Until = Time.time + 90f });
+                H(p, T(ru, "Сигналка поставлена на 90 секунд.", "Tripwire set for 90 seconds."));
+                return true;
+            });
+        S("Stash", "Тайник", "Stash", "#FFCC80", C, 60, 2, "питомец: спрятать щит", "pet: hide a shield",
+            "Мирный. Питомец прячет на твоём месте тайник со щитом (до 120 секунд). Первый, кто подойдёт ближе 1,5 м, получает щит, а ты узнаёшь, кто. Использований: 2, перезарядка 60 с. [Питомец]",
+            "Crewmate. The pet hides a shield stash where you stand (up to 120 seconds). The first one to come within 1.5 m gets the shield and you learn who. Uses: 2, cooldown 60 s. [Pet]",
+            (p, ru) =>
+            {
+                spots.Add(new Spot { Kind = "stash", Owner = p.PlayerId, Pos = p.GetTruePosition(), Until = Time.time + 120f });
+                H(p, T(ru, "Тайник спрятан на 120 секунд.", "Stash hidden for 120 seconds."));
+                return true;
+            });
+        S("Chrono", "Хронометр", "Chronometer", "#B0BEC5", C, 20, 0, "питомец: сколько прошло с последней смерти", "pet: time since the last death",
+            "Мирный. Показывает, сколько секунд прошло с последней смерти игрока. Перезарядка 20 с. [Питомец]",
+            "Crewmate. Shows how many seconds have passed since a player last died. Cooldown 20 s. [Pet]",
+            (p, ru) =>
+            {
+                if (lastDeathAt < 0) { H(p, T(ru, "Ещё никто не погиб.", "Nobody has died yet.")); return true; }
+                int sec = Mathf.RoundToInt(Time.time - lastDeathAt);
+                H(p, T(ru, $"С последней смерти прошло {sec} с.", $"{sec} s since the last death."));
+                return true;
+            });
 
         // ---------------- Предатели ----------------
-        S("Freezer", "Заморозчик", "Freezer", "#4DD0E1", I, 45, 0, "питомец: заморозить на 5 с", "pet: freeze for 5 s",
-            "Предатель. Замораживает ближайшего не-предателя (до 2,5 м) на 5 секунд. Перезарядка 45 с. [Питомец]",
-            "Impostor. Freezes the nearest non-impostor (within 2.5 m) for 5 seconds. Cooldown 45 s. [Pet]",
+        S("Discharger", "Разрядник", "Discharger", "#FFEE58", I, 60, 0, "питомец: сорвать щиты вокруг", "pet: break the shields around",
+            "Предатель. Питомец снимает щиты со всех не-предателей в радиусе 6 м. Перезарядка 60 с. [Питомец]",
+            "Impostor. The pet strips the shields off every non-impostor within 6 m. Cooldown 60 s. [Pet]",
+            (p, ru) =>
+            {
+                var me = p.GetTruePosition();
+                var l = Others(p).Where(o => !IsImp(o) && RoleLogic.ShieldArmed.Contains(o.PlayerId) && Vector2.Distance(o.GetTruePosition(), me) <= 6f).ToList();
+                if (l.Count == 0) { H(p, T(ru, "Щитов рядом нет.", "No shields nearby.")); return false; }
+                foreach (var o in l) RoleLogic.ShieldArmed.Remove(o.PlayerId);
+                H(p, T(ru, $"Щитов снято: {l.Count}.", $"Shields removed: {l.Count}."));
+                return true;
+            });
+        S("Handout", "Подачка", "Handout", "#A5D6A7", I, 45, 0, "питомец: ложный щит", "pet: a fake shield",
+            "Предатель. Питомец говорит ближайшему не-предателю (до 2,5 м), что у него щит. Щита на самом деле нет. Перезарядка 45 с. [Питомец]",
+            "Impostor. The pet tells the nearest non-impostor (within 2.5 m) that he has a shield. There is no real shield. Cooldown 45 s. [Pet]",
             (p, ru) =>
             {
                 var t = Nearest(p, 2.5f, o => !IsImp(o));
                 if (t == null) { H(p, T(ru, "Рядом нет цели.", "No target nearby.")); return false; }
-                Roles30.FreezePlayer(t, 5f);
-                H(p, T(ru, $"{Nm(t)} заморожен.", $"{Nm(t)} is frozen."));
+                Utils.SendSecret(t, T(Translator.IsRu(t), "Ты получил щит!", "You got a shield!"));
+                H(p, T(ru, $"{Nm(t)} думает, что у него щит.", $"{Nm(t)} thinks he has a shield."));
                 return true;
             });
-        S("Teleporter", "Телепортёр", "Teleporter", "#7E57C2", I, 50, 0, "питомец: прыжок к случайному игроку", "pet: jump to a random player",
-            "Предатель. Переносит тебя к случайному живому игроку. Перезарядка 50 с. [Питомец]",
-            "Impostor. Moves you to a random living player. Cooldown 50 s. [Pet]",
+        S("Shadower", "Следящий", "Shadower", "#546E7A", I, 60, 0, "питомец: метка слежки на 40 с", "pet: a tracking tag for 40 s",
+            "Предатель. Питомец ставит метку слежки на ближайшего не-предателя (до 3 м). 40 секунд каждые 5 секунд ты видишь, где он (направление и расстояние). Перезарядка 60 с. [Питомец]",
+            "Impostor. The pet tags the nearest non-impostor (within 3 m). For 40 seconds every 5 seconds you see where he is (direction and distance). Cooldown 60 s. [Pet]",
             (p, ru) =>
             {
-                var l = Others(p);
-                if (l.Count == 0) return false;
-                var t = l[rng.Next(l.Count)];
-                Commands.Tp(p, t.GetTruePosition());
-                H(p, T(ru, $"Ты оказался рядом с {Nm(t)}.", $"You appeared next to {Nm(t)}."));
+                var t = Nearest(p, 3f, o => !IsImp(o));
+                if (t == null) { H(p, T(ru, "Рядом нет цели.", "No target nearby.")); return false; }
+                spots.RemoveAll(x => x.Kind == "tag" && x.Owner == p.PlayerId);
+                spots.Add(new Spot { Kind = "tag", Owner = p.PlayerId, Target = t.PlayerId, Until = Time.time + 40f, Next = 0f });
+                H(p, T(ru, $"Метка слежки на {Nm(t)}.", $"Tracking tag on {Nm(t)}."));
                 return true;
             });
-        S("Dragger", "Тащила", "Dragger", "#8D6E63", I, 40, 0, "питомец: притянуть ближайшего", "pet: pull the nearest to you",
-            "Предатель. Притягивает к тебе ближайшего не-предателя (в радиусе 6 м). Перезарядка 40 с. [Питомец]",
-            "Impostor. Pulls the nearest non-impostor (within 6 m) to you. Cooldown 40 s. [Pet]",
+        S("Armor", "Броня", "Armor", "#90A4AE", I, 90, 3, "питомец: щит себе", "pet: a shield for yourself",
+            "Предатель. Питомец надевает на тебя щит от одного нападения, если щита ещё нет. Использований: 3, перезарядка 90 с. [Питомец]",
+            "Impostor. The pet puts a one-attack shield on you if you have none. Uses: 3, cooldown 90 s. [Pet]",
             (p, ru) =>
             {
-                var t = Nearest(p, 6f, o => !IsImp(o));
-                if (t == null) { H(p, T(ru, "В радиусе 6 м никого нет.", "Nobody within 6 m.")); return false; }
-                Commands.Tp(t, p.GetTruePosition());
-                H(p, T(ru, $"{Nm(t)} притянут к тебе.", $"{Nm(t)} was pulled to you."));
+                if (RoleLogic.ShieldArmed.Contains(p.PlayerId)) { H(p, T(ru, "Щит у тебя уже есть.", "You already have a shield.")); return false; }
+                RoleLogic.ShieldArmed.Add(p.PlayerId); RoleLogic.ShieldUsed.Remove(p.PlayerId);
+                H(p, T(ru, "Щит надет.", "Shield on."));
                 return true;
             });
-        S("Pusher", "Толкатель", "Pusher", "#FF7043", I, 45, 0, "питомец: отправить ближайшего к двери", "pet: send the nearest to a door",
-            "Предатель. Выбрасывает ближайшего не-предателя (до 2,5 м) к случайной двери. Перезарядка 45 с. [Питомец]",
-            "Impostor. Throws the nearest non-impostor (within 2.5 m) to a random door. Cooldown 45 s. [Pet]",
+        S("Siren", "Сирена", "Siren", "#F06292", I, 70, 0, "питомец: ложный крик", "pet: a false scream",
+            "Предатель. Все не-предатели в радиусе 12 м слышат, что где-то на случайной стороне кричат. Так можно увести их от тебя. Перезарядка 70 с. [Питомец]",
+            "Impostor. Every non-impostor within 12 m hears a scream somewhere in a random direction. A way to lead them away from you. Cooldown 70 s. [Pet]",
             (p, ru) =>
             {
-                var t = Nearest(p, 2.5f, o => !IsImp(o));
-                if (t == null || !RandomDoor(out var pos)) { H(p, T(ru, "Рядом нет цели.", "No target nearby.")); return false; }
-                Commands.Tp(t, pos);
-                H(p, T(ru, $"{Nm(t)} отброшен к двери.", $"{Nm(t)} was thrown to a door."));
+                var me = p.GetTruePosition();
+                var l = Others(p).Where(o => !IsImp(o) && Vector2.Distance(o.GetTruePosition(), me) <= 12f).ToList();
+                if (l.Count == 0) { H(p, T(ru, "В радиусе 12 м никого нет.", "Nobody within 12 m.")); return false; }
+                if (!RandomDoor(out var fake)) fake = me + new Vector2(5f, 0f);
+                foreach (var o in l)
+                    Utils.SendSecret(o, T(Translator.IsRu(o), $"Где-то на {Where(true, o.GetTruePosition(), fake)} слышен крик!", $"A scream somewhere to the {Where(false, o.GetTruePosition(), fake)}!"));
+                H(p, T(ru, $"Крик услышали: {l.Count}.", $"Players who heard the scream: {l.Count}."));
+                return true;
+            });
+        S("Scarecrow", "Пугало", "Scarecrow", "#8D6E63", I, 45, 0, "питомец: напугать всех рядом", "pet: scare everyone near",
+            "Предатель. Все не-предатели в радиусе 7 м получают сообщение, что у них за спиной кто-то стоит. Перезарядка 45 с. [Питомец]",
+            "Impostor. Every non-impostor within 7 m gets a message that somebody stands behind them. Cooldown 45 s. [Pet]",
+            (p, ru) =>
+            {
+                var me = p.GetTruePosition();
+                var l = Others(p).Where(o => !IsImp(o) && Vector2.Distance(o.GetTruePosition(), me) <= 7f).ToList();
+                if (l.Count == 0) { H(p, T(ru, "В радиусе 7 м никого нет.", "Nobody within 7 m.")); return false; }
+                foreach (var o in l) Utils.SendSecret(o, T(Translator.IsRu(o), "Тебе кажется, что за спиной кто-то стоит...", "You feel like somebody stands behind you..."));
+                H(p, T(ru, $"Напугано игроков: {l.Count}.", $"Players scared: {l.Count}."));
+                return true;
+            });
+        S("Headhunter", "Головорез", "Headhunter", "#D32F2F", I, 25, 0, "питомец: сколько целей вокруг", "pet: how many targets around",
+            "Предатель. Показывает, сколько не-предателей в радиусе 8 м, и расстояние до ближайшего. Перезарядка 25 с. [Питомец]",
+            "Impostor. Shows how many non-impostors are within 8 m and the distance to the nearest. Cooldown 25 s. [Pet]",
+            (p, ru) =>
+            {
+                var me = p.GetTruePosition();
+                var l = Others(p).Where(o => !IsImp(o) && Vector2.Distance(o.GetTruePosition(), me) <= 8f).ToList();
+                if (l.Count == 0) { H(p, T(ru, "В радиусе 8 м никого нет.", "Nobody within 8 m.")); return true; }
+                float d = l.Min(o => Vector2.Distance(o.GetTruePosition(), me));
+                H(p, T(ru, $"Целей рядом: {l.Count}, ближайшая в {d:0.#} м.", $"Targets near: {l.Count}, the nearest is {d:0.#} m away."));
                 return true;
             });
         S("Infiltrator", "Лазутчик", "Infiltrator", "#78909C", I, 30, 0, "питомец: где ближайший мирный", "pet: where the nearest crewmate is",
@@ -212,68 +298,24 @@ public static partial class Extra33
                 H(p, T(ru, $"Ближайшая цель: {Where(true, me, tp)}, примерно {Mathf.RoundToInt(Vector2.Distance(me, tp))} м.", $"Nearest target: {Where(false, me, tp)}, about {Mathf.RoundToInt(Vector2.Distance(me, tp))} m."));
                 return true;
             });
-        S("Eclipse", "Затмитель", "Eclipse", "#455A64", I, 60, 0, "питомец: ослепить всех рядом", "pet: blind everyone near",
-            "Предатель. Гасит свет в глазах у всех не-предателей в радиусе 8 м на 5 секунд. Перезарядка 60 с. [Питомец]",
-            "Impostor. Blinds every non-impostor within 8 m for 5 seconds. Cooldown 60 s. [Pet]",
+        S("Scapegoat", "Козёл отпущения", "Scapegoat", "#BCAAA4", I, 80, 0, "питомец: назначить виноватого", "pet: pick a scapegoat",
+            "Предатель. Питомец метит ближайшего не-предателя (до 3 м). Если в ближайшие 30 секунд кого-то убьют, всем живым придёт сообщение, что рядом с телом заметили именно его. Перезарядка 80 с. [Питомец]",
+            "Impostor. The pet marks the nearest non-impostor (within 3 m). If anyone is killed in the next 30 seconds, every living player is told that he was seen near the body. Cooldown 80 s. [Pet]",
             (p, ru) =>
             {
-                var me = p.GetTruePosition();
-                var l = Others(p).Where(o => !IsImp(o) && Vector2.Distance(o.GetTruePosition(), me) <= 8f).ToList();
-                if (l.Count == 0) { H(p, T(ru, "В радиусе 8 м никого нет.", "Nobody within 8 m.")); return false; }
-                foreach (var o in l) RoleLogic.FlashPlayer(o, 5f);
-                H(p, T(ru, $"Ослеплено игроков: {l.Count}.", $"Players blinded: {l.Count}."));
-                return true;
-            });
-        S("Anchor", "Якорь", "Anchor", "#5C6BC0", I, 20, 0, "питомец: метка и возврат", "pet: set a mark and return",
-            "Предатель. Первое нажатие ставит метку, второе возвращает тебя к ней (метка живёт 90 секунд). Перезарядка 20 с. [Питомец]",
-            "Impostor. The first press sets a mark, the second returns you to it (the mark lasts 90 seconds). Cooldown 20 s. [Pet]",
-            (p, ru) =>
-            {
-                if (anchors.TryGetValue(p.PlayerId, out var a) && Time.time - a.at < 90f)
-                {
-                    anchors.Remove(p.PlayerId);
-                    Commands.Tp(p, a.pos);
-                    H(p, T(ru, "Ты вернулся к метке.", "You returned to the mark."));
-                    return true;
-                }
-                anchors[p.PlayerId] = (p.GetTruePosition(), Time.time);
-                H(p, T(ru, "Метка поставлена. Нажми ещё раз, чтобы вернуться.", "Mark set. Press again to return."));
-                return true;
-            });
-        S("Disruptor", "Ловкач", "Disruptor", "#EC407A", I, 70, 0, "питомец: поменять двух игроков местами", "pet: swap two players",
-            "Предатель. Меняет местами двух случайных не-предателей. Перезарядка 70 с. [Питомец]",
-            "Impostor. Swaps two random non-impostors. Cooldown 70 s. [Pet]",
-            (p, ru) =>
-            {
-                var l = Others(p).Where(o => !IsImp(o)).OrderBy(o => rng.Next()).Take(2).ToList();
-                if (l.Count < 2) { H(p, T(ru, "Не хватает игроков.", "Not enough players.")); return false; }
-                var a = l[0].GetTruePosition(); var b = l[1].GetTruePosition();
-                Commands.Tp(l[0], b); Commands.Tp(l[1], a);
-                H(p, T(ru, $"{Nm(l[0])} и {Nm(l[1])} поменялись местами.", $"{Nm(l[0])} and {Nm(l[1])} swapped places."));
-                return true;
-            });
-        S("Swapper2", "Подмен", "Swapper", "#26C6DA", I, 45, 0, "питомец: поменяться местами", "pet: swap places",
-            "Предатель. Меняет тебя местами с ближайшим не-предателем (до 3 м). Перезарядка 45 с. [Питомец]",
-            "Impostor. Swaps you with the nearest non-impostor (within 3 m). Cooldown 45 s. [Pet]",
-            (p, ru) =>
-            {
-                var t = Nearest(p, 3f, o => !IsImp(o));
+                var t = Nearest(p, 3f, o => !IsImp(o) && !scapegoats.ContainsKey(o.PlayerId));
                 if (t == null) { H(p, T(ru, "Рядом нет цели.", "No target nearby.")); return false; }
-                var a = p.GetTruePosition(); var b = t.GetTruePosition();
-                Commands.Tp(p, b); Commands.Tp(t, a);
-                H(p, T(ru, $"Ты поменялся местами с {Nm(t)}.", $"You swapped places with {Nm(t)}."));
+                scapegoats[t.PlayerId] = Time.time + 30f;
+                H(p, T(ru, $"{Nm(t)} назначен виноватым на 30 секунд.", $"{Nm(t)} is the scapegoat for 30 seconds."));
                 return true;
             });
-        S("Headhunter", "Головорез", "Headhunter", "#D32F2F", I, 25, 0, "питомец: сколько целей вокруг", "pet: how many targets around",
-            "Предатель. Показывает, сколько не-предателей в радиусе 8 м, и расстояние до ближайшего. Перезарядка 25 с. [Питомец]",
-            "Impostor. Shows how many non-impostors are within 8 m and the distance to the nearest. Cooldown 25 s. [Pet]",
+        S("Tally", "Счётчик убийств", "Tally", "#E57373", I, 30, 0, "питомец: счёт смертей", "pet: the death count",
+            "Предатель. Показывает, сколько игроков погибло за игру и сколько секунд прошло с последней смерти. Перезарядка 30 с. [Питомец]",
+            "Impostor. Shows how many players died during the game and how many seconds passed since the last death. Cooldown 30 s. [Pet]",
             (p, ru) =>
             {
-                var me = p.GetTruePosition();
-                var l = Others(p).Where(o => !IsImp(o) && Vector2.Distance(o.GetTruePosition(), me) <= 8f).ToList();
-                if (l.Count == 0) { H(p, T(ru, "В радиусе 8 м никого нет.", "Nobody within 8 m.")); return true; }
-                float d = l.Min(o => Vector2.Distance(o.GetTruePosition(), me));
-                H(p, T(ru, $"Целей рядом: {l.Count}, ближайшая в {d:0.#} м.", $"Targets near: {l.Count}, the nearest is {d:0.#} m away."));
+                string ago = lastDeathAt < 0 ? "-" : Mathf.RoundToInt(Time.time - lastDeathAt).ToString();
+                H(p, T(ru, $"Смертей: {deathCount}. С последней: {ago} с.", $"Deaths: {deathCount}. Since the last one: {ago} s."));
                 return true;
             });
 
@@ -299,10 +341,6 @@ public static partial class Extra33
                 if (Around(p, 6f) < 3) { H(p, T(ru, "Нужна толпа: хотя бы трое рядом.", "You need a crowd: at least three nearby.")); return false; }
                 return Strike(p, t);
             });
-        S("Lancer", "Копейщик", "Lancer", "#FFA726", N, 55, 0, "питомец: убить издалека", "pet: kill from afar",
-            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока в радиусе 3,5 м. Перезарядка 55 с. [Питомец]",
-            "Neutral. The server sees you as a real impostor. The pet kills the nearest player within 3.5 m. Cooldown 55 s. [Pet]",
-            (p, ru) => NeutralKill(p, ru, 3.5f, o => true, "Никого нет ближе 3,5 м.", "Nobody within 3.5 m."));
         S("Bloodsucker", "Кровосос", "Bloodsucker", "#B71C1C", N, 50, 0, "питомец: убить и получить щит", "pet: kill and gain a shield",
             "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), и ты получаешь щит. [Питомец]",
             "Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m) and you gain a shield. [Pet]",
@@ -321,50 +359,57 @@ public static partial class Extra33
                 if (ok && RandomDoor(out var pos)) Commands.Tp(p, pos);
                 return ok;
             });
-        S("Butcher", "Мясник", "Butcher", "#880E4F", N, 70, 0, "питомец: убить двоих рядом", "pet: kill two nearby",
-            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает сразу двоих ближайших игроков (до 2 м), если рядом их двое. [Питомец]",
-            "Neutral. The server sees you as a real impostor. The pet kills the two nearest players (within 2 m) at once, if there are two. [Pet]",
+        S("Sniper", "Снайпер", "Sniper", "#37474F", N, 90, 2, "питомец: убить в дальнем радиусе", "pet: a long range kill",
+            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока в радиусе 5 м без промаха. Всего два выстрела за игру, перезарядка 90 с. [Питомец]",
+            "Neutral. The server sees you as a real impostor. The pet kills the nearest player within 5 m without a miss. Only two shots per game, cooldown 90 s. [Pet]",
+            (p, ru) => NeutralKill(p, ru, 5f, o => true, "Никого нет ближе 5 м.", "Nobody within 5 m."));
+        S("Judge", "Судья", "Judge", "#5D4037", N, 40, 0, "питомец: казнить подозрительного", "pet: execute a suspicious one",
+            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только если он стоит рядом с телом (до 5 м). [Питомец]",
+            "Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only if he stands next to a body (within 5 m). [Pet]",
+            (p, ru) => NeutralKill(p, ru, 2f, o => bodies.Any(b => !eaten.Contains(b.id) && Vector2.Distance(b.pos, o.GetTruePosition()) <= 5f), "Рядом нет подозрительного (у тела, до 2 м).", "No suspicious player nearby (next to a body, within 2 m)."));
+        S("Vulture", "Стервятник", "Vulture", "#4E342E", N, 25, 0, "питомец: убить сразу после смерти", "pet: kill right after a death",
+            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только в течение 30 секунд после чьей-то смерти. [Питомец]",
+            "Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only within 30 seconds after somebody's death. [Pet]",
             (p, ru) =>
             {
-                var me = p.GetTruePosition();
-                var l = Others(p).Where(o => Vector2.Distance(o.GetTruePosition(), me) <= 2f).OrderBy(o => Vector2.Distance(o.GetTruePosition(), me)).Take(2).ToList();
-                if (l.Count < 2) { H(p, T(ru, "Нужны двое ближе 2 м.", "You need two players within 2 m.")); return false; }
-                bool any = false;
-                foreach (var t in l) any |= Strike(p, t);
-                return any;
+                if (lastDeathAt < 0 || Time.time - lastDeathAt > 30f) { H(p, T(ru, "Нужна свежая смерть (не старше 30 секунд).", "You need a fresh death (not older than 30 seconds).")); return false; }
+                return NeutralKill(p, ru, 2f, o => true, "Никого нет ближе 2 м.", "Nobody within 2 m.");
             });
-        S("Sniper", "Снайпер", "Sniper", "#37474F", N, 90, 2, "питомец: убить в дальнем радиусе", "pet: a long range kill",
-            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока в радиусе 5 м. Всего два выстрела за игру, перезарядка 90 с. [Питомец]",
-            "Neutral. The server sees you as a real impostor. The pet kills the nearest player within 5 m. Only two shots per game, cooldown 90 s. [Pet]",
-            (p, ru) => NeutralKill(p, ru, 5f, o => true, "Никого нет ближе 5 м.", "Nobody within 5 m."));
-        S("Traitorhunter", "Охотник на предателей", "Traitor Hunter", "#1565C0", N, 35, 0, "питомец: убить только предателя", "pet: kill only an impostor",
-            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего предателя (до 3 м). Мирных он не трогает. [Питомец]",
-            "Neutral. The server sees you as a real impostor. The pet kills the nearest impostor (within 3 m). Crewmates are left alone. [Pet]",
-            (p, ru) => NeutralKill(p, ru, 3f, IsImp, "Рядом нет предателя (до 3 м).", "No impostor nearby (within 3 m)."));
-        S("Crewbane", "Мироед", "Crewbane", "#2E7D32", N, 30, 0, "питомец: убить мирного", "pet: kill a crewmate",
-            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего мирного (до 2 м). Предателей он не трогает. [Питомец]",
-            "Neutral. The server sees you as a real impostor. The pet kills the nearest crewmate (within 2 m). Impostors are left alone. [Pet]",
-            (p, ru) => NeutralKill(p, ru, 2f, o => !IsImp(o), "Рядом нет мирного (до 2 м).", "No crewmate nearby (within 2 m)."));
-        S("Gambler", "Азартный", "Gambler", "#F9A825", N, 25, 0, "питомец: убить с шансом", "pet: kill with a chance",
-            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м) с шансом 60%. При неудаче перезарядка всё равно уходит. [Питомец]",
-            "Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m) with a 60% chance. On a miss the cooldown is still spent. [Pet]",
+        S("Finalist", "Финалист", "Finalist", "#FFC107", N, 20, 0, "питомец: убить, когда игроков мало", "pet: kill when few are left",
+            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только когда в живых осталось не больше шести. Зато перезарядка короткая. [Питомец]",
+            "Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only when no more than six are alive. The cooldown is short. [Pet]",
+            (p, ru) =>
+            {
+                if (PlayerControl.AllPlayerControls.ToArray().Count(Alive) > 6) { H(p, T(ru, "Рано: в живых больше шести.", "Too early: more than six are alive.")); return false; }
+                return NeutralKill(p, ru, 2f, o => true, "Никого нет ближе 2 м.", "Nobody within 2 m.");
+            });
+        S("Trigger", "Курок", "Trigger", "#FF7043", N, 20, 3, "питомец: три быстрых убийства", "pet: three quick kills",
+            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м). Всего три убийства за игру, зато перезарядка 20 с. [Питомец]",
+            "Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m). Only three kills per game, but the cooldown is 20 s. [Pet]",
+            (p, ru) => NeutralKill(p, ru, 2f, o => true, "Никого нет ближе 2 м.", "Nobody within 2 m."));
+        S("Breaker", "Пробойник", "Breaker", "#455A64", N, 55, 0, "питомец: убить сквозь щит", "pet: kill through a shield",
+            "Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), даже если у него есть щит: щит просто сгорает. [Питомец]",
+            "Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m) even if he has a shield: the shield just burns out. [Pet]",
             (p, ru) =>
             {
                 var t = Nearest(p, 2f, o => true);
                 if (t == null) { H(p, T(ru, "Никого нет ближе 2 м.", "Nobody within 2 m.")); return false; }
-                if (rng.Next(100) < 60) return Strike(p, t);
-                H(p, T(ru, "Не повезло: удар мимо.", "Bad luck: you missed."));
-                return true;
+                RoleLogic.ShieldArmed.Remove(t.PlayerId);
+                return Strike(p, t);
             });
+        foreach (var id in new[] { "Hangman", "Crowdbane", "Bloodsucker", "Runaway", "Sniper", "Judge", "Vulture", "Finalist", "Trigger", "Breaker" })
+            RoleLogic.RealImpNeutrals.Add(id);
 
         // ---------------- Мистики ----------------
-        S("Oracle", "Оракул", "Oracle", "#7E57C2", M, 60, 3, "питомец: один предатель или больше", "pet: one impostor or more",
-            "Мистик. Говорит, остался ли в живых один предатель или больше одного. Использований: 3, перезарядка 60 с. [Питомец]",
-            "Mystic. Tells whether one impostor or more than one is still alive. Uses: 3, cooldown 60 s. [Pet]",
+        S("Pulse", "Пульс", "Pulse", "#AB47BC", M, 25, 0, "питомец: расстояние до ближайшего", "pet: distance to the nearest",
+            "Мистик. Показывает расстояние до ближайшего живого игрока. Перезарядка 25 с. [Питомец]",
+            "Mystic. Shows the distance to the nearest living player. Cooldown 25 s. [Pet]",
             (p, ru) =>
             {
-                int n = PlayerControl.AllPlayerControls.ToArray().Count(o => Alive(o) && IsImp(o));
-                H(p, T(ru, n <= 1 ? "Знамение: предатель остался один." : "Знамение: предателей больше одного.", n <= 1 ? "Omen: one impostor is left." : "Omen: there is more than one impostor."));
+                var t = Nearest(p, 999f, o => true);
+                if (t == null) { H(p, T(ru, "Больше никого нет.", "Nobody else is here.")); return false; }
+                float d = Vector2.Distance(p.GetTruePosition(), t.GetTruePosition());
+                H(p, T(ru, $"Ближайший игрок в {d:0.#} м.", $"The nearest player is {d:0.#} m away."));
                 return true;
             });
         S("Medium", "Медиум", "Medium", "#B39DDB", M, 45, 0, "питомец: последние погибшие", "pet: the last dead",
@@ -389,17 +434,6 @@ public static partial class Extra33
                 H(p, T(ru, dark ? $"{Nm(t)}: тёмный знак." : $"{Nm(t)}: светлый знак.", dark ? $"{Nm(t)}: a dark sign." : $"{Nm(t)}: a light sign."));
                 return true;
             });
-        S("Pulse", "Пульс", "Pulse", "#AB47BC", M, 25, 0, "питомец: расстояние до ближайшего", "pet: distance to the nearest",
-            "Мистик. Показывает расстояние до ближайшего живого игрока. Перезарядка 25 с. [Питомец]",
-            "Mystic. Shows the distance to the nearest living player. Cooldown 25 s. [Pet]",
-            (p, ru) =>
-            {
-                var t = Nearest(p, 999f, o => true);
-                if (t == null) { H(p, T(ru, "Больше никого нет.", "Nobody else is here.")); return false; }
-                float d = Vector2.Distance(p.GetTruePosition(), t.GetTruePosition());
-                H(p, T(ru, $"Ближайший игрок в {d:0.#} м.", $"The nearest player is {d:0.#} m away."));
-                return true;
-            });
         S("Palmist", "Хиромант", "Palmist", "#CE93D8", M, 40, 3, "питомец: есть ли у роли способность", "pet: does the role have an ability",
             "Мистик. Смотрит на ближайшего игрока (до 2,5 м) и говорит, есть ли у его роли активная способность. Использований: 3, перезарядка 40 с. [Питомец]",
             "Mystic. Looks at the nearest player (within 2.5 m) and tells whether his role has an active ability. Uses: 3, cooldown 40 s. [Pet]",
@@ -421,25 +455,6 @@ public static partial class Extra33
                 H(p, T(ru, "Перезарядки сброшены.", "Cooldowns are reset."));
                 return true;
             });
-        S("Windseer", "Ветрогон", "Windseer", "#80CBC4", M, 35, 0, "питомец: где ближайший игрок", "pet: where the nearest player is",
-            "Мистик. Показывает направление на ближайшего живого игрока. Перезарядка 35 с. [Питомец]",
-            "Mystic. Shows the direction to the nearest living player. Cooldown 35 s. [Pet]",
-            (p, ru) =>
-            {
-                var t = Nearest(p, 999f, o => true);
-                if (t == null) { H(p, T(ru, "Больше никого нет.", "Nobody else is here.")); return false; }
-                H(p, T(ru, $"Ближайший игрок: {Where(true, p.GetTruePosition(), t.GetTruePosition())}.", $"The nearest player: {Where(false, p.GetTruePosition(), t.GetTruePosition())}."));
-                return true;
-            });
-        S("Soulcounter", "Счётчик душ", "Soul Counter", "#B0BEC5", M, 30, 0, "питомец: сколько душ улетело", "pet: how many souls left",
-            "Мистик. Показывает, сколько игроков уже погибло. Перезарядка 30 с. [Питомец]",
-            "Mystic. Shows how many players have already died. Cooldown 30 s. [Pet]",
-            (p, ru) =>
-            {
-                int dead = PlayerControl.AllPlayerControls.ToArray().Count(o => o != null && o.Data != null && o.Data.IsDead);
-                H(p, T(ru, $"Погибших игроков: {dead}.", $"Players who died: {dead}."));
-                return true;
-            });
         S("Fortuna", "Фортуна", "Fortuna", "#FFD740", M, 90, 2, "питомец: шанс на щит", "pet: a chance for a shield",
             "Мистик. С шансом 50% даёт тебе щит. При неудаче перезарядка всё равно уходит. Использований: 2, перезарядка 90 с. [Питомец]",
             "Mystic. A 50% chance to give you a shield. On a miss the cooldown is still spent. Uses: 2, cooldown 90 s. [Pet]",
@@ -453,14 +468,47 @@ public static partial class Extra33
                 else H(p, T(ru, "Удача отвернулась.", "Luck looked away."));
                 return true;
             });
-        S("Sleepwalker", "Лунатик", "Sleepwalker", "#7986CB", M, 50, 3, "питомец: прогулка к случайной двери", "pet: a walk to a random door",
-            "Мистик. Переносит тебя к случайной двери на карте. Использований: 3, перезарядка 50 с. [Питомец]",
-            "Mystic. Moves you to a random door on the map. Uses: 3, cooldown 50 s. [Pet]",
+        S("Census", "Перепись", "Census", "#90CAF9", M, 60, 3, "питомец: сколько нейтралов в живых", "pet: how many neutrals are alive",
+            "Мистик. Говорит, сколько нейтралов сейчас живо. Использований: 3, перезарядка 60 с. [Питомец]",
+            "Mystic. Tells how many neutrals are alive right now. Uses: 3, cooldown 60 s. [Pet]",
             (p, ru) =>
             {
-                if (!RandomDoor(out var pos)) return false;
-                Commands.Tp(p, pos);
-                H(p, T(ru, "Ты очнулся у двери.", "You woke up by a door."));
+                int n = PlayerControl.AllPlayerControls.ToArray().Count(o => Alive(o) && RoleState.Assigned.TryGetValue(o.PlayerId, out var r) && r.Tab == OptTab.Neutral);
+                H(p, T(ru, $"Нейтралов в живых: {n}.", $"Neutrals alive: {n}."));
+                return true;
+            });
+        S("Hunch", "Чутьё", "Hunch", "#7E57C2", M, 30, 0, "питомец: есть ли тёмный рядом", "pet: is a dark one near",
+            "Мистик. Говорит, есть ли в радиусе 6 м предатель или нейтрал-убийца. Имя не называет. Перезарядка 30 с. [Питомец]",
+            "Mystic. Tells whether an impostor or a neutral killer is within 6 m. Does not name him. Cooldown 30 s. [Pet]",
+            (p, ru) =>
+            {
+                var me = p.GetTruePosition();
+                bool dark = Others(p).Any(o => Vector2.Distance(o.GetTruePosition(), me) <= 6f && !IsCrewSide(o));
+                H(p, T(ru, dark ? "Чутьё: рядом кто-то тёмный." : "Чутьё: рядом спокойно.", dark ? "Hunch: somebody dark is near." : "Hunch: all is calm nearby."));
+                return true;
+            });
+        S("Bodyecho", "Эхо тела", "Body Echo", "#B39DDB", M, 45, 0, "питомец: где лежит последнее тело", "pet: where the last body lies",
+            "Мистик. Называет комнату, где лежит последнее тело. Перезарядка 45 с. [Питомец]",
+            "Mystic. Names the room where the last body lies. Cooldown 45 s. [Pet]",
+            (p, ru) =>
+            {
+                var list = bodies.Where(b => !eaten.Contains(b.id)).ToList();
+                if (list.Count == 0) { H(p, T(ru, "Тел на карте нет.", "No bodies on the map.")); return false; }
+                string room = Utils.RoomLabel(Utils.RoomName(list[list.Count - 1].pos, false), ru);
+                H(p, T(ru, $"Последнее тело лежит: {room}.", $"The last body lies: {room}."));
+                return true;
+            });
+        S("Lot", "Жребий", "Lot", "#CE93D8", M, 75, 2, "питомец: три имени, среди них тёмный", "pet: three names, a dark one among them",
+            "Мистик. Называет троих игроков, и среди них есть хотя бы один не-мирный (предатель или нейтрал), если такие остались. Использований: 2, перезарядка 75 с. [Питомец]",
+            "Mystic. Names three players, and at least one of them is not crew (an impostor or a neutral) if any are left. Uses: 2, cooldown 75 s. [Pet]",
+            (p, ru) =>
+            {
+                var all = Others(p);
+                if (all.Count < 3) { H(p, T(ru, "Слишком мало игроков.", "Too few players.")); return false; }
+                var dark = all.Where(o => !IsCrewSide(o)).OrderBy(o => rng.Next()).Take(1).ToList();
+                var rest = all.Where(o => !dark.Contains(o)).OrderBy(o => rng.Next()).Take(3 - dark.Count);
+                var pick = dark.Concat(rest).OrderBy(o => rng.Next()).Select(Nm);
+                H(p, T(ru, "Жребий: " + string.Join(", ", pick) + ".", "Lot: " + string.Join(", ", pick) + "."));
                 return true;
             });
     }
