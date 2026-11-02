@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.56
+- RU: Вирус стал нейтралом с победой: нужно заразить всех живых игроков. Вирус больше не снимается собранием и остаётся до смерти игрока, на собрании приходит список заражённых. Лимит заражённых убран.
+- EN: Virus is now a neutral with a win condition: infect every living player. The virus is no longer removed by a meeting and stays until the player dies, the infected list arrives at the meeting. The infection limit is removed.
+
 ## 3.55
 - RU: новая роль мирных Вирус. Питомец заражает ближайшего игрока безвредным вирусом, заражённый передаёт его тем, кто 3 секунды стоит рядом. Ты узнаёшь о каждой передаче, а на собрании получаешь список заражённых и от кого каждый заразился. Вирус никому не вредит.
 - EN: new crewmate role Virus. The pet infects the nearest player with a harmless virus, an infected player passes it to anyone who stays near for 3 seconds. You learn of every spread and at the meeting get the list of infected players and who infected each. The virus harms nobody.
