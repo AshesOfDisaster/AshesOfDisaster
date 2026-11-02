@@ -84,6 +84,20 @@ public static partial class Extra33
                 H(p, T(ru, $"Напечатана метка: {PrintRu[k]}.", $"Mark printed: {PrintEn[k]}."));
                 return true;
             });
+        S("TimeStop", "Таймстоп", "Time Stop", "#B39DDB", OptTab.Mystic, 90, 3, "питомец: остановить время", "pet: stop time",
+            "Мистик. Питомец останавливает время: все остальные игроки замирают на несколько секунд (по умолчанию 5), а ты свободно ходишь. В это время таймеры меток, ловушек и отложенных смертей тоже стоят. Убивать замершим нельзя, но можно уйти или спрятаться. Использований: 3, перезарядка 90 с. [Питомец]",
+            "Mystic. The pet stops time: all other players freeze for a few seconds (5 by default) while you move freely. Timers of marks, traps and delayed deaths stop too. You cannot kill frozen players, but you can leave or hide. Uses: 3, cooldown 90 s. [Pet]",
+            (p, ru) =>
+            {
+                float dur = Mathf.Max(2, G("TimeStopSec"));
+                int n = 0;
+                foreach (var o in Others(p)) { Roles30.FreezePlayer(o, dur); Utils.SendSecret(o, T(Translator.IsRu(o), "Время остановлено!", "Time is stopped!"), 1, false); n++; }
+                foreach (var tm in timers) tm.At += dur;
+                foreach (var sp in spots) { sp.Until += dur; if (sp.Next > 0f) sp.Next += dur; }
+                H(p, T(ru, $"Время остановлено на {dur:0} с. Замерло игроков: {n}.", $"Time stopped for {dur:0} s. Frozen players: {n}."));
+                return true;
+            });
+        E("TimeStop", "TimeStopSec", 5, 2, 15, 1, "Длительность остановки (сек)", "Stop duration (sec)");
         S("Button", "Кнопка", "Button", "#FF8A65", C, 30, 4, "питомец: коснуться игрока, его способность сработает", "pet: touch a player, his ability fires",
             "Мирный. Питомец касается ближайшего игрока (до 2 м), и его способность тут же срабатывает, как будто он сам нажал. Работает только с активными способностями, действуют перезарядка и лимит использований самого игрока. Использований 4, перезарядка 30 с. [Питомец]",
             "Crewmate. The pet touches the nearest player (within 2 m) and his ability fires at once, as if he pressed it himself. Works only with active abilities; the player's own cooldown and uses apply. Uses 4, cooldown 30 s. [Pet]",

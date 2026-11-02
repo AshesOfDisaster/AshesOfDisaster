@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.54
+- RU: новая роль мистика Таймстоп. Питомец останавливает время: остальные игроки замирают (по умолчанию на 5 секунд, настраивается), таймеры меток и ловушек тоже стоят. 3 использования, перезарядка 90 с.
+- EN: new mystic role Time Stop. The pet stops time: the other players freeze (5 seconds by default, adjustable), timers of marks and traps stop too. 3 uses, cooldown 90 s.
+
 ## 3.51
 - RU: две новые роли мирных. Принтер: питомец печатает метку (Ловушка, Вспышка, Журнал), вид метки меняется входом в люк; Журнал открывается после 2 собраний и на собрании называет, кто проходил рядом. Кнопка: питомец касается игрока рядом, и его способность срабатывает мгновенно.
 - EN: two new crewmate roles. Printer: the pet prints a mark (Trap, Flash, Log), the kind is changed by entering a vent; the Log unlocks after 2 meetings and names who passed by at the meeting. Button: the pet touches a nearby player and his ability fires at once.
