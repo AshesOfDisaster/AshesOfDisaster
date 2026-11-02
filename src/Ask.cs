@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Concurrent;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace AshesOfDisaster;
@@ -34,7 +38,92 @@ public static class Ask
         }
         if (!host && lastAsk.TryGetValue(sender.PlayerId, out var t0) && Time.time - t0 < 4f) { Utils.SendSecret(sender, ru ? "Подожди пару секунд." : "Wait a couple of seconds."); return true; }
         lastAsk[sender.PlayerId] = Time.time;
+        if (TryAi(sender, question, ru)) return true;
+        return Local(sender, question, ru);
+    }
 
+    static readonly HttpClient http = MakeHttp();
+    static HttpClient MakeHttp()
+    {
+        var h = new HttpClient();
+        try { h.Timeout = TimeSpan.FromSeconds(20); } catch { }
+        return h;
+    }
+    static readonly ConcurrentQueue<(byte pid, string text, string q)> done = new();
+    static readonly Queue<float> calls = new();
+
+    static string Esc(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", "\\n").Replace("\t", " ");
+
+    static bool TryAi(PlayerControl sender, string question, bool ru)
+    {
+        string key = Secrets.AiKey;
+        if (string.IsNullOrEmpty(key)) return false;
+        float now = Time.realtimeSinceStartup;
+        while (calls.Count > 0 && now - calls.Peek() > 60f) calls.Dequeue();
+        if (calls.Count >= 10) return false;
+        calls.Enqueue(now);
+        var ctx = new StringBuilder();
+        foreach (var r in Direct(Tokens(question)))
+            ctx.Append("Роль ").Append(r.Ru).Append(" / ").Append(r.En).Append(": ").Append(r.DescRu).Append(" ");
+        string sys = "Ты помощник мода Ashes of Disaster для Among Us (хост-мод с 140+ ролями, команды /m /r /tip /ab /id /lang /report /ai, своя музыка в папке BepInEx/AshesMusic). "
+            + "Отвечай коротко (до 300 символов), без markdown и списков, на языке вопроса. Отвечай только про мод и Among Us. Если не знаешь, так и скажи. "
+            + (ctx.Length > 0 ? "Справка по ролям: " + Cut(ctx.ToString(), 1500) : "");
+        string body = "{\"system_instruction\":{\"parts\":[{\"text\":\"" + Esc(sys) + "\"}]},\"contents\":[{\"parts\":[{\"text\":\"" + Esc(Cut(question, 300)) + "\"}]}],\"generationConfig\":{\"maxOutputTokens\":600}}";
+        string url = "https://generativelanguage.googleapis.com/v1beta/models/" + Secrets.AiModel + ":generateContent";
+        byte pid = sender.PlayerId;
+        Task.Run(async () =>
+        {
+            string text = null;
+            try
+            {
+                using var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
+                req.Headers.Add("x-goog-api-key", key);
+                var res = await http.SendAsync(req);
+                string answer = await res.Content.ReadAsStringAsync();
+                if (res.IsSuccessStatusCode)
+                {
+                    using var doc = JsonDocument.Parse(answer);
+                    text = doc.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
+                }
+                else Plugin.Logger.LogWarning("AI answered " + (int)res.StatusCode + ": " + Cut(answer, 200));
+            }
+            catch (Exception e) { Plugin.Logger.LogWarning("AI failed: " + e.GetBaseException().Message); }
+            if (!string.IsNullOrWhiteSpace(text)) text = Cut(text.Replace("*", "").Replace("#", "").Trim(), 450);
+            done.Enqueue((pid, string.IsNullOrWhiteSpace(text) ? null : text, question));
+        });
+        return true;
+    }
+
+    static string Cut(string s, int n) => s == null ? "" : s.Length > n ? s.Substring(0, n) : s;
+
+    // вызывается из Update (главный поток): доставляет ответы нейросети или запасной локальный ответ
+    public static void Tick()
+    {
+        while (done.TryDequeue(out var d))
+        {
+            try
+            {
+                var p = Utils.GetPlayer(d.pid);
+                if (p == null || p.Data == null) continue;
+                if (d.text != null) Utils.SendSecret(p, d.text, 3);
+                else Local(p, d.q, Translator.IsRu(p));
+            }
+            catch (Exception e) { Plugin.Logger.LogWarning("Ask.Tick: " + e.Message); }
+        }
+    }
+
+    static List<RoleDef> Direct(List<string> tk)
+    {
+        var words = tk.Where(w => w.Length >= 4).ToList();
+        return Opts.Roles.Where(r =>
+        {
+            string a = Norm(r.Ru), b = Norm(r.En);
+            return words.Any(w => w.StartsWith(Stem(a)) || w.StartsWith(Stem(b)) || a.StartsWith(w) || b.StartsWith(w));
+        }).Take(2).ToList();
+    }
+
+    static bool Local(PlayerControl sender, string question, bool ru)
+    {
         var tk = Tokens(question);
         // справка по моду
         if (Has(tk, "музык", "music", "трек"))
@@ -51,11 +140,7 @@ public static class Ask
 
         // роль по названию
         var words = tk.Where(w => w.Length >= 4).ToList();
-        var direct = Opts.Roles.Where(r =>
-        {
-            string a = Norm(r.Ru), b = Norm(r.En);
-            return words.Any(w => w.StartsWith(Stem(a)) || w.StartsWith(Stem(b)) || a.StartsWith(w) || b.StartsWith(w));
-        }).Take(2).ToList();
+        var direct = Direct(tk);
         if (direct.Count > 0)
         {
             var o = new List<string>();
