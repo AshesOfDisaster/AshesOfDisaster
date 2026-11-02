@@ -93,6 +93,18 @@ public static partial class Extra33
                 VirusCheck(so);
             }
         }
+        foreach (var sp in spots.Where(x => x.Kind == "spore").ToList())
+        {
+            var so = Utils.GetPlayer(sp.Owner);
+            if (so == null || so.Data == null || so.Data.IsDead || now > sp.Until) { spots.Remove(sp); continue; }
+            var o = Others(so).FirstOrDefault(x => Vector2.Distance(x.GetTruePosition(), sp.Pos) <= 1.5f && !spots.Any(s => s.Kind == "virus" && s.Owner == so.PlayerId && s.Target == x.PlayerId));
+            if (o == null) continue;
+            spots.Remove(sp);
+            spots.Add(new Spot { Kind = "virus", Owner = so.PlayerId, Target = o.PlayerId, Until = Time.time + 99999f, Seen = new List<byte> { so.PlayerId } });
+            bool sru = Translator.IsRu(so);
+            H(so, T(sru, $"На споре заразился {Nm(o)}. Заражено {VirusCount(so)} из {VirusAlive(so)}.", $"{Nm(o)} got infected by a spore. Infected {VirusCount(so)} of {VirusAlive(so)}."));
+            VirusCheck(so);
+        }
         float dt = vLast > 0 ? Mathf.Min(now - vLast, 0.5f) : 0f; vLast = now;
         foreach (var sp in spots.Where(x => x.Kind == "virus").ToList())
         {
@@ -108,7 +120,7 @@ public static partial class Extra33
                 var k = (sp.Owner, o.PlayerId);
                 if (Vector2.Distance(v.GetTruePosition(), o.GetTruePosition()) > 1.8f) { vexp.Remove(k); continue; }
                 vexp[k] = (vexp.TryGetValue(k, out var e) ? e : 0f) + dt;
-                if (vexp[k] < (IsRole(owner, "Skibidi") ? 10f : 3f)) continue;
+                if (vexp[k] < (IsRole(owner, "Skibidi") ? 10f : IsRole(owner, "Spore") ? 6f : 3f)) continue;
                 vexp.Remove(k);
                 var src = new List<byte> { sp.Target };
                 spots.Add(new Spot { Kind = "virus", Owner = sp.Owner, Target = o.PlayerId, Until = Time.time + 9999f, Seen = src });
@@ -127,6 +139,7 @@ public static partial class Extra33
         string head = T(ru, $"<color=#9CCC65>☣ заражено {names.Count} из {n}</color>", $"<color=#9CCC65>☣ infected {names.Count} of {n}</color>");
         string act = sk ? T(ru, ", питомец: спеть", ", pet: sing") : T(ru, ", питомец: заразить", ", pet: infect");
         if (sk && sing.TryGetValue(p.PlayerId, out var su) && su > Time.time) act = T(ru, $", поёшь ещё {Mathf.CeilToInt(su - Time.time)} с", $", singing {Mathf.CeilToInt(su - Time.time)} s more");
+        if (IsRole(p, "Spore")) act = T(ru, $", питомец: спора (на земле {spots.Count(x => x.Kind == "spore" && x.Owner == p.PlayerId)})", $", pet: spore ({spots.Count(x => x.Kind == "spore" && x.Owner == p.PlayerId)} placed)");
         if (names.Count == 0) return head + act;
         return head + act + ": " + string.Join(", ", names);
     }
@@ -142,7 +155,7 @@ public static partial class Extra33
 
     static void Virus42Meeting()
     {
-        vexp.Clear(); sing.Clear();
+        vexp.Clear(); sing.Clear(); spots.RemoveAll(x => x.Kind == "spore");
         foreach (var g in spots.Where(x => x.Kind == "virus").GroupBy(x => x.Owner).ToList())
         {
             var vo = Utils.GetPlayer(g.Key);
@@ -208,6 +221,17 @@ public static partial class Extra33
             {
                 sing[p.PlayerId] = Time.time + 10f;
                 H(p, T(ru, "Ты поёшь 10 секунд: кто подойдёт ближе 3,5 м, заразится.", "You sing for 10 seconds: anyone within 3.5 m gets infected."));
+                return true;
+            });
+        S("Spore", "Спора", "Spore", "#A1887F", OptTab.Neutral, 45, 0, "питомец: оставить спору", "pet: leave a spore",
+            "Нейтрал из команды вирусов, слабая роль. Побеждает, когда заражены все живые игроки. Питомец оставляет на твоём месте невидимую спору на 60 секунд (не больше 2 одновременно, споры пропадают на собрании). Первый, кто пройдёт рядом (до 1,5 м), заражается, а ты узнаёшь кто. Заражённый передаёт вирус медленно: надо простоять рядом с другим игроком (до 1,8 м) 6 секунд. Вирус не снимается собранием, остаётся до смерти игрока и продолжает распространяться, если умрёшь ты (победа всё равно твоя). Перезарядка 45 с. [Питомец]",
+            "Neutral of the virus team, a weak role. You win when every living player is infected. The pet leaves an invisible spore where you stand for 60 seconds (no more than 2 at once, spores vanish at a meeting). The first one to pass nearby (within 1.5 m) gets infected and you learn who. An infected player spreads the virus slowly: he must stand within 1.8 m of another player for 6 seconds. A meeting does not remove the virus, it stays until the player dies and keeps spreading if you die (the win is still yours). Cooldown 45 s. [Pet]",
+            (p, ru) =>
+            {
+                var mine = spots.Where(x => x.Kind == "spore" && x.Owner == p.PlayerId).ToList();
+                if (mine.Count >= 2) spots.Remove(mine[0]);
+                spots.Add(new Spot { Kind = "spore", Owner = p.PlayerId, Pos = p.GetTruePosition(), Until = Time.time + 60f });
+                H(p, T(ru, "Спора оставлена на 60 секунд.", "Spore left for 60 seconds."));
                 return true;
             });
         S("Button", "Кнопка", "Button", "#FF8A65", C, 30, 4, "питомец: коснуться игрока, его способность сработает", "pet: touch a player, his ability fires",

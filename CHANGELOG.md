@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.60
+- RU: новая слабая роль команды вирусов Спора (нейтрал). Питомец оставляет невидимую спору на 60 секунд (не больше 2), первый, кто пройдёт рядом, заражается. Заражённый передаёт вирус медленно: 6 секунд рядом с другим игроком. Победа и метки как у Вируса.
+- EN: new weak virus-team role Spore (neutral). The pet leaves an invisible spore for 60 seconds (max 2), the first one to pass nearby gets infected. An infected player spreads the virus slowly: 6 seconds near another player. Win and marks work like the Virus.
+
 ## 3.59
 - RU: новая роль команды вирусов Скибиди (нейтрал). Питомец запускает песню на 10 секунд, раз в 30 секунд: кто подошёл ближе 3,5 м, заражается. Заражённый передаёт вирус другим медленно: надо простоять рядом 10 секунд. Победа, метки и остальное как у Вируса.
 - EN: new virus-team role Skibidi (neutral). The pet starts a song for 10 seconds, once per 30 seconds: anyone within 3.5 m gets infected. An infected player passes the virus slowly: he must stand near another player for 10 seconds. Win, marks and the rest work like the Virus.

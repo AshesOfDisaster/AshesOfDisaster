@@ -1428,7 +1428,7 @@ public static partial class Extra33
     {
         var s = ById[id];
         string hint = ru ? s.HintRu : s.HintEn;
-        if (id == "Virus" || id == "Skibidi") return VirusLine(p, ru);
+        if (id == "Virus" || id == "Skibidi" || id == "Spore") return VirusLine(p, ru);
         if (s.Fn == null) return hint;
         int left = Left(s, p.PlayerId);
         if (left == 0) return T(ru, "<color=#FF5555>использования закончились</color>", "<color=#FF5555>no uses left</color>");
