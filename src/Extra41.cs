@@ -202,18 +202,6 @@ public static partial class Extra33
                 return true;
             });
         E("TimeStop", "TimeStopSec", 5, 2, 15, 1, "Длительность остановки (сек)", "Stop duration (sec)");
-        S("Virus", "Вирус", "Virus", "#9CCC65", OptTab.Neutral, 40, 0, "питомец: заразить игрока", "pet: infect a player",
-            "Нейтрал. Чтобы выиграть, нужно заразить всех живых игроков. Питомец заражает ближайшего игрока (до 3 м) безвредным вирусом. Заражённый сам передаёт его тем, кто пробудет рядом (до 1,8 м) 3 секунды. Вирус остаётся до смерти игрока и не снимается собранием; на собрании ты получаешь список заражённых и от кого каждый заразился. Когда заражены все живые, ты побеждаешь. Если ты умрёшь, вирус продолжит распространяться, и ты всё равно выиграешь. Перезарядка 40 с. [Питомец]",
-            "Neutral. To win, infect every living player. The pet infects the nearest player (within 3 m) with a harmless virus. An infected player passes it to anyone who stays near (within 1.8 m) for 3 seconds. The virus stays until the player dies and a meeting does not remove it; at a meeting you get the list of infected players and who infected each. When all living players are infected, you win. If you die, the virus keeps spreading and you still win. Cooldown 40 s. [Pet]",
-            (p, ru) =>
-            {
-                var t = Nearest(p, 3f, o => !spots.Any(x => x.Kind == "virus" && x.Owner == p.PlayerId && x.Target == o.PlayerId));
-                if (t == null) { H(p, T(ru, "Рядом нет, кого заразить (до 3 м).", "Nobody to infect within 3 m.")); return false; }
-                spots.Add(new Spot { Kind = "virus", Owner = p.PlayerId, Target = t.PlayerId, Until = Time.time + 99999f, Seen = new List<byte> { p.PlayerId } });
-                H(p, T(ru, $"{Nm(t)} заражён. Заражено {VirusCount(p)} из {VirusAlive(p)}.", $"{Nm(t)} is infected. Infected {VirusCount(p)} of {VirusAlive(p)}."));
-                VirusCheck(p);
-                return true;
-            });
         S("Skibidi", "Скибиди", "Skibidi", "#80DEEA", OptTab.Neutral, 30, 0, "питомец: спеть песню", "pet: sing the song",
             "Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Питомец запускает песню на 10 секунд (раз в 30 секунд). Кто подошёл к тебе ближе 3,5 м, пока песня звучит, заражается. Заражённый передаёт вирус дальше медленно: ему надо стоять рядом с другим игроком (до 1,8 м) 10 секунд. Вирус не снимается собранием и остаётся до смерти игрока; если ты умрёшь, вирус продолжит распространяться и ты всё равно выиграешь. Над твоим именем видно, кто заражён. [Питомец]",
             "Neutral of the virus team. You win when every living player is infected. The pet starts the song for 10 seconds (once per 30 seconds). Anyone who comes within 3.5 m of you while the song plays gets infected. An infected player spreads the virus slowly: he must stand within 1.8 m of another player for 10 seconds. A meeting does not remove the virus, it stays until the player dies; if you die, the virus keeps spreading and you still win. You can see who is infected above your name. [Pet]",

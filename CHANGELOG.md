@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.61
+- RU: роль Вирус удалена. В команде вирусов остались Скибиди и Спора.
+- EN: the Virus role is removed. The virus team keeps Skibidi and Spore.
+
 ## 3.60
 - RU: новая слабая роль команды вирусов Спора (нейтрал). Питомец оставляет невидимую спору на 60 секунд (не больше 2), первый, кто пройдёт рядом, заражается. Заражённый передаёт вирус медленно: 6 секунд рядом с другим игроком. Победа и метки как у Вируса.
 - EN: new weak virus-team role Spore (neutral). The pet leaves an invisible spore for 60 seconds (max 2), the first one to pass nearby gets infected. An infected player spreads the virus slowly: 6 seconds near another player. Win and marks work like the Virus.
