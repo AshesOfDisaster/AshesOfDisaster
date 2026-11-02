@@ -8,7 +8,7 @@ namespace AshesOfDisaster;
 // 40 новых ролей: по 10 мирных, предателей, нейтралов и мистиков.
 public static partial class Extra33
 {
-    class Spot { public string Kind; public byte Owner, Target; public Vector2 Pos; public float Until, Next; }
+    class Spot { public string Kind; public byte Owner, Target; public Vector2 Pos; public float Until, Next; public List<byte> Seen = new(); }
     static readonly List<Spot> spots = new();
     static readonly Dictionary<byte, float> scapegoats = new();
     static readonly Dictionary<byte, int> reapKills = new();
@@ -19,7 +19,7 @@ public static partial class Extra33
     static float lastDeathAt = -999f;
     static int deathCount;
 
-    static void Clear40() { spots.Clear(); scapegoats.Clear(); reapKills.Clear(); reapLast.Clear(); lastDeathAt = -999f; deathCount = 0; deathTimes.Clear(); looted.Clear(); wounded.Clear(); }
+    static void Clear40() { spots.Clear(); scapegoats.Clear(); reapKills.Clear(); reapLast.Clear(); lastDeathAt = -999f; deathCount = 0; deathTimes.Clear(); looted.Clear(); wounded.Clear(); psel.Clear(); meetN = 0; }
 
     static void Death40(PlayerControl killer, PlayerControl target)
     {

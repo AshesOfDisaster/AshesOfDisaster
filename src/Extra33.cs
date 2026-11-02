@@ -143,6 +143,7 @@ public static partial class Extra33
         try
         {
             if (!Utils.AmHost || p == null || p.Data == null) return;
+            Vent41(p, vid);
             if (!ventLog.TryGetValue(vid, out var lg)) ventLog[vid] = lg = new List<(byte, float)>();
             lg.Add((p.PlayerId, Time.time));
             if (sealedVents.TryGetValue(vid, out var so) && so != p.PlayerId)
@@ -245,6 +246,7 @@ public static partial class Extra33
         ConfigRef = c;
         const OptTab N = OptTab.Neutral, M = OptTab.Mystic, C = OptTab.Crewmate, I = OptTab.Impostor;
         Define40();
+        Define41();
 
         // ---------------- Нейтралы (настоящие убийцы, убивают питомцем) ----------------
         S("Reaper", "Жнец", "Reaper", "#8E24AA", N, 0, 0, "питомец: метка смерти", "pet: a death mark",
@@ -1514,6 +1516,7 @@ public static partial class Extra33
     {
         try
         {
+            Meeting41();
             foreach (var kv in RoleState.Assigned.ToList())
             {
                 if (kv.Value.Id != "Pedometer") continue;
@@ -1625,6 +1628,7 @@ public static partial class Extra33
 
             NewtonTick(now);
             Tick40(now);
+            Tick41(now);
             foreach (var botKv in RoleState.Assigned.ToList())
             {
                 if (botKv.Value.Id != "Bot") continue;
