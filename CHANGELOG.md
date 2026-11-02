@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.58
+- RU: Вирус побеждает, даже если сам умер: заражение продолжает распространяться, и когда заражены все живые игроки, выигрывает тот, кто был Вирусом.
+- EN: the Virus wins even if he died: the infection keeps spreading, and when every living player is infected, the one who was the Virus wins.
+
 ## 3.57
 - RU: заражённые игроки помечены для Вируса: над его именем строка «☣ заражено N из M: имена». Другие игроки метку не видят.
 - EN: infected players are marked for the Virus: a line above his name "☣ infected N of M: names". Other players do not see the mark.

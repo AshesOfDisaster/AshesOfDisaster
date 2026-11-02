@@ -82,7 +82,7 @@ public static partial class Extra33
         foreach (var sp in spots.Where(x => x.Kind == "virus").ToList())
         {
             var owner = Utils.GetPlayer(sp.Owner);
-            if (!Alive(owner)) { spots.Remove(sp); continue; }
+            if (owner == null || owner.Data == null || owner.Data.Disconnected) { spots.Remove(sp); continue; }
             var v = Utils.GetPlayer(sp.Target);
             if (!Alive(v)) continue;
             bool ru = Translator.IsRu(owner);
@@ -97,7 +97,7 @@ public static partial class Extra33
                 vexp.Remove(k);
                 var src = new List<byte> { sp.Target };
                 spots.Add(new Spot { Kind = "virus", Owner = sp.Owner, Target = o.PlayerId, Until = Time.time + 9999f, Seen = src });
-                H(owner, T(ru, $"Вирус перекинулся: {Nm(v)} заразил {Nm(o)}. Заражено {VirusCount(owner)} из {VirusAlive(owner)}.", $"The virus spread: {Nm(v)} infected {Nm(o)}. Infected {VirusCount(owner)} of {VirusAlive(owner)}."));
+                if (Alive(owner)) H(owner, T(ru, $"Вирус перекинулся: {Nm(v)} заразил {Nm(o)}. Заражено {VirusCount(owner)} из {VirusAlive(owner)}.", $"The virus spread: {Nm(v)} infected {Nm(o)}. Infected {VirusCount(owner)} of {VirusAlive(owner)}."));
                 VirusCheck(owner);
             }
         }
@@ -115,7 +115,7 @@ public static partial class Extra33
 
     static void VirusCheck(PlayerControl owner)
     {
-        if (vwin || !Alive(owner) || MeetingHud.Instance != null) return;
+        if (vwin || MeetingHud.Instance != null) return;
         int n = VirusAlive(owner);
         if (n == 0 || VirusCount(owner) < n) return;
         vwin = true; vwinAt = Time.time + 2f;
@@ -172,8 +172,8 @@ public static partial class Extra33
             });
         E("TimeStop", "TimeStopSec", 5, 2, 15, 1, "Длительность остановки (сек)", "Stop duration (sec)");
         S("Virus", "Вирус", "Virus", "#9CCC65", OptTab.Neutral, 40, 0, "питомец: заразить игрока", "pet: infect a player",
-            "Нейтрал. Чтобы выиграть, нужно заразить всех живых игроков. Питомец заражает ближайшего игрока (до 3 м) безвредным вирусом. Заражённый сам передаёт его тем, кто пробудет рядом (до 1,8 м) 3 секунды. Вирус остаётся до смерти игрока и не снимается собранием; на собрании ты получаешь список заражённых и от кого каждый заразился. Когда заражены все живые, ты побеждаешь. Умер ты, пропадает и вирус. Перезарядка 40 с. [Питомец]",
-            "Neutral. To win, infect every living player. The pet infects the nearest player (within 3 m) with a harmless virus. An infected player passes it to anyone who stays near (within 1.8 m) for 3 seconds. The virus stays until the player dies and a meeting does not remove it; at a meeting you get the list of infected players and who infected each. When all living players are infected, you win. If you die, the virus disappears. Cooldown 40 s. [Pet]",
+            "Нейтрал. Чтобы выиграть, нужно заразить всех живых игроков. Питомец заражает ближайшего игрока (до 3 м) безвредным вирусом. Заражённый сам передаёт его тем, кто пробудет рядом (до 1,8 м) 3 секунды. Вирус остаётся до смерти игрока и не снимается собранием; на собрании ты получаешь список заражённых и от кого каждый заразился. Когда заражены все живые, ты побеждаешь. Если ты умрёшь, вирус продолжит распространяться, и ты всё равно выиграешь. Перезарядка 40 с. [Питомец]",
+            "Neutral. To win, infect every living player. The pet infects the nearest player (within 3 m) with a harmless virus. An infected player passes it to anyone who stays near (within 1.8 m) for 3 seconds. The virus stays until the player dies and a meeting does not remove it; at a meeting you get the list of infected players and who infected each. When all living players are infected, you win. If you die, the virus keeps spreading and you still win. Cooldown 40 s. [Pet]",
             (p, ru) =>
             {
                 var t = Nearest(p, 3f, o => !spots.Any(x => x.Kind == "virus" && x.Owner == p.PlayerId && x.Target == o.PlayerId));

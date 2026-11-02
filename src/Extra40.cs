@@ -40,7 +40,7 @@ public static partial class Extra33
         foreach (var sp in spots.ToList())
         {
             var owner = Utils.GetPlayer(sp.Owner);
-            if (!Alive(owner) || now > sp.Until) { spots.Remove(sp); continue; }
+            if ((!Alive(owner) && sp.Kind != "virus") || now > sp.Until) { spots.Remove(sp); continue; }
             bool ru = Translator.IsRu(owner);
             if (sp.Kind == "alarm")
             {
