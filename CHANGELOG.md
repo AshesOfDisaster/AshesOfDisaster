@@ -1,13 +1,5 @@
 # Changelog / Список изменений
 
-## 3.53
-- RU: /ai может отвечать через Gemini. Бесплатный ключ с сайта Google AI Studio положи в BepInEx/config/AshesOfDisaster.secrets.txt строкой aikey=КЛЮЧ (модель можно сменить строкой aimodel=...). Работает на компьютере хоста, не больше 10 запросов в минуту. Нет ключа, лимит или ошибка: /ai отвечает по встроенным описаниям, как раньше.
-- EN: /ai can answer through Gemini. Put a free key from Google AI Studio into BepInEx/config/AshesOfDisaster.secrets.txt as the line aikey=KEY (change the model with aimodel=...). It runs on the host's computer, at most 10 requests per minute. No key, limit or error: /ai answers from the built-in descriptions as before.
-
-## 3.52
-- RU: команда /ai вопрос (доступна всем): мгновенный ответ про роли, команды, музыку и жалобы из встроенных описаний. Это не нейросеть: ответ ищется по названиям и описаниям ролей, интернет не нужен. Раз в 4 секунды от игрока.
-- EN: command /ai question (for everyone): an instant answer about roles, commands, music and reports from the built-in descriptions. It is not a neural network: the answer is searched in role names and descriptions, no internet needed. Once per 4 seconds per player.
-
 ## 3.51
 - RU: две новые роли мирных. Принтер: питомец печатает метку (Ловушка, Вспышка, Журнал), вид метки меняется входом в люк; Журнал открывается после 2 собраний и на собрании называет, кто проходил рядом. Кнопка: питомец касается игрока рядом, и его способность срабатывает мгновенно.
 - EN: two new crewmate roles. Printer: the pet prints a mark (Trap, Flash, Log), the kind is changed by entering a vent; the Log unlocks after 2 meetings and names who passed by at the meeting. Button: the pet touches a nearby player and his ability fires at once.

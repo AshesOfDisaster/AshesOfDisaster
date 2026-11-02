@@ -36,7 +36,7 @@ public class ModGui : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.F8)) ModPanel.Toggle();
-        Music.Tick(); Ask.Tick();
+        Music.Tick();
         Optimizer.Tick();
         Psy.Tick();
         Welder.Tick();

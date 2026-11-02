@@ -6,7 +6,7 @@ namespace AshesOfDisaster;
 
 public static class Secrets
 {
-    static string reports, roomCodes, aiKey = "", aiModel = "gemini-3.8-flash";
+    static string reports, roomCodes;
     static bool loaded;
 
     static void Load()
@@ -24,8 +24,6 @@ public static class Secrets
                 string k = line.Substring(0, eq).Trim().ToLowerInvariant(), v = line.Substring(eq + 1).Trim();
                 if (k == "reports") reports = v;
                 else if (k == "roomcodes") roomCodes = v;
-                else if (k == "aikey") aiKey = v;
-                else if (k == "aimodel" && v.Length > 0) aiModel = v;
             }
         }
         catch (Exception e) { Plugin.Logger.LogWarning("Secrets: " + e.Message); }
@@ -33,6 +31,4 @@ public static class Secrets
 
     public static string Reports { get { Load(); return reports; } }
     public static string RoomCodes { get { Load(); return roomCodes; } }
-    public static string AiKey { get { Load(); return aiKey; } }
-    public static string AiModel { get { Load(); return aiModel; } }
 }

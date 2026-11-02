@@ -69,7 +69,6 @@ public static class Commands
         new() { Name = "games", DescRu = "мини-игры в лобби: угадай число, кубик, викторина, монетка, слоты и другие", DescEn = "lobby mini-games: guess, dice, quiz, coin, slots and more" },
         new() { Name = "dump", HostOnly = true, DescRu = "сохранить список игроков в файл", DescEn = "save the player list to a file" },
         new() { Name = "block", HostOnly = true, UsageRu = "ID [причина]", UsageEn = "ID [reason]", DescRu = "заблокировать игрока: кик и бан-лист, например /block 3 читер", DescEn = "block a player: kick and ban list, for example /block 3 cheater" },
-        new() { Name = "ai", Aliases = new[] { "ask", "аи" }, HostOnly = false, UsageRu = "вопрос", UsageEn = "question", DescRu = "мгновенный ответ про роли, команды и музыку, например /ai что делает Сантехник", DescEn = "instant answer about roles, commands and music, for example /ai what does Plumber do" },
         new() { Name = "report", HostOnly = false, UsageRu = "ID [причина]", UsageEn = "ID [reason]", DescRu = "отправить жалобу на игрока в Discord, например /report 3 читер", DescEn = "send a report about a player to Discord, for example /report 3 cheater" },
         new() { Name = "ac", HostOnly = true, DescRu = "что нашёл античит и включён ли он", DescEn = "what the anticheat found and whether it is on" },
     };
@@ -197,7 +196,7 @@ public static class Commands
                         string Grp(params string[] ns) => string.Join(" ", ns.Select(n => Find(n)).Where(c => c != null && (!c.HostOnly || host)).Select(c => "/" + c.Name));
                         var help = (ru ? "<b>Главное:</b> " : "<b>Main:</b> ") + Grp("m", "r", "tip", "ab", "id", "lang") + "\n"
                                  + (ru ? "<b>Призраки:</b> " : "<b>Ghosts:</b> ") + Grp("boo", "haunt", "hk", "task", "solve", "ward", "sense", "scare", "swap", "wisp") + "\n"
-                                 + (ru ? "<b>Прочее:</b> " : "<b>Other:</b> ") + Grp("perk", "bounty", "games", "now", "t", "color", "v", "tpout", "tpin", "report", "ai");
+                                 + (ru ? "<b>Прочее:</b> " : "<b>Other:</b> ") + Grp("perk", "bounty", "games", "now", "t", "color", "v", "tpout", "tpin", "report");
                         if (host) help += "\n" + (ru ? "<b>Хост:</b> " : "<b>Host:</b> ") + Grp("o", "start", "cancel", "end", "kill", "kick", "ban", "unban", "block", "role", "who", "tag", "say", "ac", "dump");
                         help += "\n" + (ru ? "Про одну команду: /h команда. Не знаешь, с чего начать - пиши /m." : "About one command: /h command. Not sure where to start - type /m.");
                         Utils.SendPrivate(sender, help, 6);
@@ -317,9 +316,6 @@ public static class Commands
                         Say(R("cmd.done"));
                         return true;
                     }
-
-                case "ai":
-                    return Ask.Handle(sender, string.Join(" ", a), host);
 
                 case "block":
                 case "report":
