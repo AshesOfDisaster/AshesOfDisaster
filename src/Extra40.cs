@@ -19,7 +19,7 @@ public static partial class Extra33
     static float lastDeathAt = -999f;
     static int deathCount;
 
-    static void Clear40() { spots.Clear(); scapegoats.Clear(); reapKills.Clear(); reapLast.Clear(); lastDeathAt = -999f; deathCount = 0; deathTimes.Clear(); looted.Clear(); wounded.Clear(); psel.Clear(); meetN = 0; }
+    static void Clear40() { spots.Clear(); scapegoats.Clear(); reapKills.Clear(); reapLast.Clear(); lastDeathAt = -999f; deathCount = 0; deathTimes.Clear(); looted.Clear(); wounded.Clear(); psel.Clear(); meetN = 0; vexp.Clear(); }
 
     static void Death40(PlayerControl killer, PlayerControl target)
     {

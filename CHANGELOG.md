@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.55
+- RU: новая роль мирных Вирус. Питомец заражает ближайшего игрока безвредным вирусом, заражённый передаёт его тем, кто 3 секунды стоит рядом. Ты узнаёшь о каждой передаче, а на собрании получаешь список заражённых и от кого каждый заразился. Вирус никому не вредит.
+- EN: new crewmate role Virus. The pet infects the nearest player with a harmless virus, an infected player passes it to anyone who stays near for 3 seconds. You learn of every spread and at the meeting get the list of infected players and who infected each. The virus harms nobody.
+
 ## 3.54
 - RU: новая роль мистика Таймстоп. Питомец останавливает время: остальные игроки замирают (по умолчанию на 5 секунд, настраивается), таймеры меток и ловушек тоже стоят. 3 использования, перезарядка 90 с.
 - EN: new mystic role Time Stop. The pet stops time: the other players freeze (5 seconds by default, adjustable), timers of marks and traps stop too. 3 uses, cooldown 90 s.

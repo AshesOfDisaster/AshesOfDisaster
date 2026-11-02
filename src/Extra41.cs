@@ -29,6 +29,7 @@ public static partial class Extra33
 
     static void Tick41(float now)
     {
+        Virus42Tick(now);
         foreach (var sp in spots.ToList())
         {
             if (sp.Kind != "ptrap" && sp.Kind != "pflash" && sp.Kind != "plog") continue;
@@ -52,6 +53,7 @@ public static partial class Extra33
 
     static void Meeting41()
     {
+        Virus42Meeting();
         meetN++;
         foreach (var g in spots.Where(x => x.Kind == "plog").GroupBy(x => x.Owner).ToList())
         {
@@ -64,6 +66,56 @@ public static partial class Extra33
                                            "Mark log: " + (names.Count == 0 ? "nobody passed." : "passed: " + string.Join(", ", names) + ".")));
             }
             spots.RemoveAll(x => x.Kind == "plog" && x.Owner == g.Key);
+        }
+    }
+
+    static readonly Dictionary<(byte, byte), float> vexp = new();
+    static float vLast;
+
+    static void Virus42Tick(float now)
+    {
+        float dt = vLast > 0 ? Mathf.Min(now - vLast, 0.5f) : 0f; vLast = now;
+        foreach (var sp in spots.Where(x => x.Kind == "virus").ToList())
+        {
+            var owner = Utils.GetPlayer(sp.Owner);
+            if (!Alive(owner)) { spots.Remove(sp); continue; }
+            var v = Utils.GetPlayer(sp.Target);
+            if (!Alive(v)) continue;
+            bool ru = Translator.IsRu(owner);
+            foreach (var o in Others(v))
+            {
+                if (o.PlayerId == sp.Owner) continue;
+                if (spots.Any(x => x.Kind == "virus" && x.Owner == sp.Owner && x.Target == o.PlayerId)) continue;
+                var k = (sp.Owner, o.PlayerId);
+                if (Vector2.Distance(v.GetTruePosition(), o.GetTruePosition()) > 1.8f) { vexp.Remove(k); continue; }
+                vexp[k] = (vexp.TryGetValue(k, out var e) ? e : 0f) + dt;
+                if (vexp[k] < 3f || spots.Count(x => x.Kind == "virus" && x.Owner == sp.Owner) >= G("VirusMax")) continue;
+                vexp.Remove(k);
+                var src = new List<byte> { sp.Target };
+                spots.Add(new Spot { Kind = "virus", Owner = sp.Owner, Target = o.PlayerId, Until = Time.time + 9999f, Seen = src });
+                H(owner, T(ru, $"Вирус перекинулся: {Nm(v)} заразил {Nm(o)}.", $"The virus spread: {Nm(v)} infected {Nm(o)}."));
+            }
+        }
+    }
+
+    static void Virus42Meeting()
+    {
+        vexp.Clear();
+        foreach (var g in spots.Where(x => x.Kind == "virus").GroupBy(x => x.Owner).ToList())
+        {
+            var vo = Utils.GetPlayer(g.Key);
+            if (Alive(vo))
+            {
+                bool ru = Translator.IsRu(vo);
+                var list = g.Select(x =>
+                {
+                    var t = Utils.GetPlayer(x.Target); if (t == null) return null;
+                    var s = x.Seen.Count > 0 ? Utils.GetPlayer(x.Seen[0]) : null;
+                    return Nm(t) + (s != null ? (ru ? " (от " : " (from ") + Nm(s) + ")" : "");
+                }).Where(s => s != null).ToList();
+                Utils.SendSecret(vo, T(ru, "Заражены вирусом: " + (list.Count == 0 ? "никто." : string.Join(", ", list) + "."), "Infected: " + (list.Count == 0 ? "nobody." : string.Join(", ", list) + ".")), 3);
+            }
+            spots.RemoveAll(x => x.Kind == "virus" && x.Owner == g.Key);
         }
     }
 
@@ -98,6 +150,19 @@ public static partial class Extra33
                 return true;
             });
         E("TimeStop", "TimeStopSec", 5, 2, 15, 1, "Длительность остановки (сек)", "Stop duration (sec)");
+        S("Virus", "Вирус", "Virus", "#9CCC65", C, 40, 0, "питомец: заразить игрока", "pet: infect a player",
+            "Мирный. Питомец заражает ближайшего игрока (до 3 м) безвредным вирусом. Заражённый передаёт его тем, кто пробудет рядом с ним (до 1,8 м) 3 секунды, и ты сразу узнаёшь о каждой передаче. На собрании получаешь список заражённых и от кого каждый заразился: так видно, кто с кем общался. Вирус никому не вредит и снимается на собрании. Одновременно не больше 8 заражённых. Перезарядка 40 с. [Питомец]",
+            "Crewmate. The pet infects the nearest player (within 3 m) with a harmless virus. An infected player passes it to anyone who stays near him (within 1.8 m) for 3 seconds, and you learn of every spread at once. At a meeting you get the list of infected players and who infected each: you see who met whom. The virus harms nobody and is removed at the meeting. No more than 8 infected at a time. Cooldown 40 s. [Pet]",
+            (p, ru) =>
+            {
+                var t = Nearest(p, 3f, o => !spots.Any(x => x.Kind == "virus" && x.Owner == p.PlayerId && x.Target == o.PlayerId));
+                if (t == null) { H(p, T(ru, "Рядом нет, кого заразить (до 3 м).", "Nobody to infect within 3 m.")); return false; }
+                if (spots.Count(x => x.Kind == "virus" && x.Owner == p.PlayerId) >= G("VirusMax")) { H(p, T(ru, "Уже слишком много заражённых.", "Too many infected already.")); return false; }
+                spots.Add(new Spot { Kind = "virus", Owner = p.PlayerId, Target = t.PlayerId, Until = Time.time + 9999f, Seen = new List<byte> { p.PlayerId } });
+                H(p, T(ru, $"{Nm(t)} заражён.", $"{Nm(t)} is infected."));
+                return true;
+            });
+        E("Virus", "VirusMax", 8, 2, 15, 1, "Максимум заражённых", "Max infected");
         S("Button", "Кнопка", "Button", "#FF8A65", C, 30, 4, "питомец: коснуться игрока, его способность сработает", "pet: touch a player, his ability fires",
             "Мирный. Питомец касается ближайшего игрока (до 2 м), и его способность тут же срабатывает, как будто он сам нажал. Работает только с активными способностями, действуют перезарядка и лимит использований самого игрока. Использований 4, перезарядка 30 с. [Питомец]",
             "Crewmate. The pet touches the nearest player (within 2 m) and his ability fires at once, as if he pressed it himself. Works only with active abilities; the player's own cooldown and uses apply. Uses 4, cooldown 30 s. [Pet]",
