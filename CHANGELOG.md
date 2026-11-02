@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.59
+- RU: новая роль команды вирусов Скибиди (нейтрал). Питомец запускает песню на 10 секунд, раз в 30 секунд: кто подошёл ближе 3,5 м, заражается. Заражённый передаёт вирус другим медленно: надо простоять рядом 10 секунд. Победа, метки и остальное как у Вируса.
+- EN: new virus-team role Skibidi (neutral). The pet starts a song for 10 seconds, once per 30 seconds: anyone within 3.5 m gets infected. An infected player passes the virus slowly: he must stand near another player for 10 seconds. Win, marks and the rest work like the Virus.
+
 ## 3.58
 - RU: Вирус побеждает, даже если сам умер: заражение продолжает распространяться, и когда заражены все живые игроки, выигрывает тот, кто был Вирусом.
 - EN: the Virus wins even if he died: the infection keeps spreading, and when every living player is infected, the one who was the Virus wins.

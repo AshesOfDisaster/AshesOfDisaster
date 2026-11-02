@@ -70,6 +70,7 @@ public static partial class Extra33
     }
 
     static readonly Dictionary<(byte, byte), float> vexp = new();
+    static readonly Dictionary<byte, float> sing = new();
     static float vLast, vwinAt;
     static bool vwin;
     static int VirusAlive(PlayerControl o) => Others(o).Count;
@@ -78,6 +79,20 @@ public static partial class Extra33
     static void Virus42Tick(float now)
     {
         if (vwin) { if (now >= vwinAt) { vwin = false; Utils.EndGame(); } return; }
+        foreach (var kv in sing.ToList())
+        {
+            var so = Utils.GetPlayer(kv.Key);
+            if (now >= kv.Value || so == null || so.Data == null || so.Data.IsDead || MeetingHud.Instance != null) { sing.Remove(kv.Key); continue; }
+            foreach (var o in Others(so))
+            {
+                if (spots.Any(x => x.Kind == "virus" && x.Owner == so.PlayerId && x.Target == o.PlayerId)) continue;
+                if (Vector2.Distance(so.GetTruePosition(), o.GetTruePosition()) > 3.5f) continue;
+                spots.Add(new Spot { Kind = "virus", Owner = so.PlayerId, Target = o.PlayerId, Until = Time.time + 99999f, Seen = new List<byte> { so.PlayerId } });
+                bool sru = Translator.IsRu(so);
+                H(so, T(sru, $"Песня достала до {Nm(o)}. Заражено {VirusCount(so)} из {VirusAlive(so)}.", $"The song reached {Nm(o)}. Infected {VirusCount(so)} of {VirusAlive(so)}."));
+                VirusCheck(so);
+            }
+        }
         float dt = vLast > 0 ? Mathf.Min(now - vLast, 0.5f) : 0f; vLast = now;
         foreach (var sp in spots.Where(x => x.Kind == "virus").ToList())
         {
@@ -93,7 +108,7 @@ public static partial class Extra33
                 var k = (sp.Owner, o.PlayerId);
                 if (Vector2.Distance(v.GetTruePosition(), o.GetTruePosition()) > 1.8f) { vexp.Remove(k); continue; }
                 vexp[k] = (vexp.TryGetValue(k, out var e) ? e : 0f) + dt;
-                if (vexp[k] < 3f) continue;
+                if (vexp[k] < (IsRole(owner, "Skibidi") ? 10f : 3f)) continue;
                 vexp.Remove(k);
                 var src = new List<byte> { sp.Target };
                 spots.Add(new Spot { Kind = "virus", Owner = sp.Owner, Target = o.PlayerId, Until = Time.time + 9999f, Seen = src });
@@ -106,11 +121,14 @@ public static partial class Extra33
     // метка заражённых: строка над именем самого Вируса (другие игроки её не видят)
     static string VirusLine(PlayerControl p, bool ru)
     {
+        bool sk = IsRole(p, "Skibidi");
         var names = spots.Where(x => x.Kind == "virus" && x.Owner == p.PlayerId).Select(x => Utils.GetPlayer(x.Target)).Where(Alive).Select(Nm).ToList();
         int n = VirusAlive(p);
         string head = T(ru, $"<color=#9CCC65>☣ заражено {names.Count} из {n}</color>", $"<color=#9CCC65>☣ infected {names.Count} of {n}</color>");
-        if (names.Count == 0) return head + T(ru, ", питомец: заразить", ", pet: infect");
-        return head + ": " + string.Join(", ", names);
+        string act = sk ? T(ru, ", питомец: спеть", ", pet: sing") : T(ru, ", питомец: заразить", ", pet: infect");
+        if (sk && sing.TryGetValue(p.PlayerId, out var su) && su > Time.time) act = T(ru, $", поёшь ещё {Mathf.CeilToInt(su - Time.time)} с", $", singing {Mathf.CeilToInt(su - Time.time)} s more");
+        if (names.Count == 0) return head + act;
+        return head + act + ": " + string.Join(", ", names);
     }
 
     static void VirusCheck(PlayerControl owner)
@@ -124,7 +142,7 @@ public static partial class Extra33
 
     static void Virus42Meeting()
     {
-        vexp.Clear();
+        vexp.Clear(); sing.Clear();
         foreach (var g in spots.Where(x => x.Kind == "virus").GroupBy(x => x.Owner).ToList())
         {
             var vo = Utils.GetPlayer(g.Key);
@@ -181,6 +199,15 @@ public static partial class Extra33
                 spots.Add(new Spot { Kind = "virus", Owner = p.PlayerId, Target = t.PlayerId, Until = Time.time + 99999f, Seen = new List<byte> { p.PlayerId } });
                 H(p, T(ru, $"{Nm(t)} заражён. Заражено {VirusCount(p)} из {VirusAlive(p)}.", $"{Nm(t)} is infected. Infected {VirusCount(p)} of {VirusAlive(p)}."));
                 VirusCheck(p);
+                return true;
+            });
+        S("Skibidi", "Скибиди", "Skibidi", "#80DEEA", OptTab.Neutral, 30, 0, "питомец: спеть песню", "pet: sing the song",
+            "Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Питомец запускает песню на 10 секунд (раз в 30 секунд). Кто подошёл к тебе ближе 3,5 м, пока песня звучит, заражается. Заражённый передаёт вирус дальше медленно: ему надо стоять рядом с другим игроком (до 1,8 м) 10 секунд. Вирус не снимается собранием и остаётся до смерти игрока; если ты умрёшь, вирус продолжит распространяться и ты всё равно выиграешь. Над твоим именем видно, кто заражён. [Питомец]",
+            "Neutral of the virus team. You win when every living player is infected. The pet starts the song for 10 seconds (once per 30 seconds). Anyone who comes within 3.5 m of you while the song plays gets infected. An infected player spreads the virus slowly: he must stand within 1.8 m of another player for 10 seconds. A meeting does not remove the virus, it stays until the player dies; if you die, the virus keeps spreading and you still win. You can see who is infected above your name. [Pet]",
+            (p, ru) =>
+            {
+                sing[p.PlayerId] = Time.time + 10f;
+                H(p, T(ru, "Ты поёшь 10 секунд: кто подойдёт ближе 3,5 м, заразится.", "You sing for 10 seconds: anyone within 3.5 m gets infected."));
                 return true;
             });
         S("Button", "Кнопка", "Button", "#FF8A65", C, 30, 4, "питомец: коснуться игрока, его способность сработает", "pet: touch a player, his ability fires",
