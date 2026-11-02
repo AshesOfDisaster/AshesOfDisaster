@@ -103,6 +103,16 @@ public static partial class Extra33
         }
     }
 
+    // метка заражённых: строка над именем самого Вируса (другие игроки её не видят)
+    static string VirusLine(PlayerControl p, bool ru)
+    {
+        var names = spots.Where(x => x.Kind == "virus" && x.Owner == p.PlayerId).Select(x => Utils.GetPlayer(x.Target)).Where(Alive).Select(Nm).ToList();
+        int n = VirusAlive(p);
+        string head = T(ru, $"<color=#9CCC65>☣ заражено {names.Count} из {n}</color>", $"<color=#9CCC65>☣ infected {names.Count} of {n}</color>");
+        if (names.Count == 0) return head + T(ru, ", питомец: заразить", ", pet: infect");
+        return head + ": " + string.Join(", ", names);
+    }
+
     static void VirusCheck(PlayerControl owner)
     {
         if (vwin || !Alive(owner) || MeetingHud.Instance != null) return;

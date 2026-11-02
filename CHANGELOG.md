@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.57
+- RU: заражённые игроки помечены для Вируса: над его именем строка «☣ заражено N из M: имена». Другие игроки метку не видят.
+- EN: infected players are marked for the Virus: a line above his name "☣ infected N of M: names". Other players do not see the mark.
+
 ## 3.56
 - RU: Вирус стал нейтралом с победой: нужно заразить всех живых игроков. Вирус больше не снимается собранием и остаётся до смерти игрока, на собрании приходит список заражённых. Лимит заражённых убран.
 - EN: Virus is now a neutral with a win condition: infect every living player. The virus is no longer removed by a meeting and stays until the player dies, the infected list arrives at the meeting. The infection limit is removed.
