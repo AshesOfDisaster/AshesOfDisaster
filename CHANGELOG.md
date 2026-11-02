@@ -1,32 +1,12 @@
 # Changelog / Список изменений
 
-## 3.61
-- RU: роль Вирус удалена. В команде вирусов остались Скибиди и Спора.
-- EN: the Virus role is removed. The virus team keeps Skibidi and Spore.
-
 ## 3.60
-- RU: новая слабая роль команды вирусов Спора (нейтрал). Питомец оставляет невидимую спору на 60 секунд (не больше 2), первый, кто пройдёт рядом, заражается. Заражённый передаёт вирус медленно: 6 секунд рядом с другим игроком. Победа и метки как у Вируса.
-- EN: new weak virus-team role Spore (neutral). The pet leaves an invisible spore for 60 seconds (max 2), the first one to pass nearby gets infected. An infected player spreads the virus slowly: 6 seconds near another player. Win and marks work like the Virus.
+- RU: новая слабая роль команды вирусов Спора (нейтрал). Питомец оставляет невидимую спору на 60 секунд (не больше 2), первый, кто пройдёт рядом, заражается. Заражённый передаёт вирус медленно: 6 секунд рядом с другим игроком. Победа: заразить всех живых игроков; метки заражённых видны над твоим именем.
+- EN: new weak virus-team role Spore (neutral). The pet leaves an invisible spore for 60 seconds (max 2), the first one to pass nearby gets infected. An infected player spreads the virus slowly: 6 seconds near another player. Win: infect every living player; infected players are marked above your name.
 
 ## 3.59
-- RU: новая роль команды вирусов Скибиди (нейтрал). Питомец запускает песню на 10 секунд, раз в 30 секунд: кто подошёл ближе 3,5 м, заражается. Заражённый передаёт вирус другим медленно: надо простоять рядом 10 секунд. Победа, метки и остальное как у Вируса.
-- EN: new virus-team role Skibidi (neutral). The pet starts a song for 10 seconds, once per 30 seconds: anyone within 3.5 m gets infected. An infected player passes the virus slowly: he must stand near another player for 10 seconds. Win, marks and the rest work like the Virus.
-
-## 3.58
-- RU: Вирус побеждает, даже если сам умер: заражение продолжает распространяться, и когда заражены все живые игроки, выигрывает тот, кто был Вирусом.
-- EN: the Virus wins even if he died: the infection keeps spreading, and when every living player is infected, the one who was the Virus wins.
-
-## 3.57
-- RU: заражённые игроки помечены для Вируса: над его именем строка «☣ заражено N из M: имена». Другие игроки метку не видят.
-- EN: infected players are marked for the Virus: a line above his name "☣ infected N of M: names". Other players do not see the mark.
-
-## 3.56
-- RU: Вирус стал нейтралом с победой: нужно заразить всех живых игроков. Вирус больше не снимается собранием и остаётся до смерти игрока, на собрании приходит список заражённых. Лимит заражённых убран.
-- EN: Virus is now a neutral with a win condition: infect every living player. The virus is no longer removed by a meeting and stays until the player dies, the infected list arrives at the meeting. The infection limit is removed.
-
-## 3.55
-- RU: новая роль мирных Вирус. Питомец заражает ближайшего игрока безвредным вирусом, заражённый передаёт его тем, кто 3 секунды стоит рядом. Ты узнаёшь о каждой передаче, а на собрании получаешь список заражённых и от кого каждый заразился. Вирус никому не вредит.
-- EN: new crewmate role Virus. The pet infects the nearest player with a harmless virus, an infected player passes it to anyone who stays near for 3 seconds. You learn of every spread and at the meeting get the list of infected players and who infected each. The virus harms nobody.
+- RU: новая роль команды вирусов Скибиди (нейтрал). Питомец запускает песню на 10 секунд, раз в 30 секунд: кто подошёл ближе 3,5 м, заражается. Заражённый передаёт вирус другим медленно: надо простоять рядом 10 секунд. Победа: заразить всех живых игроков; над твоим именем видно, кто заражён; вирус не снимается собранием и распространяется даже после твоей смерти.
+- EN: new virus-team role Skibidi (neutral). The pet starts a song for 10 seconds, once per 30 seconds: anyone within 3.5 m gets infected. An infected player passes the virus slowly: he must stand near another player for 10 seconds. Win: infect every living player; you see who is infected above your name; the virus is not removed by a meeting and keeps spreading even after you die.
 
 ## 3.54
 - RU: новая роль мистика Таймстоп. Питомец останавливает время: остальные игроки замирают (по умолчанию на 5 секунд, настраивается), таймеры меток и ловушек тоже стоят. 3 использования, перезарядка 90 с.
