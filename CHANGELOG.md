@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.52
+- RU: команда /ai вопрос (доступна всем): мгновенный ответ про роли, команды, музыку и жалобы из встроенных описаний. Это не нейросеть: ответ ищется по названиям и описаниям ролей, интернет не нужен. Раз в 4 секунды от игрока.
+- EN: command /ai question (for everyone): an instant answer about roles, commands, music and reports from the built-in descriptions. It is not a neural network: the answer is searched in role names and descriptions, no internet needed. Once per 4 seconds per player.
+
 ## 3.51
 - RU: две новые роли мирных. Принтер: питомец печатает метку (Ловушка, Вспышка, Журнал), вид метки меняется входом в люк; Журнал открывается после 2 собраний и на собрании называет, кто проходил рядом. Кнопка: питомец касается игрока рядом, и его способность срабатывает мгновенно.
 - EN: two new crewmate roles. Printer: the pet prints a mark (Trap, Flash, Log), the kind is changed by entering a vent; the Log unlocks after 2 meetings and names who passed by at the meeting. Button: the pet touches a nearby player and his ability fires at once.
