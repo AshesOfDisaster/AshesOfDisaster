@@ -122,7 +122,7 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 
 ## Credits / Авторы
 - **niko** — author / автор
-- **Claude (Anthropic)** — AI assistant, about 60% of the mod / ИИ-помощник, около 45% мода
+- **Claude (Anthropic)** — около 60% / about 60%
 
 ## Discord
 Join the community: https://discord.gg/CCB2rg3CHz — bug reports, suggestions, lobbies. / Баг-репорты, идеи, поиск игр.
