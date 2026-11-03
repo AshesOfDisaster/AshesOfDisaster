@@ -50,7 +50,7 @@ Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
 |---|---|
 | `/m` | Your role card: goal, how to use, ability state |
 | `/tip` | A tip for your role |
-| `/r` | List all roles by group (`/r 1` crew, `/r 2` impostors, `/r 3` neutrals, `/r 5` mystics) |
+| `/r` | List all roles by group (`/r 1` crew, `/r 2` impostors, `/r 3` neutrals, `/r 5` mystics, `/r 6` virus team) |
 | `/r <role>` | Role description |
 | `/h` | Help (`/h <command>` for details) |
 | `/id` | Player IDs |
@@ -103,7 +103,7 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 - **Мини-игры в лобби** (включены по умолчанию): `/guess`, `/roll`, `/quiz` и `/a`, `/rps`, `/games`, `/top`.
 
 ### Команды
-`/m` — карточка своей роли · `/tip` — совет по роли · `/r` — список ролей (`/r 1` мирные, `/r 2` предатели, `/r 3` нейтралы, `/r 5` мистики) · `/r <роль>` — описание · `/h` — помощь · `/id` — ID игроков · `/lang ru|en` — язык ответов.
+`/m` — карточка своей роли · `/tip` — совет по роли · `/r` — список ролей (`/r 1` мирные, `/r 2` предатели, `/r 3` нейтралы, `/r 5` мистики, `/r 6` вирусы) · `/r <роль>` — описание · `/h` — помощь · `/id` — ID игроков · `/lang ru|en` — язык ответов.
 
 ### Установка
 1. Установите [BepInEx (IL2CPP, 6.x)](https://builds.bepinex.dev/projects/bepinex_be) под вашу версию Among Us.

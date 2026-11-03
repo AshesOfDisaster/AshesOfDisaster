@@ -94,9 +94,9 @@ public static class Commands
         else
         {
             var tab = g == 1 ? OptTab.Crewmate : g == 2 ? OptTab.Impostor : g == 5 ? OptTab.Mystic : OptTab.Neutral;
-            title = g == 1 ? (ru ? "Мирные" : "Crew") : g == 2 ? (ru ? "Предатели" : "Impostors") : g == 5 ? (ru ? "Мистики" : "Mystics") : (ru ? "Нейтралы" : "Neutrals");
-            col = g == 1 ? "#78DCE6" : g == 2 ? "#FF4D4D" : g == 5 ? "#CE93D8" : "#FFAB1B";
-            foreach (var r in Opts.Roles.Where(x => x.Tab == tab && (!onlyOn || x.Chance.Value > 0))) items.Add("<" + r.Color + ">" + (ru ? r.Ru : r.En));
+            title = g == 1 ? (ru ? "Мирные" : "Crew") : g == 2 ? (ru ? "Предатели" : "Impostors") : g == 5 ? (ru ? "Мистики" : "Mystics") : g == 6 ? (ru ? "Команда вирусов" : "Virus team") : (ru ? "Нейтралы" : "Neutrals");
+            col = g == 1 ? "#78DCE6" : g == 2 ? "#FF4D4D" : g == 5 ? "#CE93D8" : g == 6 ? "#9CCC65" : "#FFAB1B";
+            foreach (var r in Opts.Roles.Where(x => x.Tab == tab && (g == 6 ? Extra33.VirusTeam.Contains(x.Id) : !(g == 3 && Extra33.VirusTeam.Contains(x.Id))) && (!onlyOn || x.Chance.Value > 0))) items.Add("<" + r.Color + ">" + (ru ? r.Ru : r.En));
         }
         var msgs = new List<string>();
         if (onlyOn && items.Count == 0) return msgs;
@@ -208,12 +208,12 @@ public static class Commands
                         if (a.Length == 0)
                         {
                             var all = new List<string>();
-                            for (int gi = 1; gi <= 5; gi++) all.AddRange(RoleGroupMessages(gi, ru));
+                            for (int gi = 1; gi <= 6; gi++) all.AddRange(RoleGroupMessages(gi, ru));
                             all.Add(ru ? "Что умеет роль: /r название" : "What a role does: /r name");
                             Utils.SendRich(sender, all);
                             return true;
                         }
-                        if (a.Length == 1 && a[0].Length == 1 && a[0][0] >= '1' && a[0][0] <= '5')
+                        if (a.Length == 1 && a[0].Length == 1 && a[0][0] >= '1' && a[0][0] <= '6')
                         {
                             Utils.SendRich(sender, RoleGroupMessages(a[0][0] - '0', ru));
                             return true;

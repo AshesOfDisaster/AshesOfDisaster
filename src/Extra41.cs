@@ -8,6 +8,7 @@ namespace AshesOfDisaster;
 // Принтер (метки, выбор люком) и Кнопка (касание запускает способность игрока).
 public static partial class Extra33
 {
+    public static readonly HashSet<string> VirusTeam = new() { "Skibidi", "Spore" };
     static readonly Dictionary<byte, int> psel = new();
     static int meetN;
     static readonly string[] PrintRu = { "Ловушка", "Вспышка", "Журнал" };

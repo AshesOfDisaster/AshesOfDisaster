@@ -39,6 +39,7 @@ public static class ModMenu
         new() { Ru = "Мини-игры",   En = "Mini-games",  Filter = o => o.Tab == OptTab.Mini },
         new() { Ru = "Мистики",     En = "Mystics",     Filter = o => o.Tab == OptTab.Mystic },
         new() { Ru = "Музыка",      En = "Music",       Filter = o => o.Tab == OptTab.Music },
+        new() { Ru = "Вирусы",      En = "Virus",       Filter = o => false },
     };
 
     static GameSettingMenu menu;
@@ -101,7 +102,7 @@ public static class ModMenu
             btn.ChangeButtonText(label);
             try
             {
-                var col = Pages[i].En == "Music" ? (Color)new Color32(30, 220, 70, 255) : cols[i % cols.Length];
+                var col = Pages[i].En == "Music" ? (Color)new Color32(30, 220, 70, 255) : Pages[i].En == "Virus" ? (Color)new Color32(156, 204, 101, 255) : cols[i % cols.Length];
                 foreach (var go in new[] { btn.inactiveSprites, btn.activeSprites, btn.selectedSprites })
                     if (go != null) { var sr = go.GetComponent<SpriteRenderer>(); if (sr != null) sr.color = col; }
                 btn.activeTextColor = btn.inactiveTextColor = Color.white;
@@ -245,10 +246,11 @@ public static class ModMenu
         float sp = GameOptionsMenu.SPACING_Y * Opts.RowSpacing.Value;
         float y = startY;
 
-        if ((page >= 2 && page <= 4) || page == 7)
+        if ((page >= 2 && page <= 4) || page == 7 || Pages[page].En == "Virus")
         {
             var team = page == 2 ? OptTab.Crewmate : page == 3 ? OptTab.Impostor : page == 7 ? OptTab.Mystic : OptTab.Neutral;
-            foreach (var role in Opts.Roles.Where(r => r.Tab == team))
+            bool vpage = Pages[page].En == "Virus";
+            foreach (var role in Opts.Roles.Where(r => vpage ? Extra33.VirusTeam.Contains(r.Id) : (r.Tab == team && !(team == OptTab.Neutral && Extra33.VirusTeam.Contains(r.Id)))))
             {
                 var rr = role;
                 Add(MakeCategory(rr.Colored(ru), y), y);

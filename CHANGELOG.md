@@ -1,6 +1,8 @@
 # Changelog / Список изменений
 
 ## 3.60
+- RU: команда вирусов получила свою вкладку «Вирусы» в ноутбуке настроек (светло-зелёная) и свою группу в /r (/r 6).
+- EN: the virus team now has its own "Virus" tab in the settings laptop (light green) and its own group in /r (/r 6).
 - RU: новая слабая роль команды вирусов Спора (нейтрал). Питомец оставляет невидимую спору на 60 секунд (не больше 2), первый, кто пройдёт рядом, заражается. Заражённый передаёт вирус медленно: 6 секунд рядом с другим игроком. Победа: заразить всех живых игроков; метки заражённых видны над твоим именем.
 - EN: new weak virus-team role Spore (neutral). The pet leaves an invisible spore for 60 seconds (max 2), the first one to pass nearby gets infected. An infected player spreads the virus slowly: 6 seconds near another player. Win: infect every living player; infected players are marked above your name.
 
