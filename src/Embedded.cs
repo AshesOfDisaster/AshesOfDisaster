@@ -5,4 +5,5 @@ static class Embedded
 {
     public const string Rooms = "";
     public const string Reports = "";
+    public const string Relay = "";
 }

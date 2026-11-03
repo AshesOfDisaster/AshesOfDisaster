@@ -20,6 +20,7 @@ public static class RoomCode
     static string lastCode = "";
     static string msgId, msgUrl, msgCode, msgHost, lastText;
     static int msgGame;
+    static bool msgRelay;
     static float nextUpd, waitSince = -1f;
     const float SameCodeBlock = 3600f, MinGap = 30f;
     const int MaxPerHour = 6;
@@ -81,14 +82,22 @@ public static class RoomCode
         return $"Комната: **{msgCode}**\nСтатус: {st}\nХост: {msgHost}\nИгроков: {(closed ? "-" : players.ToString())}\nМод Ashes of Disaster {Plugin.Version}";
     }
 
+    static string RelayBody(bool closed, string id)
+    {
+        var c = AmongUsClient.Instance;
+        string st = closed ? "closed" : c != null && c.GameState == InnerNet.InnerNetClient.GameStates.Started ? "game" : c != null && c.GameState == InnerNet.InnerNetClient.GameStates.Ended ? "ended" : "lobby";
+        int players = closed ? 0 : PlayerControl.AllPlayerControls.Count;
+        return "{" + (id != null ? "\"id\":\"" + id + "\"," : "") + "\"code\":\"" + Esc(msgCode) + "\",\"host\":\"" + Esc(msgHost) + "\",\"players\":" + players + ",\"state\":\"" + st + "\",\"ver\":\"" + Plugin.Version + "\"}";
+    }
+
     static void PatchStatus(bool closed)
     {
         if (msgId == null || msgUrl == null) return;
         string text = StatusText(closed);
         if (text == lastText) return;
         lastText = text;
-        string body = "{\"content\":\"" + Esc(text) + "\",\"allowed_mentions\":{\"parse\":[]}}";
-        string url = msgUrl + "/messages/" + msgId;
+        string body = msgRelay ? RelayBody(closed, msgId) : "{\"content\":\"" + Esc(text) + "\",\"allowed_mentions\":{\"parse\":[]}}";
+        string url = msgRelay ? msgUrl : msgUrl + "/messages/" + msgId;
         Task.Run(async () =>
         {
             try
@@ -132,7 +141,8 @@ public static class RoomCode
             sentFor = id;
             string url = Secrets.RoomCodes.Length > 0 ? Secrets.RoomCodes : (Opts.RoomShareUrl != null ? Opts.RoomShareUrl.Value.Trim() : "");
             bool ru = Translator.GameIsRu;
-            if (url.Length == 0) { Utils.Toast(ru ? "Код комнаты не отправлен: не указан адрес вебхука (файл AshesOfDisaster.secrets.txt)." : "Room code not sent: no webhook address (AshesOfDisaster.secrets.txt)."); return; }
+            bool viaRelay = Secrets.Relay.Length > 0;
+            if (url.Length == 0 && !viaRelay) { Utils.Toast(ru ? "Код комнаты не отправлен: не указан адрес вебхука (файл AshesOfDisaster.secrets.txt)." : "Room code not sent: no webhook address (AshesOfDisaster.secrets.txt)."); return; }
             string code = GameCode.IntToGameName(id);
             string why = Refuse(code, ru);
             if (why != null) { Utils.Toast(why); Plugin.Logger.LogInfo("RoomCode: blocked - " + why); return; }
@@ -140,8 +150,9 @@ public static class RoomCode
             var me = PlayerControl.LocalPlayer;
             string host = me == null || me.Data == null || string.IsNullOrWhiteSpace(me.Data.PlayerName) ? "неизвестно" : me.Data.PlayerName;
             msgCode = code; msgHost = host; msgGame = id; msgUrl = url; msgId = null; lastText = null; nextUpd = Time.time + 30f;
+            msgRelay = viaRelay; if (viaRelay) msgUrl = Secrets.Relay.TrimEnd('/') + "/room";
             string text = StatusText(false);
-            string body = "{\"content\":\"" + Esc(text) + "\",\"allowed_mentions\":{\"parse\":[]}}";
+            string body = viaRelay ? RelayBody(false, null) : "{\"content\":\"" + Esc(text) + "\",\"allowed_mentions\":{\"parse\":[]}}";
             Plugin.Logger.LogInfo("RoomCode: sending room code " + code);
             Utils.Toast(ru ? "Код комнаты отправлен в Discord: " + code : "Room code sent to Discord: " + code);
             Task.Run(async () =>
@@ -149,7 +160,7 @@ public static class RoomCode
                 try
                 {
                     using var content = new StringContent(body, Encoding.UTF8, "application/json");
-                    var res = await http.PostAsync(url + (url.Contains("?") ? "&" : "?") + "wait=true", content);
+                    var res = await http.PostAsync(viaRelay ? Secrets.Relay.TrimEnd('/') + "/room" : url + (url.Contains("?") ? "&" : "?") + "wait=true", content);
                     if (res.IsSuccessStatusCode)
                     {
                         Plugin.Logger.LogInfo("RoomCode: sent, answer " + (int)res.StatusCode);

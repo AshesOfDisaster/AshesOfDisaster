@@ -4,7 +4,7 @@
 
 **Host-only roles mod for Among Us** · **Хост-мод с ролями для Among Us**
 
-![version](https://img.shields.io/badge/version-3.63-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/AI%20made-60%25-8a2be2)
+![version](https://img.shields.io/badge/version-3.64-ff5555) ![loader](https://img.shields.io/badge/BepInEx-IL2CPP-blue) ![runtime](https://img.shields.io/badge/.NET-6.0-512bd4) ![AI](https://img.shields.io/badge/AI%20made-60%25-8a2be2)
 
 [English](#english) · [Русский](#русский) · [Discord](#discord)
 

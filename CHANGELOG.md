@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.64
+- RU: коды комнат и жалобы теперь могут идти через сервис-посредник (папка relay, Cloudflare Worker): мод шлёт данные сервису, а адреса вебхуков Discord хранятся только на сервере и больше не лежат в DLL. Адрес сервиса задаётся в Embedded.cs или строкой relay=... в файле секретов. Без него работает как раньше (свой вебхук в файле секретов).
+- EN: room codes and reports can now go through a relay service (relay folder, a Cloudflare Worker): the mod sends data to the service while the Discord webhook addresses stay on the server and are no longer inside the DLL. The service address is set in Embedded.cs or with the line relay=... in the secrets file. Without it everything works as before (your own webhook in the secrets file).
+
 ## 3.63
 - RU: исправлено: после конца игры статус комнаты в Discord больше не меняется на «Закрыта», пока комната существует (экран итогов и возврат в лобби считаются открытой комнатой).
 - EN: fixed: after a game ends the room status in Discord no longer turns to "Closed" while the room exists (the end screen and returning to the lobby count as an open room).

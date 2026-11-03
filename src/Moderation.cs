@@ -154,14 +154,16 @@ public static class Reports
     {
         Blocked = "";
         string url = Anticheat.Webhook == null ? "" : Anticheat.Webhook.Value.Trim();
-        if (url.Length == 0) url = Secrets.Reports;
-        if (url.Length == 0) return false;
+        bool viaRelay = url.Length == 0 && Secrets.Relay.Length > 0;
+        if (url.Length == 0 && !viaRelay) url = Secrets.Reports;
+        if (url.Length == 0 && !viaRelay) return false;
+        if (viaRelay) url = Secrets.Relay.TrimEnd('/') + "/report";
         name = Cut(name, 40); fc = Cut(fc, 40); why = Cut(why, 200);
         if (!Allowed((fc.Length > 0 ? fc : name) + "|" + why)) return false;
         var me = PlayerControl.LocalPlayer;
         string hostName = me == null || me.Data == null ? "?" : Cut(me.Data.PlayerName, 40);
         string text = $"Жалоба, хост комнаты: {hostName}\nИгрок: {name}\nFriend code: {(fc.Length > 0 ? fc : "нет")}\nПричина: {why}";
-        string body = "{\"content\":\"" + Esc(Cut(text, 1500)) + "\",\"allowed_mentions\":{\"parse\":[]}}";
+        string body = viaRelay ? "{\"host\":\"" + Esc(hostName) + "\",\"name\":\"" + Esc(name) + "\",\"fc\":\"" + Esc(fc) + "\",\"why\":\"" + Esc(why) + "\",\"ver\":\"" + Plugin.Version + "\"}" : "{\"content\":\"" + Esc(Cut(text, 1500)) + "\",\"allowed_mentions\":{\"parse\":[]}}";
         Task.Run(async () =>
         {
             try

@@ -6,13 +6,13 @@ namespace AshesOfDisaster;
 
 public static class Secrets
 {
-    static string reports, roomCodes;
+    static string relay = "", reports, roomCodes;
     static bool loaded;
 
     static void Load()
     {
         if (loaded) return;
-        loaded = true; reports = Embedded.Reports; roomCodes = Embedded.Rooms;
+        loaded = true; relay = Embedded.Relay; reports = Embedded.Reports; roomCodes = Embedded.Rooms;
         try
         {
             string path = Path.Combine(Paths.ConfigPath, "AshesOfDisaster.secrets.txt");
@@ -24,11 +24,13 @@ public static class Secrets
                 string k = line.Substring(0, eq).Trim().ToLowerInvariant(), v = line.Substring(eq + 1).Trim();
                 if (k == "reports") reports = v;
                 else if (k == "roomcodes") roomCodes = v;
+                else if (k == "relay") relay = v;
             }
         }
         catch (Exception e) { Plugin.Logger.LogWarning("Secrets: " + e.Message); }
     }
 
     public static string Reports { get { Load(); return reports; } }
+    public static string Relay { get { Load(); return relay; } }
     public static string RoomCodes { get { Load(); return roomCodes; } }
 }
