@@ -1,6 +1,6 @@
 # Roles / Роли
 
-Total / Всего: **177**. Descriptions are shown in game with `/r <role>`.
+Total / Всего: **185**. Descriptions are shown in game with `/r <role>`.
 
 
 ## Crew / Мирные

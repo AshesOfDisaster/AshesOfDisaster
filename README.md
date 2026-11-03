@@ -19,7 +19,7 @@
 Only the **host** needs the mod — other players join with a normal game and the host handles everything.
 
 ### Features
-- 🎭 177 custom roles in groups: **Crew**, **Impostors**, **Neutrals**, **Virus team**, **Mystics** and **Ghost roles**
+- 🎭 185 custom roles in groups: **Crew**, **Impostors**, **Neutrals**, **Virus team**, **Mystics** and **Ghost roles**
 - 🦠 **Virus team** (new): Skibidi sings and infects everyone around, Spore leaves invisible spores; they win by infecting every living player
 - 🎵 Your own music: put mp3/mp4/m4a/wav into `BepInEx/AshesMusic` and pick a track in the green *Music* tab of the settings laptop
 - 🚩 `/report` for every player, reports go to Discord
@@ -29,7 +29,7 @@ Only the **host** needs the mod — other players join with a normal game and th
 - 🌍 Russian and English, picked from the game language
 - 🛡️ Host-side protections against kicks, performance optimizations (caching, frame limit)
 
-### Roles (177)
+### Roles (185)
 **Crew — 61:** **Builder** (Строитель), **Psychologist** (Психолог), **Foreman** (Прораб), **Plumber** (Сантехник), **Dowser** (Лозоходец), **Sentry** (Часовой), **Statistician** (Статистик), **Intercessor** (Заступник), **Peacemaker** (Миротворец), **Eyewitness** (Очевидец), **Forensic** (Криминалист), **Radioman** (Радист), **Tracker** (Следопыт), **Accountant** (Бухгалтер), **Sapper** (Сапёр), **Herald** (Глашатай), **Coach** (Тренер), **Telegraphist** (Телеграфист), **Pinkman** (Пинкман), **Prankster** (Шутник), **Crow** (Ворон), **Hypnotist** (Гипнотизёр), **Clockmaker** (Часовщик), **Collector** (Коллекционер), **Whirlwind** (Вихрь), **Broker** (Брокер), **Portalist** (Портальщик), **Chronicler** (Летописец), **Teacher** (Учитель), **Hider** (Затаившийся), **Gardener** (Садовник), **Pedometer** (Шагомер), **Interrogator** (Дознаватель), **Atlas** (Атлас), **Pawnbroker** (Ломбардщик), **Rounder** (Обходчик), **Ventsleuth** (Следопыт люков), **Sealer** (Запечатыватель), **Snarer** (Силковщик), **Enumerator** (Переписчик), **Cartographer** (Картограф), **Switcher** (Подменщик), **Taskmaster** (Табельщик), **Mourner** (Плакальщик), **Coroner** (Коронер), **Dispatcher** (Диспетчер), **Bot** (Бот), **Newton** (Ньютон), **Hobbyhorse** (Хобихорсер), **Lantern** (Фонарщик), **Dosimeter** (Дозиметр), **X-ray** (Просвет), **Landmark** (Веха), **Compass** (Компас), **Investigator** (Следователь), **Seer** (Вещун), **Tripwire** (Сигналка), **Stash** (Тайник), **Chronometer** (Хронометр), **Printer** (Принтер), **Button** (Кнопка)
 
 **Impostors — 52:** **Welder** (Сварщик), **Twin** (Близнец), **Shroomer** (Грибник), **Hound** (Ищейка), **Minelayer** (Минёр), **Returner** (Возвращенец), **Lurer** (Приманщик), **Banisher** (Выселитель), **Hush** (Беззвучный), **Bomber** (Подрывник), **Scatterer** (Разгонщик), **Spy** (Шпион), **Fugitive** (Беглец), **Overseer** (Надзиратель), **Gravedigger** (Могильщик), **Meltdown** (Расплав), **Appraiser** (Оценщик), **Silencer** (Молчун), **Distracter** (Отвлекатель), **Shocker** (Шокер), **Blinder** (Ослепитель), **Thief** (Вор), **Pointer** (Наводчик), **Leech** (Пиявка), **Alarmist** (Паникёр), **Jumper** (Прыгун), **Rumormonger** (Сплетник), **Carousel** (Карусель), **Ambusher** (Засадник), **Bugler** (Горнист), **Packleader** (Вожак стаи), **Soulsipper** (Душелов), **Burrower** (Кротоход), **Ventbomber** (Люкобомбист), **Flashbulb** (Вспышник), **Beguiler** (Заманщик), **Alarmer** (Тревожник), **Tripper** (Подножник), **Eraser** (Стиратель), **Lockpicker** (Взломщик), **Dazer** (Дурман), **Changeling** (Подменыш), **Discharger** (Разрядник), **Handout** (Подачка), **Shadower** (Следящий), **Armor** (Броня), **Scarecrow** (Пугало), **Screamer** (Крикун), **Looter** (Мародёр), **Gatherer** (Сборщик), **Spikes** (Шипы), **Scapegoat** (Козёл отпущения)
@@ -40,7 +40,7 @@ Only the **host** needs the mod — other players join with a normal game and th
 
 **Mystics — 26:** **Alchemist** (Алхимик), **Herbalist** (Знахарь), **Fortune Teller** (Гадалка), **Witch** (Ведьма), **Mirrorer** (Зеркальщик), **Dreamer** (Сновидец), **Astrologer** (Астролог), **Banshee** (Банши), **Wanderer** (Странник), **Necromancer** (Некромант), **Hermit** (Отшельник), **Intuitive** (Интуит), **Runologist** (Рунолог), **Ductlistener** (Слухач), **Ventecho** (Эхо люков), **Blesser** (Благословитель), **Scales** (Весы), **Silhouette** (Силуэт), **Fate** (Судьба), **Omen** (Предвестник), **Palmist** (Хиромант), **Fortuna** (Фортуна), **Census** (Перепись), **Body Echo** (Эхо тела), **Lot** (Жребий), **Time Stop** (Таймстоп)
 
-**Ghost roles — 0:** 
+**Ghost roles — 8:** **Poltergeist** (Полтергейст), **Task Helper** (Помощник по заданиям), **Possessor** (Вселенец), **Guardian Spirit** (Дух-хранитель), **Medium** (Медиум), **Phantom** (Фантом), **Ghost Trickster** (Шутник-призрак), **Wisp** (Огонёк)
 
 Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
 
@@ -76,7 +76,7 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 Мод нужен **только хосту** — остальные заходят с обычной игрой, всё обрабатывает хост.
 
 ### Возможности
-- 🎭 177 своих ролей: **мирные**, **предатели**, **нейтралы**, **команда вирусов**, **мистики** и **роли призраков**
+- 🎭 185 своих ролей: **мирные**, **предатели**, **нейтралы**, **команда вирусов**, **мистики** и **роли призраков**
 - 🦠 **Команда вирусов** (новое): Скибиди поёт и заражает всех вокруг, Спора оставляет невидимые споры; побеждают, заразив всех живых игроков
 - 🎵 Своя музыка: положи mp3/mp4/m4a/wav в `BepInEx/AshesMusic` и выбери трек в зелёной вкладке «Музыка» ноутбука настроек
 - 🚩 `/report` для всех игроков, жалобы уходят в Discord
@@ -86,7 +86,7 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 - 🌍 Русский и английский, язык берётся из языка игры
 - 🛡️ Защита хоста от киков и оптимизации (кэши, лимит кадров)
 
-### Роли (177)
+### Роли (185)
 **Мирные — 61:** **Строитель** (Builder), **Психолог** (Psychologist), **Прораб** (Foreman), **Сантехник** (Plumber), **Лозоходец** (Dowser), **Часовой** (Sentry), **Статистик** (Statistician), **Заступник** (Intercessor), **Миротворец** (Peacemaker), **Очевидец** (Eyewitness), **Криминалист** (Forensic), **Радист** (Radioman), **Следопыт** (Tracker), **Бухгалтер** (Accountant), **Сапёр** (Sapper), **Глашатай** (Herald), **Тренер** (Coach), **Телеграфист** (Telegraphist), **Пинкман** (Pinkman), **Шутник** (Prankster), **Ворон** (Crow), **Гипнотизёр** (Hypnotist), **Часовщик** (Clockmaker), **Коллекционер** (Collector), **Вихрь** (Whirlwind), **Брокер** (Broker), **Портальщик** (Portalist), **Летописец** (Chronicler), **Учитель** (Teacher), **Затаившийся** (Hider), **Садовник** (Gardener), **Шагомер** (Pedometer), **Дознаватель** (Interrogator), **Атлас** (Atlas), **Ломбардщик** (Pawnbroker), **Обходчик** (Rounder), **Следопыт люков** (Ventsleuth), **Запечатыватель** (Sealer), **Силковщик** (Snarer), **Переписчик** (Enumerator), **Картограф** (Cartographer), **Подменщик** (Switcher), **Табельщик** (Taskmaster), **Плакальщик** (Mourner), **Коронер** (Coroner), **Диспетчер** (Dispatcher), **Бот** (Bot), **Ньютон** (Newton), **Хобихорсер** (Hobbyhorse), **Фонарщик** (Lantern), **Дозиметр** (Dosimeter), **Просвет** (X-ray), **Веха** (Landmark), **Компас** (Compass), **Следователь** (Investigator), **Вещун** (Seer), **Сигналка** (Tripwire), **Тайник** (Stash), **Хронометр** (Chronometer), **Принтер** (Printer), **Кнопка** (Button)
 
 **Предатели — 52:** **Сварщик** (Welder), **Близнец** (Twin), **Грибник** (Shroomer), **Ищейка** (Hound), **Минёр** (Minelayer), **Возвращенец** (Returner), **Приманщик** (Lurer), **Выселитель** (Banisher), **Беззвучный** (Hush), **Подрывник** (Bomber), **Разгонщик** (Scatterer), **Шпион** (Spy), **Беглец** (Fugitive), **Надзиратель** (Overseer), **Могильщик** (Gravedigger), **Расплав** (Meltdown), **Оценщик** (Appraiser), **Молчун** (Silencer), **Отвлекатель** (Distracter), **Шокер** (Shocker), **Ослепитель** (Blinder), **Вор** (Thief), **Наводчик** (Pointer), **Пиявка** (Leech), **Паникёр** (Alarmist), **Прыгун** (Jumper), **Сплетник** (Rumormonger), **Карусель** (Carousel), **Засадник** (Ambusher), **Горнист** (Bugler), **Вожак стаи** (Packleader), **Душелов** (Soulsipper), **Кротоход** (Burrower), **Люкобомбист** (Ventbomber), **Вспышник** (Flashbulb), **Заманщик** (Beguiler), **Тревожник** (Alarmer), **Подножник** (Tripper), **Стиратель** (Eraser), **Взломщик** (Lockpicker), **Дурман** (Dazer), **Подменыш** (Changeling), **Разрядник** (Discharger), **Подачка** (Handout), **Следящий** (Shadower), **Броня** (Armor), **Пугало** (Scarecrow), **Крикун** (Screamer), **Мародёр** (Looter), **Сборщик** (Gatherer), **Шипы** (Spikes), **Козёл отпущения** (Scapegoat)
@@ -97,7 +97,7 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 
 **Мистики — 26:** **Алхимик** (Alchemist), **Знахарь** (Herbalist), **Гадалка** (Fortune Teller), **Ведьма** (Witch), **Зеркальщик** (Mirrorer), **Сновидец** (Dreamer), **Астролог** (Astrologer), **Банши** (Banshee), **Странник** (Wanderer), **Некромант** (Necromancer), **Отшельник** (Hermit), **Интуит** (Intuitive), **Рунолог** (Runologist), **Слухач** (Ductlistener), **Эхо люков** (Ventecho), **Благословитель** (Blesser), **Весы** (Scales), **Силуэт** (Silhouette), **Судьба** (Fate), **Предвестник** (Omen), **Хиромант** (Palmist), **Фортуна** (Fortuna), **Перепись** (Census), **Эхо тела** (Body Echo), **Жребий** (Lot), **Таймстоп** (Time Stop)
 
-**Роли призраков — 0:** 
+**Роли призраков — 8:** **Полтергейст** (Poltergeist), **Помощник по заданиям** (Task Helper), **Вселенец** (Possessor), **Дух-хранитель** (Guardian Spirit), **Медиум** (Medium), **Фантом** (Phantom), **Шутник-призрак** (Ghost Trickster), **Огонёк** (Wisp)
 
 Полные описания: [docs/ROLES.md](docs/ROLES.md) или `/r <роль>` в игре.
 
