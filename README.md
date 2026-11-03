@@ -19,7 +19,7 @@
 Only the **host** needs the mod — other players join with a normal game and the host handles everything.
 
 ### Features
-- 🎭 132 custom roles in groups: **Crew**, **Impostors**, **Neutrals**, **Mystics** and **Ghost roles**
+- 🎭 177 custom roles in groups: **Crew**, **Impostors**, **Neutrals**, **Mystics** and **Ghost roles**
 - 🪪 A role card for every player at game start (goal, how to use, tip) and a clear status line above the nickname
 - ⚙️ In-lobby settings menu with colored tabs (System, Game, Crew, Impostors, Neutrals, Mystics, Ghosts, Mini-games)
 - 💬 Chat commands that work for players **without** the mod
@@ -75,7 +75,7 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 Мод нужен **только хосту** — остальные заходят с обычной игрой, всё обрабатывает хост.
 
 ### Возможности
-- 🎭 132 своих ролей: **мирные**, **предатели**, **нейтралы**, **мистики** и **роли призраков**
+- 🎭 177 своих ролей: **мирные**, **предатели**, **нейтралы**, **мистики** и **роли призраков**
 - 🪪 Карточка роли каждому игроку в начале игры (цель, как пользоваться, совет) и понятный статус над ником
 - ⚙️ Меню настроек в лобби с цветными вкладками (Система, Игра, Мирные, Предатели, Нейтралы, Мистики, Призраки, Мини-игры)
 - 💬 Команды в чате, работающие и у игроков **без** мода
