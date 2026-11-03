@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,6 +18,9 @@ public static class RoomCode
     static readonly System.Collections.Generic.Queue<float> hourly = new();
     static float lastSend = -999f;
     static string lastCode = "";
+    static string msgId, msgUrl, msgCode, msgHost, lastText;
+    static int msgGame;
+    static float nextUpd, waitSince = -1f;
     const float SameCodeBlock = 3600f, MinGap = 30f;
     const int MaxPerHour = 6;
 
@@ -69,6 +73,34 @@ public static class RoomCode
         return sb.ToString();
     }
 
+    static string StatusText(bool closed)
+    {
+        var c = AmongUsClient.Instance;
+        string st = closed ? "🔴 Закрыта" : (c != null && c.GameState == InnerNet.InnerNetClient.GameStates.Started ? "🟡 Идёт игра" : "🟢 Открыта, лобби");
+        int players = closed ? 0 : PlayerControl.AllPlayerControls.Count;
+        return $"Комната: **{msgCode}**\nСтатус: {st}\nХост: {msgHost}\nИгроков: {(closed ? "-" : players.ToString())}\nМод Ashes of Disaster {Plugin.Version}";
+    }
+
+    static void PatchStatus(bool closed)
+    {
+        if (msgId == null || msgUrl == null) return;
+        string text = StatusText(closed);
+        if (text == lastText) return;
+        lastText = text;
+        string body = "{\"content\":\"" + Esc(text) + "\",\"allowed_mentions\":{\"parse\":[]}}";
+        string url = msgUrl + "/messages/" + msgId;
+        Task.Run(async () =>
+        {
+            try
+            {
+                using var req = new HttpRequestMessage(new HttpMethod("PATCH"), url) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
+                var res = await http.SendAsync(req);
+                if (!res.IsSuccessStatusCode) Plugin.Logger.LogWarning("RoomCode status update answered " + (int)res.StatusCode);
+            }
+            catch (Exception e) { Plugin.Logger.LogWarning("RoomCode status update failed: " + e.GetBaseException().Message); }
+        });
+    }
+
     public static void Tick()
     {
         try
@@ -77,12 +109,26 @@ public static class RoomCode
             bool on = Opts.ShareRoom.Value;
             if (on && !wasOn) sentFor = 0;
             wasOn = on;
+            if (msgId != null)
+            {
+                var c0 = AmongUsClient.Instance;
+                bool open = on && Utils.AmHost && c0 != null && c0.NetworkMode == NetworkModes.OnlineGame && c0.GameId == msgGame
+                    && (c0.GameState == InnerNet.InnerNetClient.GameStates.Joined || c0.GameState == InnerNet.InnerNetClient.GameStates.Started);
+                if (!open) { PatchStatus(true); msgId = null; }
+                else if (Time.time >= nextUpd) { nextUpd = Time.time + 30f; PatchStatus(false); }
+            }
             if (!on || !Utils.AmHost) return;
             var c = AmongUsClient.Instance;
             if (c == null || c.NetworkMode != NetworkModes.OnlineGame || c.GameId == 0) return;
             if (c.GameState != InnerNet.InnerNetClient.GameStates.Joined && c.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
             int id = c.GameId;
             if (id == sentFor) return;
+            {
+                var me0 = PlayerControl.LocalPlayer;
+                string hn = me0 == null || me0.Data == null ? null : me0.Data.PlayerName;
+                if (string.IsNullOrWhiteSpace(hn) && Time.time - (waitSince < 0 ? (waitSince = Time.time) : waitSince) < 8f) return;
+                waitSince = -1f;
+            }
             sentFor = id;
             string url = Secrets.RoomCodes.Length > 0 ? Secrets.RoomCodes : (Opts.RoomShareUrl != null ? Opts.RoomShareUrl.Value.Trim() : "");
             bool ru = Translator.GameIsRu;
@@ -92,9 +138,9 @@ public static class RoomCode
             if (why != null) { Utils.Toast(why); Plugin.Logger.LogInfo("RoomCode: blocked - " + why); return; }
             sentCodes[code] = Time.time; lastSend = Time.time; lastCode = code; hourly.Enqueue(Time.time);
             var me = PlayerControl.LocalPlayer;
-            string host = me == null || me.Data == null ? "?" : me.Data.PlayerName;
-            int players = PlayerControl.AllPlayerControls.Count;
-            string text = $"Новая комната: **{code}**\nХост: {host}\nИгроков: {players}\nМод Ashes of Disaster {Plugin.Version}";
+            string host = me == null || me.Data == null || string.IsNullOrWhiteSpace(me.Data.PlayerName) ? "неизвестно" : me.Data.PlayerName;
+            msgCode = code; msgHost = host; msgGame = id; msgUrl = url; msgId = null; lastText = null; nextUpd = Time.time + 30f;
+            string text = StatusText(false);
             string body = "{\"content\":\"" + Esc(text) + "\",\"allowed_mentions\":{\"parse\":[]}}";
             Plugin.Logger.LogInfo("RoomCode: sending room code " + code);
             Utils.Toast(ru ? "Код комнаты отправлен в Discord: " + code : "Room code sent to Discord: " + code);
@@ -103,8 +149,18 @@ public static class RoomCode
                 try
                 {
                     using var content = new StringContent(body, Encoding.UTF8, "application/json");
-                    var res = await http.PostAsync(url, content);
-                    if (res.IsSuccessStatusCode) Plugin.Logger.LogInfo("RoomCode: sent, answer " + (int)res.StatusCode);
+                    var res = await http.PostAsync(url + (url.Contains("?") ? "&" : "?") + "wait=true", content);
+                    if (res.IsSuccessStatusCode)
+                    {
+                        Plugin.Logger.LogInfo("RoomCode: sent, answer " + (int)res.StatusCode);
+                        try
+                        {
+                            using var doc = JsonDocument.Parse(await res.Content.ReadAsStringAsync());
+                            msgId = doc.RootElement.GetProperty("id").GetString();
+                            lastText = text;
+                        }
+                        catch (Exception e2) { Plugin.Logger.LogWarning("RoomCode: no message id: " + e2.Message); }
+                    }
                     else
                     {
                         string answer = "";

@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.62
+- RU: сообщение о комнате в Discord показывает имя хоста (ждёт, пока имя появится, и больше не пишет «?») и живой статус: «Открыта, лобби», «Идёт игра» или «Закрыта». Сообщение само обновляется раз в 30 секунд и при закрытии комнаты.
+- EN: the room message in Discord shows the host name (it waits until the name is known and no longer writes "?") and a live status: "Open, lobby", "In game" or "Closed". The message updates itself every 30 seconds and when the room closes.
+
 ## 3.61
 - RU: у каждой вкладки ноутбука свой цвет: Система серо-голубая, Игра синяя, Мирные бирюзовые, Предатели красные, Нейтралы оранжевые, Призраки светло-серые, Мини-игры розовые, Мистики фиолетовые, Музыка жёлтая, Вирусы зелёные.
 - EN: every tab of the laptop has its own color: System grey-blue, Game blue, Crewmates teal, Impostors red, Neutrals orange, Ghosts light grey, Mini-games pink, Mystics purple, Music yellow, Virus green.

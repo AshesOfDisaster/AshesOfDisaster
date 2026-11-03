@@ -11,7 +11,7 @@ public class Plugin : BasePlugin
 {
     public const string Id = "com.niko.ashesofdisaster";
     public const string Name = "Ashes of Disaster";
-    public const string Version = "3.61";
+    public const string Version = "3.62";
     public const string Creators = "niko";
     public const string Discord = "discord.gg/CCB2rg3CHz";
 
