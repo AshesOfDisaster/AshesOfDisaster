@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.65
+- RU: новая роль команды вирусов Вымогатель (нейтрал). Питомец взламывает ближайшего игрока: он заражён и получает требование выкупа (простоять рядом 3 с, предатель может вместо этого совершить убийство). Не оплатили за 60 секунд (настройка), Вымогатель убивает. На собраниях время стоит.
+- EN: new virus-team role Ransom (neutral). The pet hacks the nearest player: he is infected and gets a ransom demand (stand next to him for 3 s, an impostor may commit a kill instead). Unpaid in 60 seconds (option), the Ransom kills him. The timer stops during meetings.
+
 ## 3.64
 - RU: коды комнат и жалобы теперь могут идти через сервис-посредник (папка relay, Cloudflare Worker): мод шлёт данные сервису, а адреса вебхуков Discord хранятся только на сервере и больше не лежат в DLL. Адрес сервиса задаётся в Embedded.cs или строкой relay=... в файле секретов. Без него работает как раньше (свой вебхук в файле секретов).
 - EN: room codes and reports can now go through a relay service (relay folder, a Cloudflare Worker): the mod sends data to the service while the Discord webhook addresses stay on the server and are no longer inside the DLL. The service address is set in Embedded.cs or with the line relay=... in the secrets file. Without it everything works as before (your own webhook in the secrets file).

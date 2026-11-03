@@ -1,6 +1,6 @@
 # Roles / Роли
 
-Total / Всего: **185**. Descriptions are shown in game with `/r <role>`.
+Total / Всего: **186**. Descriptions are shown in game with `/r <role>`.
 
 
 ## Crew / Мирные
@@ -612,6 +612,10 @@ Total / Всего: **185**. Descriptions are shown in game with `/r <role>`.
 ### Spore / Спора
 - RU: Нейтрал из команды вирусов, слабая роль. Побеждает, когда заражены все живые игроки. Питомец оставляет на твоём месте невидимую спору на 60 секунд (не больше 2 одновременно, споры пропадают на собрании). Первый, кто пройдёт рядом (до 1,5 м), заражается, а ты узнаёшь кто. Заражённый передаёт вирус медленно: надо простоять рядом с другим игроком (до 1,8 м) 6 секунд. Вирус не снимается собранием, остаётся до смерти игрока и продолжает распространяться, если умрёшь ты (победа всё равно твоя). Перезарядка 45 с. [Питомец]
 - EN: Neutral of the virus team, a weak role. You win when every living player is infected. The pet leaves an invisible spore where you stand for 60 seconds (no more than 2 at once, spores vanish at a meeting). The first one to pass nearby (within 1.5 m) gets infected and you learn who. An infected player spreads the virus slowly: he must stand within 1.8 m of another player for 6 seconds. A meeting does not remove the virus, it stays until the player dies and keeps spreading if you die (the win is still yours). Cooldown 45 s. [Pet]
+
+### Ransom / Вымогатель
+- RU: Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Питомец взламывает ближайшего игрока (до 2,5 м, не больше 2 взломов сразу): он считается заражённым и получает требование выкупа. Выкуп: простоять рядом с вымогателем 3 секунды, а для предателя ещё вариант: совершить убийство. Если за 60 секунд (настройка) выкуп не оплачен, вымогатель убивает игрока (щит спасает). На собраниях время не идёт. Перезарядка 40 с. [Питомец]
+- EN: Neutral of the virus team. You win when every living player is infected. The pet hacks the nearest player (within 2.5 m, at most 2 hacks at once): he counts as infected and gets a ransom demand. The ransom: stand next to the ransom for 3 seconds, and for an impostor also: commit a kill. If it is not paid within 60 seconds (option) the ransom kills the player (a shield stops it). The timer stops during meetings. Cooldown 40 s. [Pet]
 
 ## Mystics / Мистики
 
