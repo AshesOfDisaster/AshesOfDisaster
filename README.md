@@ -53,6 +53,10 @@ Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
 | `/id` | Player IDs |
 | `/lang ru\|en` | Reply language |
 
+### AI disclosure
+
+About 60% of this project was made with AI (Claude): code, role ideas and texts. Ideas, decisions and testing are by the author (niko).
+
 ### Install
 1. Install [BepInEx (IL2CPP, 6.x)](https://builds.bepinex.dev/projects/bepinex_be) for your Among Us version.
 2. Download `AshesOfDisaster.dll` from [Releases](../../releases), or build it yourself from source (see *Build from source*).
@@ -96,6 +100,10 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 
 ### Команды
 `/m` — карточка своей роли · `/tip` — совет по роли · `/r` — список ролей (`/r 1` мирные, `/r 2` предатели, `/r 3` нейтралы, `/r 5` мистики) · `/r <роль>` — описание · `/h` — помощь · `/id` — ID игроков · `/lang ru|en` — язык ответов.
+
+### Об ИИ
+
+Примерно 60% проекта сделано с помощью ИИ (Claude): код, идеи ролей и тексты. Идеи, решения и проверка принадлежат автору (niko).
 
 ### Установка
 1. Установите [BepInEx (IL2CPP, 6.x)](https://builds.bepinex.dev/projects/bepinex_be) под вашу версию Among Us.
