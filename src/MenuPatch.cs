@@ -102,7 +102,7 @@ public static class ModMenu
             btn.ChangeButtonText(label);
             try
             {
-                var col = Pages[i].En == "Music" ? (Color)new Color32(30, 220, 70, 255) : Pages[i].En == "Virus" ? (Color)new Color32(156, 204, 101, 255) : cols[i % cols.Length];
+                var col = Pages[i].En == "Music" ? (Color)new Color32(255, 214, 0, 255) : Pages[i].En == "Mystics" ? (Color)new Color32(156, 70, 220, 255) : Pages[i].En == "Virus" ? (Color)new Color32(156, 204, 101, 255) : cols[i % cols.Length];
                 foreach (var go in new[] { btn.inactiveSprites, btn.activeSprites, btn.selectedSprites })
                     if (go != null) { var sr = go.GetComponent<SpriteRenderer>(); if (sr != null) sr.color = col; }
                 btn.activeTextColor = btn.inactiveTextColor = Color.white;
