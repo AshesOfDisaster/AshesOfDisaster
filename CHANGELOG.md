@@ -1,12 +1,12 @@
 # Changelog / Список изменений
 
-## 3.60
+## 3.61
 - RU: у каждой вкладки ноутбука свой цвет: Система серо-голубая, Игра синяя, Мирные бирюзовые, Предатели красные, Нейтралы оранжевые, Призраки светло-серые, Мини-игры розовые, Мистики фиолетовые, Музыка жёлтая, Вирусы зелёные.
 - EN: every tab of the laptop has its own color: System grey-blue, Game blue, Crewmates teal, Impostors red, Neutrals orange, Ghosts light grey, Mini-games pink, Mystics purple, Music yellow, Virus green.
-- RU: кнопка «Музыка» в ноутбуке теперь жёлтая, а «Мистики» фиолетовая.
-- EN: the "Music" button in the laptop is now yellow and "Mystics" is purple.
 - RU: команда вирусов получила свою вкладку «Вирусы» в ноутбуке настроек (светло-зелёная) и свою группу в /r (/r 6).
 - EN: the virus team now has its own "Virus" tab in the settings laptop (light green) and its own group in /r (/r 6).
+
+## 3.60
 - RU: новая слабая роль команды вирусов Спора (нейтрал). Питомец оставляет невидимую спору на 60 секунд (не больше 2), первый, кто пройдёт рядом, заражается. Заражённый передаёт вирус медленно: 6 секунд рядом с другим игроком. Победа: заразить всех живых игроков; метки заражённых видны над твоим именем.
 - EN: new weak virus-team role Spore (neutral). The pet leaves an invisible spore for 60 seconds (max 2), the first one to pass nearby gets infected. An infected player spreads the virus slowly: 6 seconds near another player. Win: infect every living player; infected players are marked above your name.
 
