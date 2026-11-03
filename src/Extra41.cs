@@ -217,6 +217,43 @@ public static partial class Extra33
         }
     }
 
+    static void RansomHack(PlayerControl p, PlayerControl t)
+    {
+        bool ru = Translator.IsRu(p);
+                float sec = G("RansomSec");
+                int kind = IsImp(t) && UnityEngine.Random.value < 0.5f ? 1 : 0;
+                spots.Add(new Spot { Kind = "ransom", Owner = p.PlayerId, Target = t.PlayerId, Pos = new Vector2(kind, 0f), Until = Time.time + sec, Next = sec > 40f ? Time.time + sec - 30f : 0f });
+                if (!spots.Any(x => x.Kind == "virus" && x.Owner == p.PlayerId && x.Target == t.PlayerId))
+                    spots.Add(new Spot { Kind = "virus", Owner = p.PlayerId, Target = t.PlayerId, Until = Time.time + 99999f, Seen = new List<byte> { p.PlayerId } });
+                bool tru = Translator.IsRu(t);
+                string dem = kind == 1 ? T(tru, "совершить 1 убийство", "commit 1 kill") : T(tru, $"простоять рядом с {Nm(p)} 3 секунды", $"stand next to {Nm(p)} for 3 seconds");
+                Utils.SendSecret(t, T(tru, $"Тебя взломал Вымогатель! Выкуп: {dem}. Срок {sec:0} с, иначе он тебя убьёт.", $"You were hacked by the Ransom! Ransom: {dem}. {sec:0} s, or he kills you."), 3);
+                string dem2 = kind == 1 ? T(ru, "1 убийство", "1 kill") : T(ru, "3 с рядом с тобой", "3 s next to you");
+                H(p, T(ru, $"Взломан {Nm(t)}. Выкуп: {dem2}, срок {sec:0} с.", $"Hacked {Nm(t)}. Ransom: {dem2}, {sec:0} s."));
+    }
+
+    // пассивка Вымогателя: кто использовал способность рядом с ним (до 4 м), получает взлом, а способность отменяется
+    public static bool RansomBlock(PlayerControl u)
+    {
+        if (!Alive(u) || MeetingHud.Instance != null) return false;
+        if (RoleState.Assigned.TryGetValue(u.PlayerId, out var ur) && VirusTeam.Contains(ur.Id)) return false;
+        foreach (var kv in RoleState.Assigned)
+        {
+            if (kv.Value.Id != "Ransom" || kv.Key == u.PlayerId) continue;
+            var rp = Utils.GetPlayer(kv.Key);
+            if (!Alive(rp) || Roles75.IsMuted(rp) || Vector2.Distance(rp.GetTruePosition(), u.GetTruePosition()) > 4f) continue;
+            bool uru = Translator.IsRu(u);
+            if (!spots.Any(x => x.Kind == "ransom" && x.Target == u.PlayerId))
+            {
+                RansomHack(rp, u);
+                VirusCheck(rp);
+            }
+            H(u, T(uru, "Способность отменена: рядом Вымогатель!", "Ability cancelled: a Ransom is nearby!"));
+            return true;
+        }
+        return false;
+    }
+
     static void Define41()
     {
         const OptTab C = OptTab.Crewmate;
@@ -269,23 +306,14 @@ public static partial class Extra33
                 return true;
             });
         S("Ransom", "Вымогатель", "Ransom", "#EF5350", OptTab.Neutral, 40, 0, "питомец: взломать игрока и потребовать выкуп", "pet: hack a player and demand a ransom",
-            "Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Питомец взламывает ближайшего игрока (до 2,5 м, не больше 2 взломов одновременно): он сразу считается заражённым и получает требование выкупа. Выкуп: простоять рядом с тобой (до 1,5 м) 3 секунды, а если взломан предатель, то совершить убийство. Если за 60 секунд (настройка) выкуп не оплачен, ты убиваешь его (щит спасает от удара). Время идёт не во время собраний. Вирус передаётся дальше за 6 секунд рядом. Перезарядка 40 с. [Питомец]",
-            "Neutral of the virus team. You win when every living player is infected. The pet hacks the nearest player (within 2.5 m, at most 2 hacks at once): he counts as infected at once and gets a ransom demand. The ransom: stand next to you (within 1.5 m) for 3 seconds, or, if an impostor is hacked, commit a kill. If the ransom is not paid within 60 seconds (option) you kill him (a shield stops the blow). The timer does not run during meetings. The virus spreads on by 6 seconds of standing close. Cooldown 40 s. [Pet]",
+            "Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Питомец взламывает ближайшего игрока (до 2,5 м, не больше 2 взломов одновременно): он сразу считается заражённым и получает требование выкупа. Выкуп: простоять рядом с тобой (до 1,5 м) 3 секунды, а если взломан предатель, то совершить убийство. Если за 60 секунд (настройка) выкуп не оплачен, ты убиваешь его (щит спасает от удара). Особая способность: кто применит свою способность рядом с тобой (до 4 м), получает такой же взлом, а его способность отменяется. Время идёт не во время собраний. Вирус передаётся дальше за 6 секунд рядом. Перезарядка 40 с. [Питомец]",
+            "Neutral of the virus team. You win when every living player is infected. The pet hacks the nearest player (within 2.5 m, at most 2 hacks at once): he counts as infected at once and gets a ransom demand. The ransom: stand next to you (within 1.5 m) for 3 seconds, or, if an impostor is hacked, commit a kill. If the ransom is not paid within 60 seconds (option) you kill him (a shield stops the blow). Special: anyone who uses an ability within 4 m of you gets the same hack and the ability is cancelled. The timer does not run during meetings. The virus spreads on by 6 seconds of standing close. Cooldown 40 s. [Pet]",
             (p, ru) =>
             {
                 if (spots.Count(x => x.Kind == "ransom" && x.Owner == p.PlayerId) >= 2) { H(p, T(ru, "Уже 2 взлома ждут выкупа.", "2 hacks are already awaiting ransom.")); return false; }
                 var t = Nearest(p, 2.5f, o => !spots.Any(x => x.Kind == "ransom" && x.Target == o.PlayerId) && !(RoleState.Assigned.TryGetValue(o.PlayerId, out var r) && VirusTeam.Contains(r.Id)));
                 if (t == null) { H(p, T(ru, "Рядом нет подходящего игрока (до 2,5 м).", "No suitable player within 2.5 m.")); return false; }
-                float sec = G("RansomSec");
-                int kind = IsImp(t) && UnityEngine.Random.value < 0.5f ? 1 : 0;
-                spots.Add(new Spot { Kind = "ransom", Owner = p.PlayerId, Target = t.PlayerId, Pos = new Vector2(kind, 0f), Until = Time.time + sec, Next = sec > 40f ? Time.time + sec - 30f : 0f });
-                if (!spots.Any(x => x.Kind == "virus" && x.Owner == p.PlayerId && x.Target == t.PlayerId))
-                    spots.Add(new Spot { Kind = "virus", Owner = p.PlayerId, Target = t.PlayerId, Until = Time.time + 99999f, Seen = new List<byte> { p.PlayerId } });
-                bool tru = Translator.IsRu(t);
-                string dem = kind == 1 ? T(tru, "совершить 1 убийство", "commit 1 kill") : T(tru, $"простоять рядом с {Nm(p)} 3 секунды", $"stand next to {Nm(p)} for 3 seconds");
-                Utils.SendSecret(t, T(tru, $"Тебя взломал Вымогатель! Выкуп: {dem}. Срок {sec:0} с, иначе он тебя убьёт.", $"You were hacked by the Ransom! Ransom: {dem}. {sec:0} s, or he kills you."), 3);
-                string dem2 = kind == 1 ? T(ru, "1 убийство", "1 kill") : T(ru, "3 с рядом с тобой", "3 s next to you");
-                H(p, T(ru, $"Взломан {Nm(t)}. Выкуп: {dem2}, срок {sec:0} с.", $"Hacked {Nm(t)}. Ransom: {dem2}, {sec:0} s."));
+                RansomHack(p, t);
                 VirusCheck(p);
                 return true;
             });

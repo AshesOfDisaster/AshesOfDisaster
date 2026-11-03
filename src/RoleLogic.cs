@@ -448,6 +448,7 @@ public static class RoleLogic
             return;
         }
         if (Roles75.IsMuted(p)) { Hint(p, ru ? "Твоя способность заглушена." : "Your ability is silenced."); return; }
+        if (Extra33.RansomBlock(p)) return;
         if (p.AmOwner) Utils.Toast((ru ? "Способность: " : "Ability: ") + role.Colored(ru));
         Plugin.Logger.LogInfo($"Pet ability: {p.Data.PlayerName} ({role.Id})");
         if (role.Id == "Builder") PlaceWall(p);
