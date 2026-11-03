@@ -1,6 +1,6 @@
 # Roles / Роли
 
-Total / Всего: **139**. Descriptions are shown in game with `/r <role>`.
+Total / Всего: **177**. Descriptions are shown in game with `/r <role>`.
 
 
 ## Crew / Мирные
@@ -201,6 +201,54 @@ Total / Всего: **139**. Descriptions are shown in game with `/r <role>`.
 - RU: Мирный. Ты катаешься на своём хобби-коне. Питомец включает и выключает галоп. Пока идёт галоп, ты бежишь намного быстрее (по умолчанию вдвое), но конь тратит силы, их шкала 100 и падает на 25 в секунду. Пока стоишь или идёшь шагом, силы восстанавливаются. Когда силы кончатся, конь выдохнется и не пойдёт в галоп 4 секунды. В галопе ты сбиваешь всех, кто ближе 0,9 м: они замирают на 1,5 секунды (одного и того же игрока не чаще раза в 5 секунд). Стены не пробиваешь. [Питомец]
 - EN: Crewmate. You ride your hobby horse. The pet starts and stops the gallop. During a gallop you run much faster (twice as fast by default), but the horse spends stamina: the scale is 100 and drops by 25 per second. While you stand or walk the stamina recovers. When it runs out the horse is winded and will not gallop for 4 seconds. In a gallop you knock down everyone closer than 0.9 m: they freeze for 1.5 seconds (the same player not more than once every 5 seconds). You cannot go through walls. [Pet]
 
+### Lantern / Фонарщик
+- RU: Мирный. Показывает, сколько живых игроков сейчас в радиусе 7 метров от тебя. Перезарядка 20 с. [Питомец]
+- EN: Crewmate. Shows how many living players are within 7 meters of you right now. Cooldown 20 s. [Pet]
+
+### Dosimeter / Дозиметр
+- RU: Мирный. Показывает, сколько игроков погибло за последние 60 секунд. Перезарядка 30 с. [Питомец]
+- EN: Crewmate. Shows how many players died in the last 60 seconds. Cooldown 30 s. [Pet]
+
+### X-ray / Просвет
+- RU: Мирный. Просвечивает ближайшего игрока (до 2,5 м) и говорит, есть ли у него щит. Использований: 3, перезарядка 40 с. [Питомец]
+- EN: Crewmate. X-rays the nearest player (within 2.5 m) and tells whether he has a shield. Uses: 3, cooldown 40 s. [Pet]
+
+### Landmark / Веха
+- RU: Мирный. Первое нажатие ставит веху на твоём месте, следующие показывают направление и расстояние до неё. Если нажать у самой вехи (ближе 1,5 м), она переставится на новое место. Перезарядка 15 с. [Питомец]
+- EN: Crewmate. The first press sets a landmark where you stand, the next ones show the direction and distance to it. If you press right next to it (within 1.5 m), it moves to the new spot. Cooldown 15 s. [Pet]
+
+### Compass / Компас
+- RU: Мирный. Показывает направление на ближайшее тело и расстояние до него. Использований: 4, перезарядка 40 с. [Питомец]
+- EN: Crewmate. Shows the direction and distance to the nearest body. Uses: 4, cooldown 40 s. [Pet]
+
+### Investigator / Следователь
+- RU: Мирный. Проверяет ближайшего игрока (до 2,5 м): стоит ли он рядом с телом (до 5 м). Это только улика, не приговор. Использований: 3, перезарядка 35 с. [Питомец]
+- EN: Crewmate. Checks the nearest player (within 2.5 m): is he next to a body (within 5 m). Only a clue, not a verdict. Uses: 3, cooldown 35 s. [Pet]
+
+### Seer / Вещун
+- RU: Мирный. Называет случайного живого игрока, который точно на стороне мирных. Использований: 3, перезарядка 60 с. [Питомец]
+- EN: Crewmate. Names a random living player who is surely on the crew side. Uses: 3, cooldown 60 s. [Pet]
+
+### Tripwire / Сигналка
+- RU: Мирный. Питомец ставит невидимую сигналку на твоём месте (до 90 секунд). Первый, кто подойдёт к ней ближе 2 м, назовётся тебе по имени. Использований: 3, перезарядка 40 с. [Питомец]
+- EN: Crewmate. The pet sets an invisible tripwire where you stand (up to 90 seconds). The first one to come within 2 m of it is named to you. Uses: 3, cooldown 40 s. [Pet]
+
+### Stash / Тайник
+- RU: Мирный. Питомец прячет на твоём месте тайник со щитом (до 120 секунд). Первый, кто подойдёт ближе 1,5 м, получает щит, а ты узнаёшь, кто. Использований: 2, перезарядка 60 с. [Питомец]
+- EN: Crewmate. The pet hides a shield stash where you stand (up to 120 seconds). The first one to come within 1.5 m gets the shield and you learn who. Uses: 2, cooldown 60 s. [Pet]
+
+### Chronometer / Хронометр
+- RU: Мирный. Показывает, сколько секунд прошло с последней смерти игрока. Перезарядка 20 с. [Питомец]
+- EN: Crewmate. Shows how many seconds have passed since a player last died. Cooldown 20 s. [Pet]
+
+### Printer / Принтер
+- RU: Мирный. Питомец печатает метку на твоём месте, вид метки выбирается входом в люк (тебя сразу выкинет обратно). Ловушка: первый, кто подойдёт ближе 1,5 м, замирает на 4 секунды. Вспышка: ослепляет подошедшего на 3 секунды. Журнал: открывается после 2 собраний; на следующем собрании называет, кто проходил рядом (до 2,5 м). Меток держится не больше 5. Использований 6, перезарядка 20 с. [Питомец]
+- EN: Crewmate. The pet prints a mark where you stand, the kind is chosen by entering a vent (you are thrown out at once). Trap: the first one within 1.5 m is frozen for 4 seconds. Flash: blinds the one who comes close for 3 seconds. Log: unlocks after 2 meetings; at the next meeting it names who passed nearby (within 2.5 m). Up to 5 marks at once. Uses 6, cooldown 20 s. [Pet]
+
+### Button / Кнопка
+- RU: Мирный. Питомец касается ближайшего игрока (до 2 м), и его способность тут же срабатывает, как будто он сам нажал. Работает только с активными способностями, действуют перезарядка и лимит использований самого игрока. Использований 4, перезарядка 30 с. [Питомец]
+- EN: Crewmate. The pet touches the nearest player (within 2 m) and his ability fires at once, as if he pressed it himself. Works only with active abilities; the player's own cooldown and uses apply. Uses 4, cooldown 30 s. [Pet]
+
 ## Impostors / Предатели
 
 ### Welder / Сварщик
@@ -371,6 +419,46 @@ Total / Всего: **139**. Descriptions are shown in game with `/r <role>`.
 - RU: Предатель. Питомец меняет тебя местами со случайным мирным игроком на любом расстоянии. Так можно уйти от тела и оставить рядом с ним другого. Использований: 3, перезарядка 60 с. [Питомец]
 - EN: Impostor. The pet swaps you with a random crewmate at any distance. Walk away from a body and leave someone else standing next to it. Uses: 3, cooldown 60 s. [Pet]
 
+### Discharger / Разрядник
+- RU: Предатель. Питомец снимает щиты со всех не-предателей в радиусе 6 м. Перезарядка 60 с. [Питомец]
+- EN: Impostor. The pet strips the shields off every non-impostor within 6 m. Cooldown 60 s. [Pet]
+
+### Handout / Подачка
+- RU: Предатель. Питомец говорит ближайшему не-предателю (до 2,5 м), что у него щит. Щита на самом деле нет. Перезарядка 45 с. [Питомец]
+- EN: Impostor. The pet tells the nearest non-impostor (within 2.5 m) that he has a shield. There is no real shield. Cooldown 45 s. [Pet]
+
+### Shadower / Следящий
+- RU: Предатель. Питомец ставит метку слежки на ближайшего не-предателя (до 3 м). 40 секунд каждые 5 секунд ты видишь, где он (направление и расстояние). Перезарядка 60 с. [Питомец]
+- EN: Impostor. The pet tags the nearest non-impostor (within 3 m). For 40 seconds every 5 seconds you see where he is (direction and distance). Cooldown 60 s. [Pet]
+
+### Armor / Броня
+- RU: Предатель. Питомец надевает на тебя щит от одного нападения, если щита ещё нет. Использований: 3, перезарядка 90 с. [Питомец]
+- EN: Impostor. The pet puts a one-attack shield on you if you have none. Uses: 3, cooldown 90 s. [Pet]
+
+### Scarecrow / Пугало
+- RU: Предатель. Все не-предатели в радиусе 7 м получают сообщение, что у них за спиной кто-то стоит. Перезарядка 45 с. [Питомец]
+- EN: Impostor. Every non-impostor within 7 m gets a message that somebody stands behind them. Cooldown 45 s. [Pet]
+
+### Screamer / Крикун
+- RU: Предатель. Все не-предатели в радиусе 12 м слышат, что где-то на случайной стороне кричат. Так можно увести их от тебя. Перезарядка 70 с. [Питомец]
+- EN: Impostor. Every non-impostor within 12 m hears a scream somewhere in a random direction. A way to lead them away from you. Cooldown 70 s. [Pet]
+
+### Looter / Мародёр
+- RU: Предатель. Питомец обшаривает ближайшее тело (до 2,5 м) и даёт тебе щит. Каждое тело можно обшарить один раз. Перезарядка 40 с. [Питомец]
+- EN: Impostor. The pet loots the nearest body (within 2.5 m) and gives you a shield. Each body can be looted once. Cooldown 40 s. [Pet]
+
+### Gatherer / Сборщик
+- RU: Предатель. Все остальные живые предатели переносятся к тебе. Использований: 2, перезарядка 90 с. [Питомец]
+- EN: Impostor. All the other living impostors are moved to you. Uses: 2, cooldown 90 s. [Pet]
+
+### Spikes / Шипы
+- RU: Предатель. Питомец ставит шипы на твоём месте (до 120 секунд). Первый не-предатель, наступивший на них (до 1,5 м), теряет щит, а ты узнаёшь, кто это. Использований: 3, перезарядка 50 с. [Питомец]
+- EN: Impostor. The pet sets spikes where you stand (up to 120 seconds). The first non-impostor to step on them (within 1.5 m) loses his shield and you learn who it was. Uses: 3, cooldown 50 s. [Pet]
+
+### Scapegoat / Козёл отпущения
+- RU: Предатель. Питомец метит ближайшего не-предателя (до 3 м). Если в ближайшие 30 секунд кого-то убьют, всем живым придёт сообщение, что рядом с телом заметили именно его. Перезарядка 80 с. [Питомец]
+- EN: Impostor. The pet marks the nearest non-impostor (within 3 m). If anyone is killed in the next 30 seconds, every living player is told that he was seen near the body. Cooldown 80 s. [Pet]
+
 ## Neutrals / Нейтралы
 
 ### Smoker / Курильщик
@@ -477,6 +565,54 @@ Total / Всего: **139**. Descriptions are shown in game with `/r <role>`.
 - RU: Нейтрал. Для сервера ты настоящий предатель, у тебя кнопка превращения. Ты копишь веру: она растёт медленно, на собрании +1, а молитва даёт +4, но только если стоять неподвижно. Режим силы переключается люком (смена стоит 1 веру), после каждого собрания порядок режимов перемешивается, а текущий режим тебе неизвестен, пока не переключишь. Девять режимов: Кара, Приговор, Перенос, Откровение, Благословение, Остановка времени, Гнев, Молитва, Знамение. Повтор одной силы подряд дорожает на 1 веру за каждый раз. Кара и Приговор на игроке, чью роль ты не открывал Откровением, стоят на 2 веры больше. Три убийства сжигают всю веру и отнимают щит на 2 минуты. Силы с целью работают так: нажми кнопку превращения и выбери игрока в меню, сам ты не превратишься. Силы без цели включает питомец. Каждая сила стоит веры и перезаряжается. У тебя свой щит, он сам возвращается. Ты не видишь роли, пока не используешь Откровение. [Люк, превращение и питомец]
 - EN: Neutral. The server sees you as a real impostor, you have a shapeshift button. You gather faith: it grows slowly, +1 at a meeting, and Prayer gives +4 but only if you stand still. The power mode is switched with a vent (a switch costs 1 faith), the order of modes is reshuffled after every meeting and the current mode is unknown until you switch. Nine modes: Smite, Doom, Swap, Reveal, Bless, Time stop, Wrath, Prayer, Omen. Repeating a power costs 1 more faith each time. Smite and Doom on a player whose role you have not revealed cost 2 more. Three kills burn all your faith and remove your shield for 2 minutes. Targeted powers work like this: press the shapeshift button and pick a player in the menu, you do not actually morph. Powers without a target are triggered by the pet. Every power costs faith and has a cooldown. You have your own shield that returns by itself. You cannot see roles until you use Reveal. [Vent, morph and pet]
 
+### Hangman / Висельник
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только если рядом (до 7 м) нет других свидетелей. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only if nobody else is within 7 m. [Pet]
+
+### Crowdbane / Толпобой
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только если вокруг (до 6 м) есть ещё хотя бы двое. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only if at least two more are within 6 m. [Pet]
+
+### Bloodsucker / Кровосос
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), и ты получаешь щит. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m) and you gain a shield. [Pet]
+
+### Wounder / Подранок
+- RU: Нейтрал. Для сервера ты настоящий предатель. Первое нажатие ранит ближайшего игрока (до 2,5 м) на 25 секунд, повторное нажатие рядом с раненым убивает его. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The first press wounds the nearest player (within 2.5 m) for 25 seconds, pressing again next to a wounded one kills him. [Pet]
+
+### Sniper / Снайпер
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока в радиусе 5 м без промаха. Всего два выстрела за игру, перезарядка 90 с. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player within 5 m without a miss. Only two shots per game, cooldown 90 s. [Pet]
+
+### Judge / Судья
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только если он стоит рядом с телом (до 5 м). [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only if he stands next to a body (within 5 m). [Pet]
+
+### Vulture / Стервятник
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только в течение 30 секунд после чьей-то смерти. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only within 30 seconds after somebody's death. [Pet]
+
+### Finalist / Финалист
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), но только когда в живых осталось не больше шести. Зато перезарядка короткая. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m), but only when no more than six are alive. The cooldown is short. [Pet]
+
+### Trigger / Курок
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м). Всего три убийства за игру, зато перезарядка 20 с. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m). Only three kills per game, but the cooldown is 20 s. [Pet]
+
+### Breaker / Пробойник
+- RU: Нейтрал. Для сервера ты настоящий предатель. Питомец убивает ближайшего игрока (до 2 м), даже если у него есть щит: щит просто сгорает. [Питомец]
+- EN: Neutral. The server sees you as a real impostor. The pet kills the nearest player (within 2 m) even if he has a shield: the shield just burns out. [Pet]
+
+### Skibidi / Скибиди
+- RU: Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Питомец запускает песню на 10 секунд (раз в 30 секунд). Кто подошёл к тебе ближе 3,5 м, пока песня звучит, заражается. Заражённый передаёт вирус дальше медленно: ему надо стоять рядом с другим игроком (до 1,8 м) 10 секунд. Вирус не снимается собранием и остаётся до смерти игрока; если ты умрёшь, вирус продолжит распространяться и ты всё равно выиграешь. Над твоим именем видно, кто заражён. [Питомец]
+- EN: Neutral of the virus team. You win when every living player is infected. The pet starts the song for 10 seconds (once per 30 seconds). Anyone who comes within 3.5 m of you while the song plays gets infected. An infected player spreads the virus slowly: he must stand within 1.8 m of another player for 10 seconds. A meeting does not remove the virus, it stays until the player dies; if you die, the virus keeps spreading and you still win. You can see who is infected above your name. [Pet]
+
+### Spore / Спора
+- RU: Нейтрал из команды вирусов, слабая роль. Побеждает, когда заражены все живые игроки. Питомец оставляет на твоём месте невидимую спору на 60 секунд (не больше 2 одновременно, споры пропадают на собрании). Первый, кто пройдёт рядом (до 1,5 м), заражается, а ты узнаёшь кто. Заражённый передаёт вирус медленно: надо простоять рядом с другим игроком (до 1,8 м) 6 секунд. Вирус не снимается собранием, остаётся до смерти игрока и продолжает распространяться, если умрёшь ты (победа всё равно твоя). Перезарядка 45 с. [Питомец]
+- EN: Neutral of the virus team, a weak role. You win when every living player is infected. The pet leaves an invisible spore where you stand for 60 seconds (no more than 2 at once, spores vanish at a meeting). The first one to pass nearby (within 1.5 m) gets infected and you learn who. An infected player spreads the virus slowly: he must stand within 1.8 m of another player for 6 seconds. A meeting does not remove the virus, it stays until the player dies and keeps spreading if you die (the win is still yours). Cooldown 45 s. [Pet]
+
 ## Mystics / Мистики
 
 ### Alchemist / Алхимик
@@ -538,6 +674,50 @@ Total / Всего: **139**. Descriptions are shown in game with `/r <role>`.
 ### Ventecho / Эхо люков
 - RU: Мистик. Питомец прислушивается к эху: ты узнаёшь, сколько раз за раунд кто-то залезал в люки и сколько разных игроков это делало. Имён нет. Использований: 5. [Питомец]
 - EN: Mystic. The pet listens to the echo: you learn how many times someone entered vents this round and how many different players did it. No names. Uses: 5. [Pet]
+
+### Blesser / Благословитель
+- RU: Мистик. Питомец даёт щит ближайшему игроку (до 2,5 м), у которого его нет. Использований: 2, перезарядка 70 с. [Питомец]
+- EN: Mystic. The pet gives a shield to the nearest player (within 2.5 m) who has none. Uses: 2, cooldown 70 s. [Pet]
+
+### Scales / Весы
+- RU: Мистик. Говорит, чьих игроков в живых больше: мирных или остальных (предатели и нейтралы). Использований: 3, перезарядка 60 с. [Питомец]
+- EN: Mystic. Tells who has more living players: the crew or the rest (impostors and neutrals). Uses: 3, cooldown 60 s. [Pet]
+
+### Silhouette / Силуэт
+- RU: Мистик. Показывает, сколько игроков в радиусе 12 м прячутся за стенами, то есть скрыты от твоего взгляда. Перезарядка 35 с. [Питомец]
+- EN: Mystic. Shows how many players within 12 m hide behind walls, out of your sight. Cooldown 35 s. [Pet]
+
+### Fate / Судьба
+- RU: Мистик. Питомец метит ближайшего игрока (до 3 м). Через 45 секунд ты узнаешь, жив он или погиб. Использований: 3, перезарядка 60 с. [Питомец]
+- EN: Mystic. The pet marks the nearest player (within 3 m). After 45 seconds you learn whether he is alive or dead. Uses: 3, cooldown 60 s. [Pet]
+
+### Omen / Предвестник
+- RU: Мистик. Смотрит на ближайшего игрока (до 2,5 м): светлый (не предатель) или тёмный. Ответ верен в 70% случаев. Использований: 4, перезарядка 40 с. [Питомец]
+- EN: Mystic. Looks at the nearest player (within 2.5 m): light (not an impostor) or dark. The answer is right 70% of the time. Uses: 4, cooldown 40 s. [Pet]
+
+### Palmist / Хиромант
+- RU: Мистик. Смотрит на ближайшего игрока (до 2,5 м) и говорит, есть ли у его роли активная способность. Использований: 3, перезарядка 40 с. [Питомец]
+- EN: Mystic. Looks at the nearest player (within 2.5 m) and tells whether his role has an active ability. Uses: 3, cooldown 40 s. [Pet]
+
+### Fortuna / Фортуна
+- RU: Мистик. С шансом 50% даёт тебе щит. При неудаче перезарядка всё равно уходит. Использований: 2, перезарядка 90 с. [Питомец]
+- EN: Mystic. A 50% chance to give you a shield. On a miss the cooldown is still spent. Uses: 2, cooldown 90 s. [Pet]
+
+### Census / Перепись
+- RU: Мистик. Говорит, сколько нейтралов сейчас живо. Использований: 3, перезарядка 60 с. [Питомец]
+- EN: Mystic. Tells how many neutrals are alive right now. Uses: 3, cooldown 60 s. [Pet]
+
+### Body Echo / Эхо тела
+- RU: Мистик. Называет комнату, где лежит последнее тело. Перезарядка 45 с. [Питомец]
+- EN: Mystic. Names the room where the last body lies. Cooldown 45 s. [Pet]
+
+### Lot / Жребий
+- RU: Мистик. Называет троих игроков, и среди них есть хотя бы один не-мирный (предатель или нейтрал), если такие остались. Использований: 2, перезарядка 75 с. [Питомец]
+- EN: Mystic. Names three players, and at least one of them is not crew (an impostor or a neutral) if any are left. Uses: 2, cooldown 75 s. [Pet]
+
+### Time Stop / Таймстоп
+- RU: Мистик. Питомец останавливает время: все остальные игроки замирают на несколько секунд (по умолчанию 5), а ты свободно ходишь. В это время таймеры меток, ловушек и отложенных смертей тоже стоят. Убивать замершим нельзя, но можно уйти или спрятаться. Использований: 3, перезарядка 90 с. [Питомец]
+- EN: Mystic. The pet stops time: all other players freeze for a few seconds (5 by default) while you move freely. Timers of marks, traps and delayed deaths stop too. You cannot kill frozen players, but you can leave or hide. Uses: 3, cooldown 90 s. [Pet]
 
 ## Ghosts / Призраки
 
