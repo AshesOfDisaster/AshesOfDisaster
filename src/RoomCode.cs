@@ -76,7 +76,7 @@ public static class RoomCode
     static string StatusText(bool closed)
     {
         var c = AmongUsClient.Instance;
-        string st = closed ? "🔴 Закрыта" : (c != null && c.GameState == InnerNet.InnerNetClient.GameStates.Started ? "🟡 Идёт игра" : "🟢 Открыта, лобби");
+        string st = closed ? "🔴 Закрыта" : (c != null && c.GameState == InnerNet.InnerNetClient.GameStates.Started ? "🟡 Идёт игра" : c != null && c.GameState == InnerNet.InnerNetClient.GameStates.Ended ? "🟢 Открыта, игра закончилась" : "🟢 Открыта, лобби");
         int players = closed ? 0 : PlayerControl.AllPlayerControls.Count;
         return $"Комната: **{msgCode}**\nСтатус: {st}\nХост: {msgHost}\nИгроков: {(closed ? "-" : players.ToString())}\nМод Ashes of Disaster {Plugin.Version}";
     }
@@ -113,7 +113,7 @@ public static class RoomCode
             {
                 var c0 = AmongUsClient.Instance;
                 bool open = on && Utils.AmHost && c0 != null && c0.NetworkMode == NetworkModes.OnlineGame && c0.GameId == msgGame
-                    && (c0.GameState == InnerNet.InnerNetClient.GameStates.Joined || c0.GameState == InnerNet.InnerNetClient.GameStates.Started);
+                    && c0.GameState != InnerNet.InnerNetClient.GameStates.NotJoined;
                 if (!open) { PatchStatus(true); msgId = null; }
                 else if (Time.time >= nextUpd) { nextUpd = Time.time + 30f; PatchStatus(false); }
             }

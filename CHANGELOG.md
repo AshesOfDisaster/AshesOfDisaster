@@ -1,5 +1,9 @@
 # Changelog / Список изменений
 
+## 3.63
+- RU: исправлено: после конца игры статус комнаты в Discord больше не меняется на «Закрыта», пока комната существует (экран итогов и возврат в лобби считаются открытой комнатой).
+- EN: fixed: after a game ends the room status in Discord no longer turns to "Closed" while the room exists (the end screen and returning to the lobby count as an open room).
+
 ## 3.62
 - RU: сообщение о комнате в Discord показывает имя хоста (ждёт, пока имя появится, и больше не пишет «?») и живой статус: «Открыта, лобби», «Идёт игра» или «Закрыта». Сообщение само обновляется раз в 30 секунд и при закрытии комнаты.
 - EN: the room message in Discord shows the host name (it waits until the name is known and no longer writes "?") and a live status: "Open, lobby", "In game" or "Closed". The message updates itself every 30 seconds and when the room closes.
