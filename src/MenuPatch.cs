@@ -56,6 +56,24 @@ public static class ModMenu
     static float y0;
     static float scrollY, scrollMax;
 
+    static Color TabColor(string en, Color fallback)
+    {
+        switch (en)
+        {
+            case "System": return new Color32(120, 144, 156, 255);
+            case "Game": return new Color32(66, 133, 244, 255);
+            case "Crewmates": return new Color32(38, 198, 218, 255);
+            case "Impostors": return new Color32(229, 57, 53, 255);
+            case "Neutrals": return new Color32(255, 152, 0, 255);
+            case "Ghosts": return new Color32(176, 190, 197, 255);
+            case "Mini-games": return new Color32(236, 64, 122, 255);
+            case "Mystics": return new Color32(156, 70, 220, 255);
+            case "Music": return new Color32(255, 214, 0, 255);
+            case "Virus": return new Color32(102, 187, 106, 255);
+            default: return fallback;
+        }
+    }
+
     static string PageName(int i) => Translator.GameIsRu ? Pages[i].Ru : Pages[i].En;
     
     static readonly List<PassiveButton> pageButtons = new();
@@ -102,7 +120,7 @@ public static class ModMenu
             btn.ChangeButtonText(label);
             try
             {
-                var col = Pages[i].En == "Music" ? (Color)new Color32(255, 214, 0, 255) : Pages[i].En == "Mystics" ? (Color)new Color32(156, 70, 220, 255) : Pages[i].En == "Virus" ? (Color)new Color32(156, 204, 101, 255) : cols[i % cols.Length];
+                var col = TabColor(Pages[i].En, cols[i % cols.Length]);
                 foreach (var go in new[] { btn.inactiveSprites, btn.activeSprites, btn.selectedSprites })
                     if (go != null) { var sr = go.GetComponent<SpriteRenderer>(); if (sr != null) sr.color = col; }
                 btn.activeTextColor = btn.inactiveTextColor = Color.white;

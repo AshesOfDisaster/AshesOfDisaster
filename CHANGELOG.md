@@ -1,6 +1,8 @@
 # Changelog / Список изменений
 
 ## 3.60
+- RU: у каждой вкладки ноутбука свой цвет: Система серо-голубая, Игра синяя, Мирные бирюзовые, Предатели красные, Нейтралы оранжевые, Призраки светло-серые, Мини-игры розовые, Мистики фиолетовые, Музыка жёлтая, Вирусы зелёные.
+- EN: every tab of the laptop has its own color: System grey-blue, Game blue, Crewmates teal, Impostors red, Neutrals orange, Ghosts light grey, Mini-games pink, Mystics purple, Music yellow, Virus green.
 - RU: кнопка «Музыка» в ноутбуке теперь жёлтая, а «Мистики» фиолетовая.
 - EN: the "Music" button in the laptop is now yellow and "Mystics" is purple.
 - RU: команда вирусов получила свою вкладку «Вирусы» в ноутбуке настроек (светло-зелёная) и свою группу в /r (/r 6).
