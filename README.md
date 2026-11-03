@@ -10,8 +10,6 @@
 
 </div>
 
-> 🤖 **AI disclosure / Сделано с помощью ИИ.** About **60%** of this mod was made by AI (Claude by Anthropic); the rest was made, directed and tested by its human authors. / Около **60%** мода сделано ИИ (Claude от Anthropic), остальное сделано, направлено и протестировано авторами-людьми.
-
 ---
 
 ## English
