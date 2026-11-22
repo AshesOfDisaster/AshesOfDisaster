@@ -120,7 +120,6 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 
 ## Credits / Авторы
 - **niko** — author / автор
-- **Claude (Anthropic)** — около 60% / about 60%
 
 ## Discord
 Join the community: https://discord.gg/rzrph6v2rV — bug reports, suggestions, lobbies. / Баг-репорты, идеи, поиск игр.
