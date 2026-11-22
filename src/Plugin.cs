@@ -11,9 +11,9 @@ public class Plugin : BasePlugin
 {
     public const string Id = "com.niko.ashesofdisaster";
     public const string Name = "Ashes of Disaster";
-    public const string Version = "3.65";
+    public const string Version = "4.0.0";
     public const string Creators = "niko";
-    public const string Discord = "discord.gg/CCB2rg3CHz";
+    public const string Discord = "discord.gg/rzrph6v2rV";
 
     public static Plugin Instance;
     public static BepInEx.Logging.ManualLogSource Logger;

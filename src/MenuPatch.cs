@@ -36,7 +36,6 @@ public static class ModMenu
         new() { Ru = "Предатели",   En = "Impostors",   Filter = o => o.Tab == OptTab.Impostor },
         new() { Ru = "Нейтралы",    En = "Neutrals",    Filter = o => o.Tab == OptTab.Neutral },
         new() { Ru = "Призраки",    En = "Ghosts",      Filter = o => o.Tab == OptTab.Ghost },
-        new() { Ru = "Мини-игры",   En = "Mini-games",  Filter = o => o.Tab == OptTab.Mini },
         new() { Ru = "Мистики",     En = "Mystics",     Filter = o => o.Tab == OptTab.Mystic },
         new() { Ru = "Музыка",      En = "Music",       Filter = o => o.Tab == OptTab.Music },
         new() { Ru = "Вирусы",      En = "Virus",       Filter = o => false },
@@ -66,7 +65,6 @@ public static class ModMenu
             case "Impostors": return new Color32(229, 57, 53, 255);
             case "Neutrals": return new Color32(255, 152, 0, 255);
             case "Ghosts": return new Color32(176, 190, 197, 255);
-            case "Mini-games": return new Color32(236, 64, 122, 255);
             case "Mystics": return new Color32(156, 70, 220, 255);
             case "Music": return new Color32(255, 214, 0, 255);
             case "Virus": return new Color32(102, 187, 106, 255);
@@ -77,6 +75,58 @@ public static class ModMenu
     static string PageName(int i) => Translator.GameIsRu ? Pages[i].Ru : Pages[i].En;
     
     static readonly List<PassiveButton> pageButtons = new();
+
+    // ---- gradient overlay (design 10): colour on the left, darker to the right ----
+    static Sprite gradSprite;
+    static Sprite GradSprite()
+    {
+        if (gradSprite != null) return gradSprite;
+        const int GW = 192, GH = 32; const float R = 6f;
+        var tex = new Texture2D(GW, GH, TextureFormat.RGBA32, false);
+        for (int y = 0; y < GH; y++)
+            for (int x = 0; x < GW; x++)
+            {
+                float a = 0.45f * x / (GW - 1);
+                float dx = Math.Max(Math.Max(R - x, x - (GW - 1 - R)), 0f);
+                float dy = Math.Max(Math.Max(R - y, y - (GH - 1 - R)), 0f);
+                if (dx * dx + dy * dy > R * R) a = 0f;
+                tex.SetPixel(x, y, new Color(0f, 0f, 0f, a));
+            }
+        tex.Apply();
+        tex.wrapMode = TextureWrapMode.Clamp;
+        try { tex.hideFlags = HideFlags.DontUnloadUnusedAsset; } catch { }
+        gradSprite = Sprite.Create(tex, new Rect(0, 0, GW, GH), new Vector2(0.5f, 0.5f), 100f);
+        try { gradSprite.hideFlags = HideFlags.DontUnloadUnusedAsset; } catch { }
+        return gradSprite;
+    }
+
+    static void AddGradient(GameObject spritesGo)
+    {
+        if (spritesGo == null) return;
+        var sr = spritesGo.GetComponent<SpriteRenderer>();
+        if (sr == null || sr.sprite == null) return;
+        if (spritesGo.transform.Find("AoD_Grad") != null) return;
+        var go = new GameObject("AoD_Grad");
+        go.layer = spritesGo.layer;
+        go.transform.SetParent(spritesGo.transform, false);
+        var gsr = go.AddComponent<SpriteRenderer>();
+        gsr.sprite = GradSprite();
+        gsr.sortingLayerID = sr.sortingLayerID;
+        gsr.sortingOrder = sr.sortingOrder + 1;
+        Vector2 size = sr.drawMode == SpriteDrawMode.Simple ? (Vector2)sr.sprite.bounds.size : sr.size;
+        Vector3 c = sr.sprite.bounds.center;
+        Vector3 gb = gsr.sprite.bounds.size;
+        go.transform.localPosition = new Vector3(c.x, c.y, -0.001f);
+        go.transform.localScale = new Vector3(size.x / gb.x, size.y / gb.y, 1f);
+    }
+
+    static void AddGradient(PassiveButton b)
+    {
+        try { AddGradient(b.inactiveSprites); AddGradient(b.activeSprites); AddGradient(b.selectedSprites); }
+        catch (Exception e) { Plugin.Logger.LogWarning("ModMenu gradient: " + e.Message); }
+    }
+
+    static bool LightColor(Color c) => 0.299f * c.r + 0.587f * c.g + 0.114f * c.b > 0.667f;
 
     public static void Build(GameSettingMenu m)
     {
@@ -90,13 +140,14 @@ public static class ModMenu
 
         Vector3 pPre = m.GamePresetsButton.transform.localPosition;
         float colX = pPre.x, w = 1.5f, rowH = 0.3f;
-        Vector3 btnScale = new Vector3(0.45f, 0.35f, 1f);
+        Vector3 btnScale = new Vector3(0.52f, 0.45f, 1f);
         Func<int, Vector3> cell = k => new Vector3(colX + (k % 2 == 0 ? -w * 0.5f : w * 0.5f), pPre.y - rowH * (k / 2), pPre.z);
         try
         {
             m.GamePresetsButton.gameObject.SetActive(false);
             m.GameSettingsButton.transform.localPosition = cell(0); m.GameSettingsButton.transform.localScale = btnScale;
             m.RoleSettingsButton.transform.localPosition = cell(1); m.RoleSettingsButton.transform.localScale = btnScale;
+            AddGradient(m.GameSettingsButton); AddGradient(m.RoleSettingsButton);
         }
         catch (Exception e) { Plugin.Logger.LogWarning("ModMenu shift buttons: " + e.Message); }
         Color[] cols =
@@ -123,9 +174,12 @@ public static class ModMenu
                 var col = TabColor(Pages[i].En, cols[i % cols.Length]);
                 foreach (var go in new[] { btn.inactiveSprites, btn.activeSprites, btn.selectedSprites })
                     if (go != null) { var sr = go.GetComponent<SpriteRenderer>(); if (sr != null) sr.color = col; }
-                btn.activeTextColor = btn.inactiveTextColor = Color.white;
-                btn.selectedTextColor = new Color(0.7f, 0.7f, 0.7f);
-                if (btn.buttonText != null) btn.buttonText.color = Color.white;
+                bool lightCol = LightColor(col);
+                Color tc = lightCol ? new Color(0.08f, 0.08f, 0.08f) : Color.white;
+                btn.activeTextColor = btn.inactiveTextColor = tc;
+                btn.selectedTextColor = lightCol ? new Color(0.3f, 0.3f, 0.3f) : new Color(0.7f, 0.7f, 0.7f);
+                if (btn.buttonText != null) btn.buttonText.color = tc;
+                AddGradient(btn);
             }
             catch (Exception e) { Plugin.Logger.LogWarning("ModMenu tab colors: " + e.Message); }
             int idx = i;
@@ -264,9 +318,9 @@ public static class ModMenu
         float sp = GameOptionsMenu.SPACING_Y * Opts.RowSpacing.Value;
         float y = startY;
 
-        if ((page >= 2 && page <= 4) || page == 7 || Pages[page].En == "Virus")
+        if ((page >= 2 && page <= 4) || page == 6 || Pages[page].En == "Virus")
         {
-            var team = page == 2 ? OptTab.Crewmate : page == 3 ? OptTab.Impostor : page == 7 ? OptTab.Mystic : OptTab.Neutral;
+            var team = page == 2 ? OptTab.Crewmate : page == 3 ? OptTab.Impostor : page == 6 ? OptTab.Mystic : OptTab.Neutral;
             bool vpage = Pages[page].En == "Virus";
             foreach (var role in Opts.Roles.Where(r => vpage ? Extra33.VirusTeam.Contains(r.Id) : (r.Tab == team && !(team == OptTab.Neutral && Extra33.VirusTeam.Contains(r.Id)))))
             {

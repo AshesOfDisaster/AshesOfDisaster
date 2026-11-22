@@ -8,7 +8,6 @@ namespace AshesOfDisaster;
 
 public static class LobbyGames
 {
-    public static BoolOpt On;
     static readonly System.Random rng = new();
     static readonly Dictionary<byte, int> points = new();
     static readonly Dictionary<byte, int> streak = new();
@@ -17,14 +16,9 @@ public static class LobbyGames
     static byte bestId = 255; static int bestRoll; static float rollEnds;
     static int quizAnswer; static string quizText; static float quizEnds;
 
-    public static void Define(ConfigFile c)
-    {
-        On = new BoolOpt("LobbyGames", OptTab.Mini, true, c);
-        On.NameRu = "Мини-игры в лобби"; On.NameEn = "Lobby mini-games";
-        On.GroupRu = "Мини-игры"; On.GroupEn = "Mini-games";
-    }
+    public static void Define(ConfigFile c) { }
 
-    static bool GamesOn => On != null && On.Value;
+    static bool GamesOn => true;
     static float nextHint;
 
     public static void Reset() { points.Clear(); streak.Clear(); secret = 0; bestId = 255; bestRoll = 0; quizAnswer = 0; quizText = null; }

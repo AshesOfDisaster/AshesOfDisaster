@@ -128,7 +128,7 @@ public static class Commands
     static readonly Vector2 TpOutPos = new(0.1f, 3.8f);
     static readonly Vector2 TpInDefault = new(-0.2f, 1.3f);
 
-    public static bool WallBetween(Vector2 a, Vector2 b)
+    public static bool WallBetween(Vector2 a, Vector2 b, bool wallOnError = false)
     {
         var d = b - a; float m = d.magnitude;
         if (m < 0.001f) return false;
@@ -139,7 +139,7 @@ public static class Commands
                 || PhysicsHelpers.AnyNonTriggersBetween(a + side, n, m + 0.1f, Constants.ShipAndObjectsMask)
                 || PhysicsHelpers.AnyNonTriggersBetween(a - side, n, m + 0.1f, Constants.ShipAndObjectsMask);
         }
-        catch { return false; }
+        catch { return wallOnError; }
     }
 
     public static void Tp(PlayerControl pc, Vector2 pos)

@@ -267,7 +267,7 @@ public static class RoleLogic
         {
             var pool = team == OptTab.Impostor ? imps : crew;
             var list = new List<RoleDef>();
-            foreach (var r in Opts.Roles.Where(x => x.Tab == team && x.Chance.Value > 0))
+            foreach (var r in Opts.Roles.Where(x => x.Tab == team && x.Chance.Value > 0 && x.Id != "PlagueDoctor"))
                 for (int i = 0; i < r.Count.Value; i++)
                     if (rng.Next(100) < r.Chance.Value) list.Add(r);
             foreach (var r in Shuffle(list))
@@ -287,6 +287,7 @@ public static class RoleLogic
                 RoleState.Assigned[p.PlayerId] = r;
             }
         }
+        Extra33.PlagueDoctorPass(crew);
         foreach (var cp in toImp)
         {
             try { SetVanillaRole(cp, RoleTypes.Impostor); ForcedImp.Add(cp.PlayerId); Plugin.Logger.LogInfo($"Team swap: {cp.Data.PlayerName} -> vanilla Impostor"); }

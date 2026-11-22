@@ -1,6 +1,6 @@
 # Roles / Роли
 
-Total / Всего: **186**. Descriptions are shown in game with `/r <role>`.
+Total / Всего: **190**. Descriptions are shown in game with `/r <role>`.
 
 
 ## Crew / Мирные
@@ -249,6 +249,30 @@ Total / Всего: **186**. Descriptions are shown in game with `/r <role>`.
 - RU: Мирный. Питомец касается ближайшего игрока (до 2 м), и его способность тут же срабатывает, как будто он сам нажал. Работает только с активными способностями, действуют перезарядка и лимит использований самого игрока. Использований 4, перезарядка 30 с. [Питомец]
 - EN: Crewmate. The pet touches the nearest player (within 2 m) and his ability fires at once, as if he pressed it himself. Works only with active abilities; the player's own cooldown and uses apply. Uses 4, cooldown 30 s. [Pet]
 
+### Plague Doctor / Чумной доктор
+- RU: Мирный. Питомец лечит ближайшего заражённого игрока (до 2 м): с него снимается вирус и чума. Если рядом здоровый, ты узнаёшь, что он не заражён (перезарядка тоже тратится). Устойчивый штамм Патогена вылечить нельзя. Шанс появления выше, когда в игре есть вирус (настройка «Шанс без вируса»). Перезарядка 30 с. [Питомец]
+- EN: Crewmate. The pet cures the nearest infected player (within 2 m): the virus and the plague are removed. If a healthy player is near, you learn he is not infected (the cooldown is spent too). The Pathogen's resistant strain cannot be cured. The spawn chance is higher when a virus is in the game (option "Chance without a virus"). Cooldown 30 s. [Pet]
+
+### Fan / Вентилятор
+- RU: Мирный. Питомец включает вентилятор: все игроки в радиусе 3 м от тебя отлетают от тебя на 4 м (стена останавливает раньше). Перезарядка 30 с. Радиус и силу можно менять в настройках. [Питомец]
+- EN: Crewmate. The pet turns the fan on: every player within 3 m of you is blown 4 m away from you (a wall stops them earlier). Cooldown 30 s. Radius and force can be changed in the options. [Pet]
+
+### Magnet / Магнит
+- RU: Мирный. Питомец включает магнит: все игроки в радиусе 4 м подтягиваются к тебе на 3 м (стена останавливает раньше, вплотную никого не прижимает). Перезарядка 30 с. Радиус и силу можно менять в настройках. [Питомец]
+- EN: Crewmate. The pet turns the magnet on: every player within 4 m is pulled 3 m toward you (a wall stops them earlier, nobody ends up on top of you). Cooldown 30 s. Radius and force can be changed in the options. [Pet]
+
+### Radar / Радар
+- RU: Мирный. Питомец включает радар: ты узнаёшь, сколько живых игроков в радиусе 6 м, и в какой комнате находится ближайший к тебе игрок на всей карте. Использований 6, перезарядка 20 с. [Питомец]
+- EN: Crewmate. The pet turns the radar on: you learn how many living players are within 6 m and which room the player closest to you is in anywhere on the map. Uses 6, cooldown 20 s. [Pet]
+
+### Guardian / Страж
+- RU: Мирный. Питомец накрывает щитом ближайшего игрока (до 2 м, не себя): щит спасает от одного убийства. Если у него уже есть щит, питомец ничего не тратит. Использований 2, перезарядка 60 с. [Питомец]
+- EN: Crewmate. The pet covers the nearest player (within 2 m, not yourself) with a shield: the shield saves from one kill. If he already has a shield nothing is spent. Uses 2, cooldown 60 s. [Pet]
+
+### Snowman / Снеговик
+- RU: Мирный. Питомец замораживает ближайшего игрока (до 3 м): он стоит на месте несколько секунд (по умолчанию 3). Подходит, чтобы остановить убегающего предателя. Перезарядка 40 с. [Питомец]
+- EN: Crewmate. The pet freezes the nearest player (within 3 m): he stands still for a few seconds (3 by default). Good for stopping an impostor who runs away. Cooldown 40 s. [Pet]
+
 ## Impostors / Предатели
 
 ### Welder / Сварщик
@@ -459,6 +483,18 @@ Total / Всего: **186**. Descriptions are shown in game with `/r <role>`.
 - RU: Предатель. Питомец метит ближайшего не-предателя (до 3 м). Если в ближайшие 30 секунд кого-то убьют, всем живым придёт сообщение, что рядом с телом заметили именно его. Перезарядка 80 с. [Питомец]
 - EN: Impostor. The pet marks the nearest non-impostor (within 3 m). If anyone is killed in the next 30 seconds, every living player is told that he was seen near the body. Cooldown 80 s. [Pet]
 
+### Hook / Крюк
+- RU: Предатель. Питомец бросает крюк в ближайшего не-предателя (до 5 м) и подтягивает его к тебе почти вплотную. Стена останавливает рывок раньше. Перезарядка 35 с. [Питомец]
+- EN: Impostor. The pet throws a hook at the nearest non-impostor (within 5 m) and drags him almost right next to you. A wall stops the pull earlier. Cooldown 35 s. [Pet]
+
+### Shover / Толкач
+- RU: Предатель. Питомец отталкивает ближайшего не-предателя (до 2 м) от тебя на 5 м, стена останавливает раньше. Хорошо отводит свидетеля от тела. Перезарядка 30 с. [Питомец]
+- EN: Impostor. The pet shoves the nearest non-impostor (within 2 m) 5 m away from you, a wall stops him earlier. Good for sending a witness away from a body. Cooldown 30 s. [Pet]
+
+### Stunner / Оглушитель
+- RU: Предатель. Питомец оглушает всех не-предателей в радиусе 3 м: они замирают на 2 секунды. Времени хватит, чтобы уйти. Использований 3, перезарядка 50 с. [Питомец]
+- EN: Impostor. The pet stuns every non-impostor within 3 m: they freeze for 2 seconds. Use the time to walk away. Uses 3, cooldown 50 s. [Pet]
+
 ## Neutrals / Нейтралы
 
 ### Smoker / Курильщик
@@ -617,6 +653,14 @@ Total / Всего: **186**. Descriptions are shown in game with `/r <role>`.
 - RU: Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Питомец взламывает ближайшего игрока (до 2,5 м, не больше 2 взломов сразу): он считается заражённым и получает требование выкупа. Выкуп: простоять рядом с вымогателем 3 секунды, а для предателя ещё вариант: совершить убийство. Если за 60 секунд (настройка) выкуп не оплачен, вымогатель убивает игрока (щит спасает). Особая способность: кто применит способность рядом (до 4 м), получает такой же взлом, а его способность отменяется. На собраниях время не идёт. Перезарядка 40 с. [Питомец]
 - EN: Neutral of the virus team. You win when every living player is infected. The pet hacks the nearest player (within 2.5 m, at most 2 hacks at once): he counts as infected and gets a ransom demand. The ransom: stand next to the ransom for 3 seconds, and for an impostor also: commit a kill. If it is not paid within 60 seconds (option) the ransom kills the player (a shield stops it). Special: anyone using an ability within 4 m gets the same hack and the ability is cancelled. The timer stops during meetings. Cooldown 40 s. [Pet]
 
+### Mutant / Мутант
+- RU: Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Сначала ты Личинка, очень слабая роль: питомец заражает только того, кто стоит вплотную (до 0,9 м), а заражённые передают вирус дальше очень медленно (14 секунд рядом с другим игроком). После 2-го собрания (настройка) ты мутируешь: питомец теперь убивает ближайшего игрока (до 1,6 м, щит спасает), другой кнопки нет. Мёртвых заражать не нужно, поэтому убийства приближают победу. Перезарядка 40 с. [Питомец]
+- EN: Neutral of the virus team. You win when every living player is infected. At first you are a Larva, a very weak role: the pet infects only someone standing right next to you (within 0.9 m), and infected players spread the virus very slowly (14 seconds next to another player). After the 2nd meeting (option) you mutate: the pet now kills the nearest player (within 1.6 m, a shield saves him), there is no other button. The dead do not need infecting, so kills bring the win closer. Cooldown 40 s. [Pet]
+
+### Pathogen / Патоген
+- RU: Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Питомец сразу заражает ближайшего игрока (до 2 м). Твой штамм устойчивый: Чумной доктор не может вылечить тех, кого заразил ты. Заражённые передают вирус быстро: за 4 секунды рядом с другим игроком. Перезарядка 40 с. [Питомец]
+- EN: Neutral of the virus team. You win when every living player is infected. The pet infects the nearest player at once (within 2 m). Your strain is resistant: the Plague Doctor cannot cure those you infected. Infected players spread the virus fast: in 4 seconds next to another player. Cooldown 40 s. [Pet]
+
 ## Mystics / Мистики
 
 ### Alchemist / Алхимик
@@ -722,6 +766,18 @@ Total / Всего: **186**. Descriptions are shown in game with `/r <role>`.
 ### Time Stop / Таймстоп
 - RU: Мистик. Питомец останавливает время: все остальные игроки замирают на несколько секунд (по умолчанию 5), а ты свободно ходишь. В это время таймеры меток, ловушек и отложенных смертей тоже стоят. Убивать замершим нельзя, но можно уйти или спрятаться. Использований: 3, перезарядка 90 с. [Питомец]
 - EN: Mystic. The pet stops time: all other players freeze for a few seconds (5 by default) while you move freely. Timers of marks, traps and delayed deaths stop too. You cannot kill frozen players, but you can leave or hide. Uses: 3, cooldown 90 s. [Pet]
+
+### Exchanger / Меняла
+- RU: Мистик. Питомец меняет тебя местами с ближайшим игроком (до 3 м): ты оказываешься там, где стоял он, а он там, где стоял ты. Можно спастись от убийцы или внезапно оказаться у цели. Использований 4, перезарядка 45 с. [Питомец]
+- EN: Mystic. The pet swaps you with the nearest player (within 3 m): you land where he stood and he lands where you stood. Can save you from a killer or put you suddenly next to a target. Uses 4, cooldown 45 s. [Pet]
+
+### Shuffler / Тасовщик
+- RU: Мистик. Питомец меняет местами двух ближайших к тебе игроков (оба не дальше 6 м). Оба игрока получат сообщение о смене места. Использований 3, перезарядка 60 с. [Питомец]
+- EN: Mystic. The pet swaps the two players closest to you (both within 6 m). They are told about it. Uses 3, cooldown 60 s. [Pet]
+
+### Warper / Искривитель
+- RU: Мистик. Питомец искривляет пространство: ты и ближайший игрок (до 3 м) оказываетесь у двух разных случайных дверей на карте. Если рядом никого нет, телепортируешься только ты. Использований 3, перезарядка 70 с. [Питомец]
+- EN: Mystic. The pet bends space: you and the nearest player (within 3 m) end up at two different random doors on the map. If nobody is near, only you are teleported. Uses 3, cooldown 70 s. [Pet]
 
 ## Ghosts / Призраки
 

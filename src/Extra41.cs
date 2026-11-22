@@ -8,7 +8,7 @@ namespace AshesOfDisaster;
 // Принтер (метки, выбор люком) и Кнопка (касание запускает способность игрока).
 public static partial class Extra33
 {
-    public static readonly HashSet<string> VirusTeam = new() { "Skibidi", "Spore", "Ransom" };
+    public static readonly HashSet<string> VirusTeam = new() { "Skibidi", "Spore", "Ransom", "Mutant", "Pathogen" };
     static readonly Dictionary<byte, int> psel = new();
     static int meetN;
     static readonly string[] PrintRu = { "Ловушка", "Вспышка", "Журнал" };
@@ -58,6 +58,7 @@ public static partial class Extra33
         Virus42Meeting();
         if (spots.Any(x => x.Kind == "ransom")) rMeet = Time.time;
         meetN++;
+        MutantMeeting();
         foreach (var g in spots.Where(x => x.Kind == "plog").GroupBy(x => x.Owner).ToList())
         {
             var pr = Utils.GetPlayer(g.Key);
@@ -123,7 +124,7 @@ public static partial class Extra33
                 var k = (sp.Owner, o.PlayerId);
                 if (Vector2.Distance(v.GetTruePosition(), o.GetTruePosition()) > 1.8f) { vexp.Remove(k); continue; }
                 vexp[k] = (vexp.TryGetValue(k, out var e) ? e : 0f) + dt;
-                if (vexp[k] < (IsRole(owner, "Skibidi") ? 10f : IsRole(owner, "Spore") || IsRole(owner, "Ransom") ? 6f : 3f)) continue;
+                if (vexp[k] < (IsRole(owner, "Skibidi") ? 10f : IsRole(owner, "Pathogen") ? 4f : IsRole(owner, "Mutant") ? (MutantAwake() ? 6f : 14f) : IsRole(owner, "Spore") || IsRole(owner, "Ransom") ? 6f : 3f)) continue;
                 vexp.Remove(k);
                 var src = new List<byte> { sp.Target };
                 spots.Add(new Spot { Kind = "virus", Owner = sp.Owner, Target = o.PlayerId, Until = Time.time + 9999f, Seen = src });
@@ -144,8 +145,37 @@ public static partial class Extra33
         if (sk && sing.TryGetValue(p.PlayerId, out var su) && su > Time.time) act = T(ru, $", поёшь ещё {Mathf.CeilToInt(su - Time.time)} с", $", singing {Mathf.CeilToInt(su - Time.time)} s more");
         if (IsRole(p, "Spore")) act = T(ru, $", питомец: спора (на земле {spots.Count(x => x.Kind == "spore" && x.Owner == p.PlayerId)})", $", pet: spore ({spots.Count(x => x.Kind == "spore" && x.Owner == p.PlayerId)} placed)");
         if (IsRole(p, "Ransom")) act = T(ru, $", питомец: взломать (ждут выкуп {spots.Count(x => x.Kind == "ransom" && x.Owner == p.PlayerId)})", $", pet: hack ({spots.Count(x => x.Kind == "ransom" && x.Owner == p.PlayerId)} awaiting ransom)");
+        if (IsRole(p, "Mutant")) act = MutantAwake()
+            ? T(ru, ", питомец: убить", ", pet: kill")
+            : T(ru, $", личинка: мутация после {MutantNeed()}-го собрания (сейчас {meetN})", $", larva: mutates after meeting {MutantNeed()} (now {meetN})");
         if (names.Count == 0) return head + act;
         return head + act + ": " + string.Join(", ", names);
+    }
+
+    static readonly System.Random pdRng = new();
+
+    // Чумной доктор выдаётся после остальных: с вирусом в игре шанс обычный, без вируса меньше (PDocNoVirus %)
+    public static void PlagueDoctorPass(List<PlayerControl> pool)
+    {
+        var def = Opts.Roles.FirstOrDefault(x => x.Id == "PlagueDoctor");
+        if (def == null || def.Chance.Value <= 0) return;
+        bool virus = RoleState.Assigned.Values.Any(a => VirusTeam.Contains(a.Id));
+        int pct = virus ? def.Chance.Value : def.Chance.Value * G("PDocNoVirus") / 100;
+        int have = RoleState.Assigned.Values.Count(a => a.Id == "PlagueDoctor");
+        for (int i = have; i < def.Count.Value && pool.Count > 0; i++)
+            if (pdRng.Next(100) < pct) { var dp = pool[0]; pool.RemoveAt(0); RoleState.Assigned[dp.PlayerId] = def; }
+        Plugin.Logger.LogInfo($"PlagueDoctor: virus in game = {virus}, chance {pct}%");
+    }
+
+    static int MutantNeed() => Math.Max(1, G("MutantMeet"));
+    static bool MutantAwake() => meetN >= MutantNeed();
+
+    // после нужного собрания Личинка мутирует: питомец начинает убивать
+    static void MutantMeeting()
+    {
+        if (meetN != MutantNeed()) return;
+        foreach (var o in PlayerControl.AllPlayerControls.ToArray().Where(x => Alive(x) && IsRole(x, "Mutant")))
+            Utils.SendSecret(o, T(Translator.IsRu(o), "Ты мутировал! Теперь питомец убивает ближайшего игрока (до 1,6 м).", "You mutated! Now the pet kills the nearest player (within 1.6 m)."));
     }
 
     static void VirusCheck(PlayerControl owner)
@@ -220,16 +250,16 @@ public static partial class Extra33
     static void RansomHack(PlayerControl p, PlayerControl t)
     {
         bool ru = Translator.IsRu(p);
-                float sec = G("RansomSec");
-                int kind = IsImp(t) && UnityEngine.Random.value < 0.5f ? 1 : 0;
-                spots.Add(new Spot { Kind = "ransom", Owner = p.PlayerId, Target = t.PlayerId, Pos = new Vector2(kind, 0f), Until = Time.time + sec, Next = sec > 40f ? Time.time + sec - 30f : 0f });
-                if (!spots.Any(x => x.Kind == "virus" && x.Owner == p.PlayerId && x.Target == t.PlayerId))
-                    spots.Add(new Spot { Kind = "virus", Owner = p.PlayerId, Target = t.PlayerId, Until = Time.time + 99999f, Seen = new List<byte> { p.PlayerId } });
-                bool tru = Translator.IsRu(t);
-                string dem = kind == 1 ? T(tru, "совершить 1 убийство", "commit 1 kill") : T(tru, $"простоять рядом с {Nm(p)} 3 секунды", $"stand next to {Nm(p)} for 3 seconds");
-                Utils.SendSecret(t, T(tru, $"Тебя взломал Вымогатель! Выкуп: {dem}. Срок {sec:0} с, иначе он тебя убьёт.", $"You were hacked by the Ransom! Ransom: {dem}. {sec:0} s, or he kills you."), 3);
-                string dem2 = kind == 1 ? T(ru, "1 убийство", "1 kill") : T(ru, "3 с рядом с тобой", "3 s next to you");
-                H(p, T(ru, $"Взломан {Nm(t)}. Выкуп: {dem2}, срок {sec:0} с.", $"Hacked {Nm(t)}. Ransom: {dem2}, {sec:0} s."));
+        float sec = G("RansomSec");
+        int kind = IsImp(t) && UnityEngine.Random.value < 0.5f ? 1 : 0;
+        spots.Add(new Spot { Kind = "ransom", Owner = p.PlayerId, Target = t.PlayerId, Pos = new Vector2(kind, 0f), Until = Time.time + sec, Next = sec > 40f ? Time.time + sec - 30f : 0f });
+        if (!spots.Any(x => x.Kind == "virus" && x.Owner == p.PlayerId && x.Target == t.PlayerId))
+            spots.Add(new Spot { Kind = "virus", Owner = p.PlayerId, Target = t.PlayerId, Until = Time.time + 99999f, Seen = new List<byte> { p.PlayerId } });
+        bool tru = Translator.IsRu(t);
+        string dem = kind == 1 ? T(tru, "совершить 1 убийство", "commit 1 kill") : T(tru, $"простоять рядом с {Nm(p)} 3 секунды", $"stand next to {Nm(p)} for 3 seconds");
+        Utils.SendSecret(t, T(tru, $"Тебя взломал Вымогатель! Выкуп: {dem}. Срок {sec:0} с, иначе он тебя убьёт.", $"You were hacked by the Ransom! Ransom: {dem}. {sec:0} s, or he kills you."), 3);
+        string dem2 = kind == 1 ? T(ru, "1 убийство", "1 kill") : T(ru, "3 с рядом с тобой", "3 s next to you");
+        H(p, T(ru, $"Взломан {Nm(t)}. Выкуп: {dem2}, срок {sec:0} с.", $"Hacked {Nm(t)}. Ransom: {dem2}, {sec:0} s."));
     }
 
     // пассивка Вымогателя: кто использовал способность рядом с ним (до 4 м), получает взлом, а способность отменяется
@@ -243,7 +273,7 @@ public static partial class Extra33
             var rp = Utils.GetPlayer(kv.Key);
             if (!Alive(rp) || Roles75.IsMuted(rp) || Vector2.Distance(rp.GetTruePosition(), u.GetTruePosition()) > 4f) continue;
             bool uru = Translator.IsRu(u);
-            if (!spots.Any(x => x.Kind == "ransom" && x.Target == u.PlayerId))
+            if (!spots.Any(x => x.Kind == "ransom" && x.Target == u.PlayerId) && spots.Count(x => x.Kind == "ransom" && x.Owner == rp.PlayerId) < 2)
             {
                 RansomHack(rp, u);
                 VirusCheck(rp);
@@ -318,6 +348,90 @@ public static partial class Extra33
                 return true;
             });
         E("Ransom", "RansomSec", 60, 30, 120, 10, "Время на выкуп (сек)", "Ransom time (sec)");
+        S("Mutant", "Мутант", "Mutant", "#C0CA33", OptTab.Neutral, 40, 0, "питомец: заразить, а после мутации убить", "pet: infect, after the mutation kill",
+            "Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Сначала ты Личинка, очень слабая роль: питомец заражает только того, кто стоит вплотную (до 0,9 м), а заражённые передают вирус дальше очень медленно (14 секунд рядом с другим игроком). После 2-го собрания (настройка) ты мутируешь: питомец теперь убивает ближайшего игрока (до 1,6 м, щит спасает), другой кнопки нет. Мёртвых заражать не нужно, поэтому убийства приближают победу. Перезарядка 40 с. [Питомец]",
+            "Neutral of the virus team. You win when every living player is infected. At first you are a Larva, a very weak role: the pet infects only someone standing right next to you (within 0.9 m), and infected players spread the virus very slowly (14 seconds next to another player). After the 2nd meeting (option) you mutate: the pet now kills the nearest player (within 1.6 m, a shield saves him), there is no other button. The dead do not need infecting, so kills bring the win closer. Cooldown 40 s. [Pet]",
+            (p, ru) =>
+            {
+                if (!MutantAwake())
+                {
+                    var mt0 = Nearest(p, 0.9f, o => !(RoleState.Assigned.TryGetValue(o.PlayerId, out var mr0) && VirusTeam.Contains(mr0.Id)) && !spots.Any(sy => sy.Kind == "virus" && sy.Owner == p.PlayerId && sy.Target == o.PlayerId));
+                    if (mt0 == null) { H(p, T(ru, $"Личинка: рядом никого (до 0,9 м). Мутация после {MutantNeed()}-го собрания.", $"Larva: nobody within 0.9 m. You mutate after meeting {MutantNeed()}.")); return false; }
+                    spots.Add(new Spot { Kind = "virus", Owner = p.PlayerId, Target = mt0.PlayerId, Until = Time.time + 99999f, Seen = new List<byte> { p.PlayerId } });
+                    H(p, T(ru, $"Заражён {Nm(mt0)}. Заражено {VirusCount(p)} из {VirusAlive(p)}.", $"{Nm(mt0)} infected. Infected {VirusCount(p)} of {VirusAlive(p)}."));
+                    VirusCheck(p);
+                    return true;
+                }
+                var mt = Nearest(p, 1.6f, o => !(RoleState.Assigned.TryGetValue(o.PlayerId, out var mr) && VirusTeam.Contains(mr.Id)));
+                if (mt == null) { H(p, T(ru, "Рядом никого (до 1,6 м).", "Nobody within 1.6 m.")); return false; }
+                if (!Strike(p, mt)) { H(p, T(ru, "Убить не получилось.", "Could not kill.")); return false; }
+                VirusCheck(p);
+                return true;
+            });
+        E("Mutant", "MutantMeet", 2, 1, 5, 1, "Мутация после собрания №", "Mutation after meeting #");
+        RoleLogic.RealImpNeutrals.Add("Mutant");
+        S("Pathogen", "Патоген", "Pathogen", "#7CB342", OptTab.Neutral, 40, 0, "питомец: заразить устойчивым штаммом", "pet: infect with a resistant strain",
+            "Нейтрал из команды вирусов. Побеждает, когда заражены все живые игроки. Питомец сразу заражает ближайшего игрока (до 2 м). Твой штамм устойчивый: Чумной доктор не может вылечить тех, кого заразил ты. Заражённые передают вирус быстро: за 4 секунды рядом с другим игроком. Перезарядка 40 с. [Питомец]",
+            "Neutral of the virus team. You win when every living player is infected. The pet infects the nearest player at once (within 2 m). Your strain is resistant: the Plague Doctor cannot cure those you infected. Infected players spread the virus fast: in 4 seconds next to another player. Cooldown 40 s. [Pet]",
+            (p, ru) =>
+            {
+                var pgt = Nearest(p, 2f, o => !(RoleState.Assigned.TryGetValue(o.PlayerId, out var pgr) && VirusTeam.Contains(pgr.Id)) && !spots.Any(pgs => pgs.Kind == "virus" && pgs.Owner == p.PlayerId && pgs.Target == o.PlayerId));
+                if (pgt == null) { H(p, T(ru, "Некого заразить (до 2 м).", "Nobody to infect within 2 m.")); return false; }
+                spots.Add(new Spot { Kind = "virus", Owner = p.PlayerId, Target = pgt.PlayerId, Until = Time.time + 99999f, Seen = new List<byte> { p.PlayerId } });
+                H(p, T(ru, $"Заражён {Nm(pgt)}. Заражено {VirusCount(p)} из {VirusAlive(p)}.", $"{Nm(pgt)} infected. Infected {VirusCount(p)} of {VirusAlive(p)}."));
+                VirusCheck(p);
+                return true;
+            });
+        S("PlagueDoctor", "Чумной доктор", "Plague Doctor", "#FFD180", C, 30, 0, "питомец: вылечить заражённого", "pet: cure an infected player",
+            "Мирный. Питомец лечит ближайшего заражённого игрока (до 2 м): с него снимается вирус и чума. Если рядом здоровый, ты узнаёшь, что он не заражён (перезарядка тоже тратится). Устойчивый штамм Патогена вылечить нельзя. Шанс появления выше, когда в игре есть вирус (настройка «Шанс без вируса»). Перезарядка 30 с. [Питомец]",
+            "Crewmate. The pet cures the nearest infected player (within 2 m): the virus and the plague are removed. If a healthy player is near, you learn he is not infected (the cooldown is spent too). The Pathogen's resistant strain cannot be cured. The spawn chance is higher when a virus is in the game (option \"Chance without a virus\"). Cooldown 30 s. [Pet]",
+            (p, ru) =>
+            {
+                var cvT = Nearest(p, 2f, o => true);
+                if (cvT == null) { H(p, T(ru, "Рядом никого (до 2 м).", "Nobody within 2 m.")); return false; }
+                var cvList = spots.Where(cx => cx.Kind == "virus" && cx.Target == cvT.PlayerId).ToList();
+                bool cvPlague = infect.ContainsKey(cvT.PlayerId);
+                if (cvList.Count == 0 && !cvPlague) { H(p, T(ru, $"{Nm(cvT)} не заражён.", $"{Nm(cvT)} is not infected.")); return true; }
+                int cvDone = 0; bool cvResist = false;
+                foreach (var cvSp in cvList)
+                {
+                    var cvOwner = Utils.GetPlayer(cvSp.Owner);
+                    if (IsRole(cvOwner, "Pathogen")) { cvResist = true; continue; }
+                    spots.Remove(cvSp); cvDone++;
+                    if (spots.RemoveAll(rx => rx.Kind == "ransom" && rx.Owner == cvSp.Owner && rx.Target == cvT.PlayerId) > 0) { rprog.Remove(cvT.PlayerId); H(cvT, T(Translator.IsRu(cvT), "Тебя вылечили: требование выкупа снято.", "You were cured: the ransom demand is lifted.")); }
+                    if (Alive(cvOwner)) H(cvOwner, T(Translator.IsRu(cvOwner), $"{Nm(cvT)} вылечили. Заражено {VirusCount(cvOwner)} из {VirusAlive(cvOwner)}.", $"{Nm(cvT)} was cured. Infected {VirusCount(cvOwner)} of {VirusAlive(cvOwner)}."));
+                }
+                if (cvPlague) { infect.Remove(cvT.PlayerId); cvDone++; }
+                if (cvDone == 0 && cvResist) { H(p, T(ru, $"У {Nm(cvT)} устойчивый штамм: вылечить нельзя.", $"{Nm(cvT)} has a resistant strain: cannot be cured.")); return true; }
+                H(p, T(ru, $"{Nm(cvT)} вылечен.", $"{Nm(cvT)} was cured."));
+                return true;
+            });
+        E("PlagueDoctor", "PDocNoVirus", 40, 0, 100, 10, "Шанс без вируса (% от обычного)", "Chance without a virus (% of normal)");
+        S("Fan", "Вентилятор", "Fan", "#B3E5FC", C, 30, 0, "питомец: сдуть игроков вокруг", "pet: blow nearby players away",
+            "Мирный. Питомец включает вентилятор: все игроки в радиусе 3 м от тебя отлетают от тебя на 4 м (стена останавливает раньше). Перезарядка 30 с. Радиус и силу можно менять в настройках. [Питомец]",
+            "Crewmate. The pet turns the fan on: every player within 3 m of you is blown 4 m away from you (a wall stops them earlier). Cooldown 30 s. Radius and force can be changed in the options. [Pet]",
+            (p, ru) =>
+            {
+                float fnR = G("FanRadius"), fnPush = G("FanPush");
+                var fnPos = p.GetTruePosition(); int fnCount = 0;
+                foreach (var fnT in PlayerControl.AllPlayerControls.ToArray().Where(x => x != p && Alive(x) && !x.inVent))
+                {
+                    var fnFrom = fnT.GetTruePosition(); var fnDiff = fnFrom - fnPos;
+                    if (fnDiff.magnitude > fnR) continue;
+                    var fnDir = fnDiff.magnitude < 0.05f ? new Vector2(1f, 0f) : fnDiff.normalized;
+                    for (float fnD = fnPush; fnD >= 0.5f; fnD -= 0.5f)
+                    {
+                        var fnDest = fnFrom + fnDir * fnD;
+                        if (Commands.WallBetween(fnFrom, fnDest, true)) continue;
+                        Commands.Tp(fnT, fnDest); fnCount++; H(fnT, T(Translator.IsRu(fnT), "Тебя сдуло вентилятором!", "You were blown away by a fan!")); break;
+                    }
+                }
+                if (fnCount == 0) { H(p, T(ru, $"Рядом никого (до {fnR:0.#} м).", $"Nobody within {fnR:0.#} m.")); return false; }
+                H(p, T(ru, $"Сдуто игроков: {fnCount}.", $"Blown away: {fnCount}."));
+                return true;
+            });
+        E("Fan", "FanRadius", 3, 1, 6, 1, "Радиус вентилятора (м)", "Fan radius (m)");
+        E("Fan", "FanPush", 4, 1, 8, 1, "Сила: на сколько метров сдувает", "Force: how many metres it blows");
         S("Button", "Кнопка", "Button", "#FF8A65", C, 30, 4, "питомец: коснуться игрока, его способность сработает", "pet: touch a player, his ability fires",
             "Мирный. Питомец касается ближайшего игрока (до 2 м), и его способность тут же срабатывает, как будто он сам нажал. Работает только с активными способностями, действуют перезарядка и лимит использований самого игрока. Использований 4, перезарядка 30 с. [Питомец]",
             "Crewmate. The pet touches the nearest player (within 2 m) and his ability fires at once, as if he pressed it himself. Works only with active abilities; the player's own cooldown and uses apply. Uses 4, cooldown 30 s. [Pet]",

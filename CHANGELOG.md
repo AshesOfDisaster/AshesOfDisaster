@@ -1,5 +1,31 @@
 # Changelog / Список изменений
 
+## 4.0.0
+- RU: большое обновление, 10 новых ролей, все работают от питомца. Мирные: Магнит (притягивает игроков вокруг), Радар (сколько игроков рядом и в какой комнате ближайший), Страж (щит ближайшему игроку), Снеговик (замораживает ближайшего). Предатели: Крюк (подтягивает жертву к себе), Толкач (отбрасывает ближайшего), Оглушитель (замораживает игроков рядом на 2 с). Мистики: Меняла (меняет тебя местами с ближайшим), Тасовщик (меняет местами двух игроков), Искривитель (отправляет тебя и ближайшего к случайным дверям). Игроков никогда не сдвигает сквозь стены и не трогает тех, кто в люке.
+- RU: вкладка «Мини-игр» убрана из ноутбука, мини-игры в лобби теперь всегда включены.
+- EN: big update, 10 new roles, all use the pet. Crew: Magnet (pulls players around you), Radar (how many players are near and which room the closest one is in), Guardian (a shield for the nearest player), Snowman (freezes the nearest player). Impostors: Hook (drags a victim to you), Shover (shoves the nearest player away), Stunner (freezes nearby players for 2 s). Mystics: Exchanger (swaps you with the nearest player), Shuffler (swaps two players), Warper (sends you and the nearest player to random doors). Players are never moved through walls and players inside a vent are left alone.
+- EN: the Mini-games tab is removed from the laptop, lobby mini-games are now always on.
+- RU: обновлена ссылка на Discord-сервер.
+- EN: the Discord server link is updated.
+- RU: в README доля ИИ в проекте указана как 35%.
+- EN: the README now states the share of AI in the project as 35%.
+
+## 3.69
+- RU: исправления. Вентилятор: если проверка стены даёт сбой, игрока больше не телепортирует сквозь стену, а сдутые игроки получают подсказку. Вымогатель: пассивка тоже соблюдает лимит в 2 взлома. Чумной доктор: вылеченный от взлома Вымогателя игрок больше не ждёт выкуп, ему приходит сообщение. Поправлены отступы в коде.
+- EN: fixes. Fan: if the wall check fails a player is no longer teleported through a wall, and blown players get a hint. Ransom: the passive now respects the limit of 2 hacks. Plague Doctor: a player cured of a Ransom hack no longer waits for the ransom demand and is told about it. Code indentation fixed.
+
+## 3.68
+- RU: новая роль Вентилятор (мирный). Питомец сдувает всех игроков в радиусе 3 м: они отлетают от него на 4 м, стена останавливает раньше. Радиус и силу можно менять в настройках.
+- EN: new role Fan (crew). The pet blows away every player within 3 m: they fly 4 m away from it, a wall stops them earlier. Radius and force can be changed in the options.
+
+## 3.67
+- RU: новые роли. Чумной доктор (мирный): питомец лечит ближайшего заражённого (вирус и чуму). Без вируса в игре шанс его появления ниже (настройка «Шанс без вируса», по умолчанию 40% от обычного), с вирусом обычный. Патоген (команда вирусов): питомец сразу заражает ближайшего, его штамм устойчив к лечению доктора, а заражённые передают вирус за 4 секунды. Исправлено: Мутант теперь настоящий предатель-нейтрал (иначе убийство не работало) и не использует несуществующую константу.
+- EN: new roles. Plague Doctor (crew): the pet cures the nearest infected player (virus and plague). Without a virus in the game its spawn chance is lower (option "Chance without a virus", default 40% of normal), with a virus it is normal. Pathogen (virus team): the pet infects the nearest player at once, its strain resists the doctor's cure, and infected players spread it in 4 seconds. Fixed: the Mutant is now a real impostor-neutral (its kill did not work otherwise) and no longer uses an undefined constant.
+
+## 3.66
+- RU: новая роль команды вирусов Мутант (нейтрал). Сначала Личинка, очень слабая: питомец заражает только вплотную (до 0,9 м), заражённые передают вирус за 14 секунд. После 2-го собрания (настройка «Мутация после собрания №») мутирует: питомец одной кнопкой убивает ближайшего игрока (до 1,6 м, щит спасает). Победа как у всей команды: заражены все живые.
+- EN: new virus-team role Mutant (neutral). It starts as a very weak Larva: the pet infects only point-blank (within 0.9 m), infected players spread the virus in 14 seconds. After the 2nd meeting (option "Mutation after meeting #") it mutates: the pet kills the nearest player with one button (within 1.6 m, a shield saves him). Wins like the whole team: every living player is infected.
+
 ## 3.65
 - RU: новая роль команды вирусов Вымогатель (нейтрал). Питомец взламывает ближайшего игрока: он заражён и получает требование выкупа (простоять рядом 3 с, предатель может вместо этого совершить убийство). Не оплатили за 60 секунд (настройка), Вымогатель убивает. На собраниях время стоит. Пассивка: кто применит способность рядом с Вымогателем (до 4 м), получает взлом, а способность отменяется.
 - EN: new virus-team role Ransom (neutral). The pet hacks the nearest player: he is infected and gets a ransom demand (stand next to him for 3 s, an impostor may commit a kill instead). Unpaid in 60 seconds (option), the Ransom kills him. The timer stops during meetings. Passive: anyone who uses an ability within 4 m of a Ransom gets hacked and the ability is cancelled.
