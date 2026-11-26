@@ -58,14 +58,9 @@ Full descriptions: [docs/ROLES.md](docs/ROLES.md) or `/r <role>` in game.
 
 ### Install
 1. Install [BepInEx (IL2CPP, 6.x)](https://builds.bepinex.dev/projects/bepinex_be) for your Among Us version.
-2. Download `AshesOfDisaster.dll` from [Releases](../../releases), or build it yourself from source (see *Build from source*).
+2. Download `AshesOfDisaster.dll` from [Releases](../../releases).
 3. Put it into `Among Us/BepInEx/plugins/`.
 4. Start the game, create a lobby — only you need the mod.
-
-> Remove other overlapping mods (e.g. old host mods, AUnlocker) if you see conflicts.
-
-### Build from source
-Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install BepInEx 6, run the game once, then double-click **`Run all.bat`** (or `python run_all.py`) — the script finds the game, builds the mod and puts `AshesOfDisaster.dll` into `BepInEx/plugins`. Needs Python 3 and .NET SDK 8. More notes (Russian): [docs/NOTES.ru.md](docs/NOTES.ru.md).
 
 ---
 
@@ -107,14 +102,9 @@ Source is in [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Easiest way: install Be
 
 ### Установка
 1. Установите [BepInEx (IL2CPP, 6.x)](https://builds.bepinex.dev/projects/bepinex_be) под вашу версию Among Us.
-2. Скачайте `AshesOfDisaster.dll` в [Releases](../../releases) или соберите сами из исходников (см. «Сборка из исходников»).
+2. Скачайте `AshesOfDisaster.dll` в [Releases](../../releases).
 3. Положите в `Among Us/BepInEx/plugins/`.
 4. Запустите игру и создайте лобби — мод нужен только вам.
-
-> При конфликтах уберите другие похожие моды (старые хост-моды, AUnlocker).
-
-### Сборка из исходников
-Исходный код — в [`src/`](src) (C#, .NET 6, BepInEx IL2CPP). Установите BepInEx 6, один раз запустите игру и дважды кликните **`Run all.bat`** (или `python run_all.py`): скрипт найдёт игру, соберёт мод и положит `AshesOfDisaster.dll` в `BepInEx/plugins`. Нужны Python 3 и .NET SDK 8. Подробности: [docs/NOTES.ru.md](docs/NOTES.ru.md).
 
 ---
 
